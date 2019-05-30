@@ -1749,6 +1749,20 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 							if ($searchPortlet.length > 0) {
 								// it's Unified Search portlet
 								$searchPortlet.addClass("ms-font-m");
+								var $uiBox = $searchPortlet.find(".uiBox");
+								var $uiBoxTitle = $uiBox.find(".title");
+								var $uiContentBox = $uiBox.find(".uiContentBox");
+								$uiContentBox.hide();
+								 var onFilterClick = true;
+								 $uiBoxTitle.on("click", function(){
+								   if (onFilterClick ){
+								    $uiContentBox.show();
+								    onFilterClick = false;
+								   } else {
+								    $uiContentBox.hide();
+								    onFilterClick = true;
+								   }
+								  });
 								var $resultPage = $searchPortlet.find("#resultPage");
 								$resultPage.on(domEvent, "div.resultBox", function(event) {
 									$(event.target).find("a").each(function() {
@@ -1756,6 +1770,10 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 										$a.attr("target", "_blank");
 										$a.attr("href", fixPortalName($a.attr("href")));
 									});
+								    $(event.target).find("div.content").each(function() {
+                                        var $content = $(this);
+                                         $content.find(".excerpt").hide();
+                                    });
 									return true;
 								});
 							}

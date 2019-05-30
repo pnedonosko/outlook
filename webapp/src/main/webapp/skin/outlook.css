@@ -448,7 +448,6 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 	position: absolute;
 	right: 8px;
 	font-size: 11px;
-	height: 15px;
 	width: 80px;
 	bottom: 25px;
 	z-index: 1;
@@ -487,4 +486,23 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 
 .link:hover{
    color: white;
+}
+
+.uiSearchPortlet{
+    padding: 0px;
+}
+
+.ms-Grid-row .uiSearchPortlet .resultPage{
+   padding: 2px;
+}
+
+.ms-Grid-row .uiSearchPortlet .resultPage .resultBox .content{
+    margin-left: 5px;
+    border: 1px  #0078d7;
+}
+.ms-Grid-row .uiIcon64x64texthtml{
+     font-size: 40px;
+}
+.ms-Grid-row .uiSearchPortlet .resultPage .resultBox .avatar{
+    padding: 2px;
 }

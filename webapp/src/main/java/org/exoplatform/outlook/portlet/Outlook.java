@@ -340,7 +340,7 @@ public class Outlook {
         addRootMenuItem(create);
 
         // TODO features for 1.1+ version
-        // addRootMenuItem(new MenuItem("search"));
+        addRootMenuItem(new MenuItem("search"));
         addRootMenuItem(new MenuItem("userInfo"));
     }
 
