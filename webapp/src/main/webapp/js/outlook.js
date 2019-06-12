@@ -1715,6 +1715,7 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 						var searchDocument = searchWindow.document;
 						loadStyle("/outlook/skin/fabric.min.css", searchDocument);
 						loadStyle("/outlook/skin/fabric.components.min.css", searchDocument);
+						loadStyle("/outlook/skin/outlook.css", searchDocument);
 						
 						// make search results open in new window
 						var $searchPortlet = $searchFrame.contents().find("#ToolBarSearch");
@@ -1745,9 +1746,13 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 								return true;
 							});
 						} else {
+
+
 							$searchPortlet = $searchFrame.contents().find("#searchPortlet");
 							if ($searchPortlet.length > 0) {
 								// it's Unified Search portlet
+								 var $fragment = $searchPortlet.parent(".PORTLET-FRAGMENT");
+								 $fragment.addClass("outlook-search-style");
 								$searchPortlet.addClass("ms-font-m");
 								var $uiBox = $searchPortlet.find(".uiBox");
 								var $uiBoxTitle = $uiBox.find(".title");
