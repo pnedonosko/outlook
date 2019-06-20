@@ -406,7 +406,7 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 	border-color: #0078d7 !important;
 }
 
-.searchContainer {
+.searchContainer-outlook {
 	min-height: 350px;
 }
 
@@ -488,21 +488,38 @@ textarea[name='activityTitle'], textarea[name='comment'] {
    color: white;
 }
 
-.uiSearchPortlet{
-    padding: 0px;
+.outlook-search-style{
+  height: 250px;
+}
+.outlook-search-style #resultSort{
+  margin-right: 5px; 
+}
+.outlook-search-style #resultSort #sortOptions{
+  width: 110px;
 }
 
-.ms-Grid-row .uiSearchPortlet .resultPage{
-   padding: 2px;
+.outlook-search-style .uiSearchPortlet{
+  padding: 0px;
 }
 
-.ms-Grid-row .uiSearchPortlet .resultPage .resultBox .content{
-    margin-left: 5px;
-    border: 1px  #0078d7;
+.outlook-search-style .uiSearchPortlet .resultPage{
+  padding: 2px;
 }
-.ms-Grid-row .uiIcon64x64texthtml{
-     font-size: 40px;
+
+.outlook-search-style .uiSearchPortlet .resultPage .resultBox .content{
+  margin-left: 5px;
+  border: 1px  #0078d7;
 }
-.ms-Grid-row .uiSearchPortlet .resultPage .resultBox .avatar{
-    padding: 2px;
+
+.outlook-search-style [class*="64x64"] {
+font-size: 35px;
+}
+.outlook-search-style .detail{
+  margin-left: 65px;
+}
+.outlook-search-style #btnSearch{
+  height: 40px;
+}
+.outlook-search-style .uiSearchPortlet .resultPage .resultBox .avatar{
+  padding: 2px;
 }
