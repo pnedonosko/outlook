@@ -118,11 +118,7 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 
 			var from = Office.context.mailbox.item.from;
 			var internetMessageId = Office.context.mailbox.item.internetMessageId;
-			var correspondenceEmail = "";
-
-
-
-
+ 
 			// init main pane page
 			var $pane = $("#outlook-pane");
 			if ($pane.length > 0) {
@@ -326,20 +322,36 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 				}
 
 				function userInfoInit() {
+				  var recipientEmails = "";
+          function addEmailsIfNotUser(recipients){
+            if (recipients != null){
+              for(var i = 0; i < recipients.length; i++){
+                if (recipients[i].emailAddress != userEmail){
+                  recipientEmails += recipients[i].emailAddress + ",";
+                }
+              }
+            }
+          }
 					if (internetMessageId) {
-						if (from.emailAddress != null){
-							correspondenceEmail =from.emailAddress ;
-							console.log("From Email : " + correspondenceEmail);
-						} sendEmails(correspondenceEmail);
+						if (from.emailAddress != userEmail){
+						  recipientEmails += from.emailAddress + "," ;
+						}
+						addEmailsIfNotUser(from);
+            var toCopy = Office.context.mailbox.item.to;
+            var carbonCopy = Office.context.mailbox.item.cc;
+            addEmailsIfNotUser(toCopy);
+            addEmailsIfNotUser(carbonCopy);
+						console.log("From Email: " + recipientEmails);
+						loadUserInfo(recipientEmails);
 					} else {
+					  // When this should happen? In a new message compose?
+					  // TODO need CC to get asycn also?
 						Office.context.mailbox.item.to.getAsync(function callback(asyncResult) {
 							if (asyncResult.status === "succeeded") {
-								var jsonObj = asyncResult.value;
-								for(var i = 0; i < jsonObj.length; i++){
-									correspondenceEmail += jsonObj[i].emailAddress + ",";
-								}
-								console.log("Email to  " + correspondenceEmail);
-								sendEmails(correspondenceEmail)
+								var toCopy = asyncResult.value;
+								addEmailsIfNotUser(toCopy);
+								console.log("Email to: " + recipientEmails);
+								loadUserInfo(recipientEmails)
 							} else {
 								console.log("Office.context.mailbox.item.subject.getAsync() [" + asyncResult.status + "] error: "
 										+ JSON.stringify(asyncResult.error) + " value: " + JSON.stringify(asyncResult.value));
@@ -349,20 +361,23 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 					}
 				}
 
-				function sendEmails(correspondenceEmail) {
-					var $userInfo = $("#outlook-userInfo");
-					var $document = $userInfo.find("#outlook-userInfo-text");
-					$document.jzLoad("Outlook.userInfo()", {
-						correspondenceEmail : correspondenceEmail
+				function loadUserInfo(byEmail) {
+					var $userInfo = $("#outlook-userInfo>div");
+					$userInfo.jzLoad("Outlook.userInfo()", {
+						byEmail : byEmail
 					}, function(response, status, jqXHR) {
 						if (status == "error") {
 							showError(jqXHR);
 						} else {
 							clearError();
+							$(document).ready(function() {
+							  if ($.fn.PersonaCard) {
+							    $(".ms-PersonaCard").PersonaCard();
+							  }
+						  });
 						}
 					});
 				}
-
 
 				function saveAttachmentInit() {
 					var $saveAttachment = $("#outlook-saveAttachment");
@@ -635,7 +650,11 @@ require(["SHARED/jquery", "SHARED/outlookFabricUI", "SHARED/outlookJqueryUI", "S
 								}
 							});
 						});
-					}
+					} else {
+                        var $notAttachment = $("#notAttachment");
+                        $saveAttachment.hide();
+                        $notAttachment.show();
+                    }
 				}
 
 				function convertToStatusInit() {

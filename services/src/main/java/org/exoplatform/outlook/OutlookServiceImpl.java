@@ -70,6 +70,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.entity.ContentType;
+import org.exoplatform.services.cms.documents.DocumentService;
+import org.exoplatform.services.jcr.core.ManageableRepository;
+import org.exoplatform.services.wcm.core.NodeLocation;
+import org.exoplatform.social.core.identity.model.Profile;
+import org.exoplatform.social.core.manager.RelationshipManager;
+import org.exoplatform.social.core.relationship.model.Relationship;
+import org.exoplatform.social.plugin.doc.UIDocActivity;
+import org.exoplatform.wcm.ext.component.activity.FileUIActivity;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -164,6 +172,8 @@ import org.exoplatform.wiki.resolver.TitleResolver;
 import org.exoplatform.wiki.service.IDType;
 import org.exoplatform.wiki.service.WikiService;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
+
+import static org.exoplatform.social.core.relationship.model.Relationship.Type.CONFIRMED;
 
 /**
  * Service implementing {@link OutlookService} and {@link Startable}.<br>
@@ -507,6 +517,9 @@ public class OutlookServiceImpl implements OutlookService, Startable {
     /** The social activity manager. */
     protected final ActivityManager socialActivityManager;
 
+    /** The social relationship manager. */
+    protected final RelationshipManager socialRelationshipManager;
+
     /**
      * Instantiates a new user impl.
      *
@@ -518,6 +531,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
       super(email, displayName, userName);
       this.socialIdentityManager = socialIdentityManager();
       this.socialActivityManager = socialActivityManager();
+      this.socialRelationshipManager = socialRelationshipManager();
     }
 
     /**
@@ -532,7 +546,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
           // Since upgrade to Platform 5.2 root of user folder has no user
           // permissions even for read.
           // Node userPublicFolder = userDocs.getParent().getNode("Public");
-          Node sysPublicFolder = systemNode(userDocs.getSession().getWorkspace().getName(), userDocs.getPath()).getNode("Public");
+          Node sysPublicFolder = systemNode(userDocs.getSession().getWorkspace().getName(), userDocs.getPath() + "/Public");
           Node sysMessagesFolder = messagesFolder(sysPublicFolder, localUser, "member:/platform/users");
           Node sysMessageFile = addMessageFile(sysMessagesFolder, message);
           setPermissions(sysMessageFile, localUser, "member:/platform/users");
@@ -638,6 +652,20 @@ public class OutlookServiceImpl implements OutlookService, Startable {
 	  RealtimeListAccess<ExoSocialActivity> activity =socialActivityManager.getActivitiesWithListAccess(userIdentity);
       return activity;
     }
+    @Override
+    public Profile getProfileForName(String name) throws Exception {
+      Identity userIdentity = socialIdentityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, name, true);
+
+      return userIdentity.getProfile();
+    }
+
+    @Override
+    public  List<Relationship>  getRelationships(String name) throws Exception {
+      Identity userIdentity = socialIdentityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, name, true);
+      List<Relationship> relationships =socialRelationshipManager.getRelationshipsByStatus(userIdentity,CONFIRMED, 0, 0  );
+      return relationships;
+    }
+
   }
 
   /**
@@ -1031,6 +1059,10 @@ public class OutlookServiceImpl implements OutlookService, Startable {
   /** The resource bundle service. */
   protected final ResourceBundleService                       resourceBundleService;
 
+  /** The resource document service. */
+  protected final DocumentService                       documentService;
+
+
   /** The html policy. */
   protected final PolicyFactory                               htmlPolicy        =
                                                                          Sanitizers.BLOCKS.and(Sanitizers.FORMATTING)
@@ -1177,7 +1209,8 @@ public class OutlookServiceImpl implements OutlookService, Startable {
                             ForumService forumService,
                             RenderingService wikiRenderingService,
                             ResourceBundleService resourceBundleService,
-                            InitParams params)
+                            InitParams params,
+                            DocumentService documentService)
       throws ConfigurationException, MailServerException {
 
     this.jcrService = jcrService;
@@ -1192,6 +1225,8 @@ public class OutlookServiceImpl implements OutlookService, Startable {
     this.trashService = trashService;
     this.wikiRenderingService = wikiRenderingService;
     this.resourceBundleService = resourceBundleService;
+    this.documentService = documentService;
+
 
     // API for user requests (uses credentials from eXo user profile)
     MailAPI api = new MailAPI();
@@ -1530,8 +1565,9 @@ public class OutlookServiceImpl implements OutlookService, Startable {
    */
 
   @Override
+  @Deprecated
   public Map<String, String> getUserInfoMap(String name)  {
-      Map<String, String> userInfoMap = new HashMap();
+      Map<String, String> userInfoMap = new HashMap<>();
     try {
       Collection<UserProfile> userProfiles = new LinkedList<>();
       userProfiles = organization.getUserProfileHandler().findUserProfiles();
@@ -1546,7 +1582,6 @@ public class OutlookServiceImpl implements OutlookService, Startable {
     return userInfoMap ;
   }
 
-
    /**
    * Gets the All exo users.   *
    *
@@ -1554,6 +1589,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
    * @throws OutlookException the outlook exception
    */
   @Override
+  @Deprecated
   public ListAccess<User> getAllExoUsers() throws OutlookException {
     try {
       return organization.getUserHandler().findAllUsers();
@@ -1561,9 +1597,6 @@ public class OutlookServiceImpl implements OutlookService, Startable {
       throw new OutlookException("Error searching all user " , e);
     }
   }
-  
-  
-  
 
   // *********************** testing level **********************
 
@@ -1992,6 +2025,15 @@ public class OutlookServiceImpl implements OutlookService, Startable {
   }
 
   /**
+   * Social relationship manager.
+   *
+   * @return the relationship manager
+   */
+  protected RelationshipManager socialRelationshipManager() {
+    return (RelationshipManager) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(RelationshipManager.class);
+  }
+
+  /**
    * User spaces.
    *
    * @param userId the user id
@@ -2330,73 +2372,100 @@ public class OutlookServiceImpl implements OutlookService, Startable {
                                                      List<File> files,
                                                      OutlookUser user,
                                                      String comment) throws RepositoryException {
-    String author = user.getLocalUser();
 
-    // FYI Code inspired by UIDocActivityComposer
-    Map<String, String> activityParams = new LinkedHashMap<String, String>();
+    final String origType = org.exoplatform.wcm.ext.component.activity.listener.Utils.getActivityType();
+    try {
+      String author = user.getLocalUser();
+      IdentityManager identityManager = socialIdentityManager();
+      Identity authorIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, author, true);
 
-    StringBuilder filesLine = new StringBuilder();
-    for (File f : files) {
-      if (filesLine.length() > 0) {
-        filesLine.append(',');
-      }
-      filesLine.append(OutlookAttachmentActivity.attachmentString(f.getNode().getUUID(), f.getTitle()));
-    }
+      // FYI Code inspired by UIDocActivityComposer
+        Map<String, String> activityParams = new LinkedHashMap<String, String>();
+        Calendar activityDate = Calendar.getInstance();
+        DateFormat dateFormatter = new SimpleDateFormat(ISO8601.SIMPLE_DATETIME_FORMAT);
+        String fileName = "",id = "",doclink = "",docpath = "",mimeType = "",contenLink = "",workspace = "",repository = "",dateString = "",owner = "",isSymlink = "";
+        String REGEX ="|@|";
+        int i =0;
+        for (File f : files) {
+          if(files.size()-1 == i){
+            REGEX ="";
+          }
+          fileName += f.getName() + REGEX;
+          id += f.getNode().getUUID() + REGEX;
+          mimeType += f.getNode().getNode("jcr:content").getProperty("jcr:mimeType").getString() + REGEX;
+          docpath += f.getNode().getPath() + REGEX;
+          owner += author + REGEX;
+          isSymlink += false + REGEX;
+          try {
+              contenLink += documentService.getLinkInDocumentsApp(NodeLocation.getNodeLocationByNode(f.getNode()).getPath()) + REGEX;
+              doclink += org.exoplatform.wcm.webui.Utils.getWebdavURL(f.getNode()) + REGEX;
+          } catch (Exception e) {
+            LOG.error("Error getting node download link " + f.getNode(), e);
+          }
+          dateString += dateFormatter.format(activityDate.getTime()) + REGEX;
+          workspace += destFolder.getNode().getSession().getWorkspace().getName() + REGEX;
+          repository += ((ManageableRepository) destFolder.getNode().getSession().getRepository()).getConfiguration().getName() + REGEX;
+          i++;
+        }
+        activityParams.put(OutlookAttachmentActivity.FILES, fileName);
+        activityParams.put(OutlookAttachmentActivity.DOCTITLE, fileName);
+        activityParams.put(OutlookAttachmentActivity.WORKSPACE, workspace);
+        activityParams.put(OutlookAttachmentActivity.REPOSITORY, repository);
+        activityParams.put(OutlookAttachmentActivity.COMMENT, comment);
+        activityParams.put(OutlookAttachmentActivity.DOCLINK, doclink);
+        activityParams.put(OutlookAttachmentActivity.DOCNAME, fileName);
+        activityParams.put(OutlookAttachmentActivity.DOCPATH, docpath);
+        activityParams.put(OutlookAttachmentActivity.PATH, docpath);
+        activityParams.put(OutlookAttachmentActivity.AUTHOR, owner);
+        activityParams.put(OutlookAttachmentActivity.DATE_CREATED, dateString);
+        activityParams.put(OutlookAttachmentActivity.DATE_LAST_MODIFIED, dateString);
+        activityParams.put(FileUIActivity.ID, id);
+        activityParams.put(FileUIActivity.CONTENT_NAME, fileName);
+        activityParams.put(FileUIActivity.ACTIVITY_STATUS, comment);
+        activityParams.put(FileUIActivity.MIME_TYPE, mimeType);
+        activityParams.put(FileUIActivity.CONTENT_LINK, contenLink);
+        activityParams.put(FileUIActivity.DOCUMENT_TITLE, fileName);
+        activityParams.put(UIDocActivity.IS_SYMLINK, isSymlink);
 
-    activityParams.put(OutlookAttachmentActivity.FILES, filesLine.toString());
-    activityParams.put(OutlookAttachmentActivity.WORKSPACE, destFolder.getNode().getSession().getWorkspace().getName());
-    activityParams.put(OutlookAttachmentActivity.COMMENT, comment);
-    activityParams.put(OutlookAttachmentActivity.AUTHOR, author);
+        // if NT_FILE
+        // activityParams.put(UIDocActivity.ID, node.isNodeType(NodetypeConstant.MIX_REFERENCEABLE) ?
+        // node.getUUID() : "");
+        // activityParams.put(UIDocActivity.CONTENT_NAME, node.getName());
+        // activityParams.put(UIDocActivity.AUTHOR, activityOwnerId);
+        // activityParams.put(UIDocActivity.DATE_CREATED, strDateCreated);
+        // activityParams.put(UIDocActivity.LAST_MODIFIED, strLastModified);
+        // activityParams.put(UIDocActivity.CONTENT_LINK, UIDocActivity.getContentLink(node));
 
-    Calendar activityDate = Calendar.getInstance();
-    DateFormat dateFormatter = new SimpleDateFormat(ISO8601.SIMPLE_DATETIME_FORMAT);
-    String dateString = dateFormatter.format(activityDate.getTime());
-    activityParams.put(OutlookAttachmentActivity.DATE_CREATED, dateString);
-    activityParams.put(OutlookAttachmentActivity.DATE_LAST_MODIFIED, dateString);
-
-    // if NT_FILE
-    // activityParams.put(UIDocActivity.ID, node.isNodeType(NodetypeConstant.MIX_REFERENCEABLE) ?
-    // node.getUUID() : "");
-    // activityParams.put(UIDocActivity.CONTENT_NAME, node.getName());
-    // activityParams.put(UIDocActivity.AUTHOR, activityOwnerId);
-    // activityParams.put(UIDocActivity.DATE_CREATED, strDateCreated);
-    // activityParams.put(UIDocActivity.LAST_MODIFIED, strLastModified);
-    // activityParams.put(UIDocActivity.CONTENT_LINK, UIDocActivity.getContentLink(node));
-
-    //
-    IdentityManager identityManager = socialIdentityManager();
-    Identity authorIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, author, true);
-
-    //
-    String title = comment != null
-        && comment.length() > 0 ? comment
-                                : new StringBuilder("User ").append(author)
-                                                            .append(" has saved ")
-                                                            .append(files.size())
+        String title = comment != null
+                && comment.length() > 0 ? comment
+                : new StringBuilder("User ").append(author)
+                .append(" has saved ")
+                .append(files.size())
                                                             .append(files.size() > 1 ? " files" : " file")
-                                                            .toString();
+                .toString();
     ExoSocialActivity activity = new ExoSocialActivityImpl(authorIdentity.getId(),
-                                                           OutlookAttachmentActivity.ACTIVITY_TYPE,
-                                                           title,
-                                                           null);
-    activity.setTemplateParams(activityParams);
+                OutlookAttachmentActivity.ACTIVITY_TYPE,
+                title,
+                null);
+      activity.setTemplateParams(activityParams);
 
-    // activity destination (user or space)
-    ActivityManager activityManager = socialActivityManager();
-    String spaceGroupName = getSpaceName(destFolder.getNode());
-    Space space = spaceService().getSpaceByGroupId(SpaceUtils.SPACE_GROUP + "/" + spaceGroupName);
-    if (spaceGroupName != null && spaceGroupName.length() > 0 && space != null) {
-      // post activity to space stream
-      Identity spaceIdentity = identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, space.getPrettyName(), true);
-      activityManager.saveActivityNoReturn(spaceIdentity, activity);
-    } else {
-      // post activity to user status stream
-      activityManager.saveActivityNoReturn(authorIdentity, activity);
+      // activity destination (user or space)
+      ActivityManager activityManager = socialActivityManager();
+      String spaceGroupName = getSpaceName(destFolder.getNode());
+      Space space = spaceService().getSpaceByGroupId(SpaceUtils.SPACE_GROUP + "/" + spaceGroupName);
+      if (spaceGroupName != null && spaceGroupName.length() > 0 && space != null) {
+        // post activity to space stream
+        Identity spaceIdentity = identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, space.getPrettyName(), true);
+        activityManager.saveActivityNoReturn(spaceIdentity, activity);
+      } else {
+        // post activity to user status stream
+        activityManager.saveActivityNoReturn(authorIdentity, activity);
+      }
+      activity = activityManager.getActivity(activity.getId());
+      return activity;
+    } finally {
+      org.exoplatform.wcm.ext.component.activity.listener.Utils.setActivityType(origType);
     }
-
-    //
-    activity = activityManager.getActivity(activity.getId());
-    return activity;
   }
 
   /**
