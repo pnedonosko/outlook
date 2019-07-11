@@ -533,10 +533,38 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 }
 
 .outlook-search-style #btnSearch{
-  height: 40px;
+	height: 40px;
+	border-radius: unset;
 }
+
 .outlook-search-style .uiSearchPortlet .resultPage .resultBox .avatar{
-  padding: 2px;
+	padding: 2px;
+}
+
+.search-header{
+	margin: 1px;
+}
+
+.outlook-search-style #txtQuery{
+	height: 40px;
+}
+
+.PORTLET-FRAGMENT .uiQuickSearchResult .uiGrid tbody tr th:first-child{
+    width: 20%;
+    padding: 0px;
+    text-align: center;
+}
+
+@media (max-width: 479px) {
+	#outlook-search {	   
+		height: 450px;
+	}
+}
+
+@media (max-width: 479px) {
+	#resultPage {
+		height: 450px;
+	}
 }
 
 .outlook-usersInfo .ms-OrgChart-listItem{
