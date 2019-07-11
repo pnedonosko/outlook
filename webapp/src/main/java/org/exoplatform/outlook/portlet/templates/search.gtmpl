@@ -1,7 +1,7 @@
 #{param name=spaces/}
 <div id="outlook-search" class="ms-Grid">
 	<div class="ms-Grid-row text-centered">
-		<h4>&{Outlook.command.search}</h4>
+		<h4 class="search-header">&{Outlook.command.search}</h4>
 	</div>
 	<form role="form">
 		<div class="ms-Grid-row">

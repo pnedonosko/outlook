@@ -372,12 +372,12 @@ div.messageSubject {
 
 .messageText>iframe, .messageEditor>iframe {
 	width: 100%;
-  height: 100%;
+	height: 100%;
 } 
 
 .messageEditor>iframe {
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-  overflow: hidden;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+	overflow: hidden;
 }
 
 .statusText, .topicText {
@@ -417,8 +417,9 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 	border-color: #0078d7 !important;
 }
 
-.searchContainer {
-	min-height: 350px; /* was 260px in search branch */
+#outlook-search .searchContainer {
+	height: max-content;
+	min-height: 260px;
 }
 
 .ms-Persona-image-userInfo {
@@ -448,7 +449,6 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 }
 
 .activity-body {
-
 	font-style: oblique;
 	margin-left: 5px;
 }
@@ -456,14 +456,9 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 .postedTime {
 	text-align: right;
 	overflow: hidden;
-	position: absolute;
-  /* HEAD 
-	right: 8px;
-	font-size: 11px;
-	width: 80px;
-	bottom: 25px;*/
+	position: absolute;  
 	right: 5px;
-	font-size: 11px;	
+	font-size: 11px;
 	width: 80px;
 	bottom: 50%;
 	z-index: 1;
@@ -481,13 +476,6 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 }
 
 .activity {
-  /* <<<<<<< HEAD was in search
-	background: #f4f4f4;
-	border: 1px double white;
-	text-align: left;
-	height: 50px;
-	position: relative;
-	padding: 5px; */
   background: #ffffff;
   border: 1px double white;
   text-align: left;
@@ -497,53 +485,53 @@ textarea[name='activityTitle'], textarea[name='comment'] {
 }
 
 .activity:hover {
-  /* background: #0078d7; was in search */
-  background: #edebe9;
+	background: #edebe9;
 }
 
 .out-box {
 	width: 95%;
 }
 .infobox {
-  width: 90%;
-  background: #e1e2e8;
+	width: 90%;
+	background: #e1e2e8;
 }
 
 .a-link:hover {
-	/*color: white; was in search */
-  color: #0078d7;
+	color: #0078d7;
 }
 
-.outlook-search-style {
-  height: 250px;
+#outlook-search .outlook-search-style .searchContainer {
+	min-height: max-content;
+	height: 100px;
 }
 .outlook-search-style #resultSort {
-  margin-right: 5px; 
+	margin-right: 5px;
 }
 .outlook-search-style #resultSort #sortOptions {
-  width: 110px;
+	width: 110px;
 }
 
 .outlook-search-style .uiSearchPortlet {
-  padding: 0px;
+	padding: 0px;
 }
 
 .outlook-search-style .uiSearchPortlet .resultPage{
-  padding: 2px;
+	padding: 2px;
 }
 
 .outlook-search-style .uiSearchPortlet .resultPage .resultBox .content{
-  margin-left: 5px;
-  border: 1px  #0078d7;
+	border: 1px  #0078d7;
 }
 
 .outlook-search-style [class*="64x64"] {
-  font-size: 35px;
+	font-size: 35px;
 }
 
 .outlook-search-style .detail{
-  margin-left: 65px;
+	margin: 2px; !important;
+	margin-left: 65px; !important;
 }
+
 .outlook-search-style #btnSearch{
   height: 40px;
 }
