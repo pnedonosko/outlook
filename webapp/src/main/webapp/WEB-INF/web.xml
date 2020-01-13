@@ -27,7 +27,7 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name>outlook</display-name>
   
-  <!--<absolute-ordering />
+  <absolute-ordering />
   
   <context-param>
     <param-name>juzu.inject</param-name>
@@ -98,9 +98,26 @@
   <servlet-mapping>
     <servlet-name>AssetServlet</servlet-name>
     <url-pattern>/assets/*</url-pattern>
-  </servlet-mapping>-->
+  </servlet-mapping>
 
-  <absolute-ordering />
+  <servlet>
+    <servlet-name>JuzuOutlookServlet</servlet-name>
+    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
+    <init-param>
+      <param-name>juzu.app_name</param-name>
+      <param-value>org.exoplatform.outlook.portlet</param-value>
+    </init-param>
+    <init-param>
+      <param-name>juzu.inject</param-name>
+      <param-value>guice</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JuzuOutlookServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+
+  <!--<absolute-ordering />
 
   <context-param>
     <param-name>juzu.inject</param-name>
@@ -177,12 +194,12 @@
   <filter-mapping>
     <filter-name>RestEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping>-->
 
   <!-- ================================================================== -->
   <!--           LISTENER                                                 -->
   <!-- ================================================================== -->
-  <listener>
+ <!-- <listener>
     <listener-class>org.exoplatform.web.GenericHttpListener</listener-class>
   </listener>
   <listener>
@@ -243,7 +260,7 @@
   <servlet-mapping>
     <servlet-name>JuzuOutlookServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping>-->
 
   <!--<servlet>
     <description>eXo - Platform REST Server</description>
@@ -275,7 +292,7 @@
     </user-data-constraint>
   </security-constraint>-->
 
-  <login-config>
+  <!--<login-config>
     <auth-method>BASIC</auth-method>
     <realm-name>gatein-domain</realm-name>
   </login-config>
@@ -283,5 +300,5 @@
   <security-role>
     <description>the user role</description>
     <role-name>users</role-name>
-  </security-role>
+  </security-role>-->
 </web-app>

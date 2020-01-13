@@ -36,7 +36,6 @@
 @Assets({ "*" })
 package org.exoplatform.outlook.portlet;
 
-import juzu.plugin.servlet.Servlet;
 import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.jcr.ContentLink;
 import org.exoplatform.outlook.security.OutlookTokenService;

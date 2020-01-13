@@ -580,7 +580,6 @@ public class Outlook {
    * @param message the message
    * @return the response
    */
-  @View
   public Response error(String message) {
     return error.with().message(message).ok();
   }
