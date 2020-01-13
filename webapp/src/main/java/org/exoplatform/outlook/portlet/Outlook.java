@@ -52,6 +52,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import juzu.*;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -105,11 +106,6 @@ import org.exoplatform.web.security.security.AbstractTokenService;
 import org.exoplatform.web.security.security.CookieTokenService;
 import org.exoplatform.wiki.mow.api.Page;
 
-import juzu.Path;
-import juzu.Resource;
-import juzu.Response;
-import juzu.SessionScoped;
-import juzu.View;
 import juzu.request.HttpContext;
 import juzu.request.RequestContext;
 import juzu.template.TemplateExecutionException;
@@ -542,6 +538,7 @@ public class Outlook {
    * @return the response
    */
   @View
+  @Route("/")
   public Response index(String command, RequestContext resourceContext) {
     Collection<MenuItem> menu = new ArrayList<MenuItem>();
     if (command == null) {

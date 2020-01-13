@@ -56,7 +56,7 @@ public class OutlookContextFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
                                                                                             ServletException {
 
-    PortalContainer container = PortalContainer.getInstance();
+    /*PortalContainer container = PortalContainer.getInstance();
     WebAppController controller = (WebAppController) container.getComponentInstanceOfType(WebAppController.class);
     PortalApplication app = controller.getApplication(PortalApplication.PORTAL_APPLICATION_ID);
 
@@ -66,7 +66,7 @@ public class OutlookContextFilter implements Filter {
       chain.doFilter(request, response);
     } finally {
       app.getApplicationLifecycle().remove(lifecycle);
-    }
+    }*/
   }
 
 }

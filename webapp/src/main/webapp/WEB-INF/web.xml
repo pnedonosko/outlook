@@ -27,7 +27,7 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name>outlook</display-name>
   
-  <absolute-ordering />
+  <!--<absolute-ordering />
   
   <context-param>
     <param-name>juzu.inject</param-name>
@@ -98,5 +98,190 @@
   <servlet-mapping>
     <servlet-name>AssetServlet</servlet-name>
     <url-pattern>/assets/*</url-pattern>
+  </servlet-mapping>-->
+
+  <absolute-ordering />
+
+  <context-param>
+    <param-name>juzu.inject</param-name>
+    <param-value>guice</param-value>
+  </context-param>
+  <context-param>
+    <param-name>juzu.request_encoding</param-name>
+    <param-value>UTF-8</param-value>
+  </context-param>
+
+  <filter>
+    <filter-name>ResourceRequestFilter</filter-name>
+    <filter-class>org.exoplatform.portal.application.ResourceRequestFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>OutlookResourceFilter</filter-name>
+    <filter-class>org.exoplatform.outlook.server.filter.OutlookResourceFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>SetCurrentIdentityFilter</filter-name>
+    <filter-class>org.exoplatform.services.security.web.SetCurrentIdentityFilter</filter-class>
+    <init-param>
+      <param-name>restoreIdentity</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter>
+    <filter-name>ThreadLocalSessionProviderInitializedFilter</filter-name>
+    <filter-class>org.exoplatform.frameworks.jcr.web.ThreadLocalSessionProviderInitializedFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>RestEncodingFilter</filter-name>
+    <filter-class>org.exoplatform.services.rest.servlet.RestEncodingFilter</filter-class>
+    <init-param>
+      <param-name>REQUEST_ENCODING</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter>
+    <filter-name>PortalCheckInitFilter</filter-name>
+    <filter-class>org.gatein.portal.init.PortalCheckInitFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>LocalizationFilter</filter-name>
+    <filter-class>org.exoplatform.portal.application.localization.LocalizationFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ResourceRequestFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>OutlookResourceFilter</filter-name>
+    <url-pattern>/js/*</url-pattern>
+    <url-pattern>/skin/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>PortalCheckInitFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>LocalizationFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>SetCurrentIdentityFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ThreadLocalSessionProviderInitializedFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>RestEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- ================================================================== -->
+  <!--           LISTENER                                                 -->
+  <!-- ================================================================== -->
+  <listener>
+    <listener-class>org.exoplatform.web.GenericHttpListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.exoplatform.services.security.web.JAASConversationStateListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>GateInServlet</servlet-name>
+    <servlet-class>org.gatein.wci.api.GateInServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>JuzuServlet</servlet-name>
+    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
+    <init-param>
+      <param-name>juzu.app_name</param-name>
+      <param-value>org.exoplatform.outlook.server</param-value>
+    </init-param>
+    <init-param>
+      <param-name>juzu.inject</param-name>
+      <param-value>guice</param-value>
+    </init-param>
+    <init-param>
+      <param-name>juzu.resource_bundle</param-name>
+      <param-value>locale.outlook.Login</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>AssetServlet</servlet-name>
+    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>GateInServlet</servlet-name>
+    <url-pattern>/gateinservlet</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JuzuServlet</servlet-name>
+    <url-pattern>/login/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AssetServlet</servlet-name>
+    <url-pattern>/assets/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>JuzuOutlookServlet</servlet-name>
+    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
+    <init-param>
+      <param-name>juzu.app_name</param-name>
+      <param-value>org.exoplatform.outlook.portlet</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JuzuOutlookServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+
+  <!--<servlet>
+    <description>eXo - Platform REST Server</description>
+    <servlet-name>RestServer</servlet-name>
+    <servlet-class>org.exoplatform.services.rest.servlet.RestServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>RestServer</servlet-name>
+    <url-pattern>/private/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RestServer</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>outlook</web-resource-name>
+      <url-pattern>/private/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>users</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>-->
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>gatein-domain</realm-name>
+  </login-config>
+
+  <security-role>
+    <description>the user role</description>
+    <role-name>users</role-name>
+  </security-role>
 </web-app>

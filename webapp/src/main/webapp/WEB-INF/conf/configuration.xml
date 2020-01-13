@@ -346,6 +346,6 @@
     </component-plugin>
   </external-component-plugins>
 
-  <import>war:/conf/outlook/portal-configuration.xml</import>
+
 
 </configuration>

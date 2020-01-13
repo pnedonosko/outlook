@@ -24,7 +24,7 @@
   xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
   <!-- Outlook portal extension configuration -->
-  <external-component-plugins>
+  <!--<external-component-plugins>
     <target-component>org.exoplatform.container.definition.PortalContainerConfig</target-component>
     <component-plugin>
       <name>Change PortalContainer Definitions</name>
@@ -49,5 +49,5 @@
         </object-param>
       </init-params>
     </component-plugin>
-  </external-component-plugins>
+  </external-component-plugins>-->
 </configuration>

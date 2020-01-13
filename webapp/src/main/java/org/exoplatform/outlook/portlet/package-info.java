@@ -16,8 +16,7 @@
 /**
  * OutlookPortlet.
  */
-@Application
-@Portlet(name = "OutlookPortlet")
+@Application(defaultController = Outlook.class)
 @Bindings({ @Binding(value = OutlookService.class), @Binding(value = OutlookTokenService.class),
     @Binding(value = CookieTokenService.class), @Binding(value = ContentLink.class), @Binding(value = IdentityManager.class),
     @Binding(value = ActivityManager.class), @Binding(value = RelationshipManager.class), @Binding(value = SpaceService.class),
@@ -35,9 +34,9 @@
         "jquery-ui.structure.css", "jquery-ui.theme.css", "fabric.css", "fabric.components.css", "outlook.css" }) })
 
 @Assets({ "*" })
-
 package org.exoplatform.outlook.portlet;
 
+import juzu.plugin.servlet.Servlet;
 import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.jcr.ContentLink;
 import org.exoplatform.outlook.security.OutlookTokenService;
@@ -57,4 +56,3 @@ import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
-import juzu.plugin.portlet.Portlet;
