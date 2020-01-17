@@ -24,9 +24,16 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import javax.annotation.security.RolesAllowed;
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
@@ -40,6 +47,11 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.rest.Connector;
+import org.exoplatform.services.rest.resource.ResourceContainer;
+import org.exoplatform.services.security.ConversationRegistry;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.StateKey;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
@@ -53,7 +65,8 @@ import org.exoplatform.web.security.security.CookieTokenService;
 /**
  * The servlet.
  */
-public class TestServlet extends AbstractHttpServlet  {
+
+public class TestServlet extends AbstractHttpServlet implements ResourceContainer {
 
     /**
      *
@@ -64,12 +77,35 @@ public class TestServlet extends AbstractHttpServlet  {
     private static final Log log = ExoLogger.getLogger(TestServlet.class);
 
 
+    public TestServlet(){
+    }
 
+
+
+
+    @GET
+    @RolesAllowed("users")
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.warn("[SampleServlet]: Current portal " + getContainer());
         log.warn("[SampleServlet]: Servlet Context " + getServletContext());
 
+        /*try {
+            TimeUnit.SECONDS.sleep(15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
+
+        ConversationState convo = ConversationState.getCurrent();
+        if (convo != null) {
+            String currentUserId = convo.getIdentity().getUserId();
+            resp.getWriter().print("currentUserId - " + currentUserId);
+            log.warn("currentUserId - " + currentUserId);
+        } else {
+            resp.getWriter().print("ConversationState is null");
+            log.warn("ConversationState is null");
+        }
 
         List<IdentityInfo> list = null;
         try {
@@ -83,7 +119,7 @@ public class TestServlet extends AbstractHttpServlet  {
 
             try {
                 log.warn("[SampleServlet]: getFullName " + list.toArray(new IdentityInfo[0])[0].getFullName());
-                resp.getWriter().print(list.toArray(new IdentityInfo[0])[0].getFullName());
+                resp.getWriter().println(list.toArray(new IdentityInfo[0])[0].getFullName());
             } catch (Exception e) {
                 log.warn("[SampleServlet]: getFullName error ",e);
             }
@@ -93,7 +129,7 @@ public class TestServlet extends AbstractHttpServlet  {
 
 
 
-        try {
+        /*try {
             // We set the character encoding now to UTF-8 before obtaining parameters
             req.setCharacterEncoding("UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -108,20 +144,22 @@ public class TestServlet extends AbstractHttpServlet  {
             log.warn("fullLogout finish");
         } catch (Exception e) {
             log.error("fullLogout Exception", e);
-        }
+        }*/
 
 
     }
 
+    @POST
+    @RolesAllowed("users")
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
     }
 
     private List<IdentityInfo> findUsersByEmail(String emails, String excludeOne) throws Exception {
         List<IdentityInfo> list = new ArrayList<>();
         ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
-        RequestLifeCycle.begin(currentContainer);
+        //RequestLifeCycle.begin(currentContainer);
         try {
             for (String email : emails.split(",")) {
                 User user = findUserByEmail(email.toLowerCase());
@@ -137,9 +175,9 @@ public class TestServlet extends AbstractHttpServlet  {
             }
         } catch (Exception exception) {
             log.warn("Error while findUsersByEmail: " + emails , exception);
-        } finally {
+        } /*finally {
             RequestLifeCycle.end();
-        }
+        }*/
 
         return list;
     }
@@ -199,5 +237,39 @@ public class TestServlet extends AbstractHttpServlet  {
         rememberMeOutlookCookie.setPath(req.getRequestURI());
         rememberMeOutlookCookie.setMaxAge(0);
         res.addCookie(rememberMeOutlookCookie);
+
+
+      /*  ConversationRegistry conversationRegistry = (ConversationRegistry) getContainer().getComponentInstanceOfType(ConversationRegistry.class);
+
+        HttpSession session = req.getSession();
+
+        ConversationState convo = ConversationState.getCurrent();
+
+        String currentUserId = convo.getIdentity().getUserId();
+        //String sessionId = session.();
+
+        List<StateKey>a stateKeys =  conversationRegistry.getStateKeys(currentUserId);
+
+        StateKey stateKey =
+        ConversationState conversationState = conversationRegistry.unregister(sessionId);
+
+        if (conversationState != null) {
+            log.info("Remove conversation state " + sessionId);
+            if (conversationState.getAttribute(ConversationState.SUBJECT) != null) {
+                Subject subject = (Subject) conversationState.getAttribute(ConversationState.SUBJECT);
+                LoginContext ctx = null;
+                try {
+                    ctx = new LoginContext("exo-domain",  subject);
+                } catch (LoginException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    ctx.logout();
+                } catch (LoginException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                log.warn("Subject was not found in ConversationState attributes.");
+            }*/
     }
 }

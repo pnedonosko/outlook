@@ -54,6 +54,10 @@
     <type>org.exoplatform.outlook.rest.ContentService</type>
   </component>
 
+ <!-- <component>
+    <type>org.exoplatform.outlook.TestServlet</type>
+  </component>-->
+
   <component>
     <key>org.exoplatform.outlook.security.OutlookTokenService</key>
     <type>org.exoplatform.outlook.security.OutlookTokenService</type>
@@ -213,6 +217,21 @@
               <collection type="java.util.ArrayList" item-type="java.lang.String">
                 <value>
                   <string>/intranet/outlook.*</string>
+                </value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+        <object-param>
+          <name>Outlook Rest Filter</name>
+          <object type="org.exoplatform.web.filter.FilterDefinition">
+            <field name="filter">
+              <object type="org.exoplatform.outlook.server.filter.OutlookRestFilter" />
+            </field>
+            <field name="patterns">
+              <collection type="java.util.ArrayList" item-type="java.lang.String">
+                <value>
+                  <string>/test/*</string>
                 </value>
               </collection>
             </field>

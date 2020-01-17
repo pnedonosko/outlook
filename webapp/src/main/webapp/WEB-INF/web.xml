@@ -55,6 +55,33 @@
     <url-pattern>/js/*</url-pattern>
     <url-pattern>/skin/*</url-pattern>
   </filter-mapping>
+
+  <filter>
+    <filter-name>OutlookRestFilter</filter-name>
+    <filter-class>org.exoplatform.outlook.server.filter.OutlookRestFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>OutlookRestFilter</filter-name>
+    <url-pattern>/test/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>SetCurrentIdentityFilter</filter-name>
+    <filter-class>org.exoplatform.services.security.web.SetCurrentIdentityFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SetCurrentIdentityFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>ThreadLocalSessionProviderInitializedFilter</filter-name>
+    <filter-class>org.exoplatform.frameworks.jcr.web.ThreadLocalSessionProviderInitializedFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ThreadLocalSessionProviderInitializedFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   
   <listener>
     <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
