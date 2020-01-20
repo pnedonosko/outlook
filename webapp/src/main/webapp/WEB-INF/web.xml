@@ -26,9 +26,16 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name>outlook</display-name>
-  
-  <absolute-ordering />
-  
+
+  <!-- <absolute-ordering />-->
+  <!-- The SpringServletContainerInitializer can be enabled by adding "spring_web" to
+  the list of named web fragments in web.xml
+  https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/SpringServletContainerInitializer.html
+ -->
+  <absolute-ordering>
+    <name>spring_web</name>
+  </absolute-ordering>
+
   <context-param>
     <param-name>juzu.inject</param-name>
     <param-value>guice</param-value>
