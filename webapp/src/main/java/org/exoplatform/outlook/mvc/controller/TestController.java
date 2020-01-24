@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 @Controller
+@RequestMapping(value = "/app/*")
 public class TestController {
 
     private static final Log log = ExoLogger.getLogger(TestController.class);
