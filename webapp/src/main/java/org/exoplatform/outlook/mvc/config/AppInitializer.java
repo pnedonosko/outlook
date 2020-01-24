@@ -1,7 +1,5 @@
 package org.exoplatform.outlook.mvc.config;
 
-import org.exoplatform.outlook.mvc.filter.LoginFilter;
-import org.exoplatform.outlook.mvc.filter.OutlookCurrentContainerRequestLifeCycleFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -20,7 +18,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
   @Override
   protected String[] getServletMappings() {
-    return new String[] { "/*" };
+    return new String[] { "/" };
   }
 
   @Override
@@ -28,6 +26,6 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
     CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
     characterEncodingFilter.setEncoding("UTF-8");
     characterEncodingFilter.setForceEncoding(true);
-    return new Filter[] { characterEncodingFilter, new LoginFilter(), new OutlookCurrentContainerRequestLifeCycleFilter() };
+    return new Filter[] { characterEncodingFilter };
   }
 }
