@@ -8,13 +8,13 @@ import org.exoplatform.services.security.ConversationState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "/app/*")
+@RequestMapping(value = "/app")
 public class TestController {
 
     private static final Log log = ExoLogger.getLogger(TestController.class);
@@ -26,23 +26,18 @@ public class TestController {
         this.testService = testService;
     }
 
-    @RequestMapping(value = "/test",
-            method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-    @ResponseBody
-    public ModelAndView getTestPage(@RequestParam(value = "email") String email) {
+    @RequestMapping(value = "/test-thymeleaf", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+    public String getTestThymeleaf(Model model, @RequestParam(value = "email") String email) {
 
         log.warn("[TestController]: start ");
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("test-page");
 
         ConversationState convo = ConversationState.getCurrent();
         if (convo != null) {
             String currentUserId = convo.getIdentity().getUserId();
-            modelAndView.addObject("user", currentUserId);
+            model.addAttribute("user", currentUserId);
             log.warn("currentUserId - " + currentUserId);
         } else {
-            modelAndView.addObject("user", null);
+            model.addAttribute("user", null);
             log.warn("ConversationState is null");
         }
 
@@ -53,19 +48,19 @@ public class TestController {
             log.error("findUsersByEmail Exception", e);
         }
 
-        if(list!=null){
+        if (list != null) {
             log.warn("[TestController]: list length: " + list.size());
 
             try {
                 log.warn("[TestController]: getFullName " + list.toArray(new IdentityInfo[0])[0].getFullName());
-                modelAndView.addObject("fullName", list.toArray(new IdentityInfo[0])[0].getFullName());
+                model.addAttribute("fullName", list.toArray(new IdentityInfo[0])[0].getFullName());
             } catch (Exception e) {
-                log.warn("[TestController]: getFullName error ",e);
+                log.warn("[TestController]: getFullName error ", e);
             }
         } else {
             log.warn("[TestController]: list is null ");
         }
 
-        return modelAndView;
+        return "test.html";
     }
 }
