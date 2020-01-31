@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="/outlook/js/outlook-logout.js"></script>
 </head>
 <body>
 <h1>Test Spring Page</h1>
-<div>User - <span th:text="${user}" /></div>
-<div>Test service (get name by email): <span th:text="${fullName}" /></div>
-<a href="/outlook/logout">
+<div>User - <span th:text="${user}"/></div>
+<div>Test service (get name by email): <span th:text="${fullName}"/></div>
+
+<a onclick="logout();" href="javascript:void(0);">
   <span>Logout</span>
 </a>
 </body>

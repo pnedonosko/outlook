@@ -36,14 +36,14 @@
     <name>spring_web</name>
   </absolute-ordering>
 
-  <context-param>
+  <!--<context-param>
     <param-name>juzu.inject</param-name>
     <param-value>guice</param-value>
   </context-param>
   <context-param>
     <param-name>juzu.request_encoding</param-name>
     <param-value>UTF-8</param-value>
-  </context-param>
+  </context-param>-->
   
   <filter>
     <filter-name>ResourceRequestFilter</filter-name>
@@ -94,12 +94,12 @@
     <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
   </listener>
   
-  <servlet>
+  <!--<servlet>
     <servlet-name>GateInServlet</servlet-name>
     <servlet-class>org.gatein.wci.api.GateInServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
-  </servlet>
-  <servlet>
+  </servlet>-->
+ <!-- <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
@@ -114,8 +114,8 @@
       <param-name>juzu.resource_bundle</param-name>
       <param-value>locale.outlook.Login</param-value>
     </init-param>
-  </servlet>
-  <servlet>
+  </servlet>-->
+  <!--<servlet>
     <servlet-name>AssetServlet</servlet-name>
     <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
@@ -124,17 +124,17 @@
   <servlet-mapping>
     <servlet-name>GateInServlet</servlet-name>
     <url-pattern>/gateinservlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
+  </servlet-mapping>-->
+ <!-- <servlet-mapping>
     <servlet-name>JuzuServlet</servlet-name>
     <url-pattern>/login/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
+  </servlet-mapping>-->
+  <!--<servlet-mapping>
     <servlet-name>AssetServlet</servlet-name>
     <url-pattern>/assets/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping>-->
 
-  <servlet>
+  <!--<servlet>
     <servlet-name>JuzuOutlookServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
@@ -149,7 +149,7 @@
   <servlet-mapping>
     <servlet-name>JuzuOutlookServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping>-->
 
   <servlet>
     <servlet-name>TestServlet</servlet-name>

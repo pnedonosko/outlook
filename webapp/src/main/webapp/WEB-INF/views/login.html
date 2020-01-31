@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" type="text/css" href="/outlook/skin/fabric.min.css"/>
+  <link rel="stylesheet" type="text/css" href="/outlook/skin/fabric.components.min.css"/>
+  <link rel="stylesheet" type="text/css" href="/outlook/skin/outlook.css"/>
+  <link rel="stylesheet" type="text/css" href="/outlook/skin/jquery-ui.min.css"/>
+  <link rel="stylesheet" type="text/css" href="/outlook/skin/jquery-ui.structure.min.css"/>
+  <link rel="stylesheet" type="text/css" href="/outlook/skin/jquery-ui.theme.min.css"/>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="/outlook/js/jquery-ui.js"></script>
+  <script src="/outlook/js/jquery.fabric.min.js"></script>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script>
+  <script src="/outlook/js/outlook-login.js"></script>
+</head>
+<body>
+<!-- Error banner -->
+<div id="outlook-error" class="error-message" style="display: none;">
+  <div class="ms-MessageBanner">
+    <div class="ms-MessageBanner-content">
+      <div class="ms-MessageBanner-text">
+        <div class="ms-MessageBanner-clipper"></div>
+      </div>
+      <button class="ms-MessageBanner-expand">
+        <i class="ms-Icon ms-Icon--chevronsDown"></i>
+      </button>
+      <div class="ms-MessageBanner-action" style="display: none;">
+        <button class="ms-Button ms-Button--primary ms-fontColor-neutralLight">OK</button>
+      </div>
+    </div>
+    <button class="ms-MessageBanner-close">
+      <i class="ms-Icon ms-Icon--x"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Welcome screen -->
+<div id="welcomePage" class="ms-Grid">
+  <div class="ms-Grid-row ms-bgColor-themePrimary ms-borderColor-themePrimary">
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+    <div class="ms-Grid-col ms-u-sm10 ms-u-md8 ms-u-lg6 text-centered">
+      <img src="images/exo-icon-64.png" class="welcomeIcon">
+      <div class="ms-Dialog-header welcomeHeader">
+        <p class="ms-Dialog-title ms-font-xl ms-fontColor-yellow" th:text="#{Outlook.welcome.title}" />
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+  </div>
+  <div class="ms-Grid-row ms-bgColor-themePrimary ms-borderColor-themePrimary">
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+    <div class="ms-Grid-col ms-u-sm10 ms-u-md8 ms-u-lg6">
+      <div class="ms-Dialog-header welcomeHeader">
+        <p class="ms-Dialog-title ms-font-m ms-fontColor-themeLight" th:text="#{Outlook.welcome.aboutAddin}" />
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+  </div>
+  <div class="ms-Grid-row firstFeatureRow">
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+    <div class="ms-ChoiceField">
+      <div class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1 featureCheck">
+        <span class="ms-font-l"><i class="ms-Icon ms-Icon--check"></i></span>
+      </div>
+      <div class="ms-Grid-col ms-u-sm9 ms-u-md7 ms-u-lg7">
+        <span class="featureText ms-font-s-plus" th:text="#{Outlook.welcome.aboutSaveAttachment}" />
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+  </div>
+  <div class="ms-Grid-row">
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+    <div class="ms-ChoiceField">
+      <div class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1 featureCheck">
+        <span class="ms-font-l"><i class="ms-Icon ms-Icon--check"></i></span>
+      </div>
+      <div class="ms-Grid-col ms-u-sm9 ms-u-md7 ms-u-lg7">
+        <span class="featureText ms-font-s-plus" th:text="#{Outlook.welcome.aboutConvertTo}" />
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+  </div>
+  <div class="ms-Grid-row">
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+    <div class="ms-ChoiceField">
+      <div class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1 featureCheck">
+        <span class="ms-font-l"><i class="ms-Icon ms-Icon--check"></i></span>
+      </div>
+      <div class="ms-Grid-col ms-u-sm9 ms-u-md7 ms-u-lg7">
+        <span class="featureText ms-font-s-plus" th:text="#{Outlook.welcome.aboutCreate}" />
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+  </div>
+  <div class="ms-Grid-row">
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+    <div class="ms-ChoiceField">
+      <div class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1 featureCheck">
+        <span class="ms-font-l"><i class="ms-Icon ms-Icon--check"></i></span>
+      </div>
+      <div class="ms-Grid-col ms-u-sm9 ms-u-md7 ms-u-lg7">
+        <span class="featureText ms-font-s-plus" th:text="#{Outlook.welcome.aboutSearch}" />
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm1 ms-u-md2 ms-u-lg3"></div>
+  </div>
+  <div class="ms-Grid-row">
+    <div class="ms-Grid-col ms-u-sm3 ms-u-md4 ms-u-lg4"></div>
+    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg4">
+      <div class="ms-Dialog-actions text-centered">
+        <button class="ms-Dialog-action ms-Button ms-Button--primary signInExo" data-dismiss="modal">
+          <span class="ms-Button-label"
+                title="&{Outlook.welcome.signInExoDescription}" th:text="#{Outlook.login.signInExo}" />
+        </button>
+      </div>
+    </div>
+    <div class="ms-Grid-col ms-u-sm3 ms-u-md4 ms-u-lg4"></div>
+  </div>
+</div>
+
+<!-- Login dialog -->
+<div id="signInDialog" class="ms-Dialog" style="display: none;">
+  <div class="ms-Overlay ms-Overlay--dark js-DialogAction--close"></div>
+  <div class="ms-Dialog-main">
+    <button class="ms-Dialog-button ms-Dialog-button--close js-DialogAction--close">
+      <i class="ms-Icon ms-Icon--x"></i>
+    </button>
+    <div class="ms-Dialog-header">
+      <p class="ms-Dialog-title text-centered" th:text="#{Outlook.login.signInExoTitle}" />
+    </div>
+    <div class="ms-Dialog-inner">
+      <form role="form">
+        <div class="ms-Dialog-content">
+          <p class="ms-Dialog-subText" th:text="#{Outlook.login.signInDescription}" />
+          <div class="ms-TextField">
+            <label for="userName" class="ms-Label" th:text="#{Outlook.login.userName}" />
+            <input name="userName" class="ms-TextField-field" type="text" autocorrect="off" autocapitalize="none">
+          </div>
+          <div class="ms-TextField">
+            <label for="password" class="ms-Label" th:text="#{Outlook.login.password}" />
+            <input name="password" class="ms-TextField-field" type="password">
+          </div>
+        </div>
+        <div class="ms-Dialog-actions text-centered">
+          <button class="ms-Dialog-action ms-Button ms-Button--primary signIn" disabled>
+            <span class="ms-Button-label" title="&{Outlook.welcome.doSignInDescription}" th:text="#{Outlook.login.signIn}" />
+          </button>
+          <button class="ms-Dialog-action ms-Button cancel">
+            <span class="ms-Button-label"
+                  title="&{Outlook.welcome.cancelSignInDescription}" th:text="#{Outlook.login.cancel}" />
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="signInProgress" class="ms-Grid ms-bgColor-themePrimary ms-borderColor-themePrimary" style="display: none;">
+  <div class="text-centered signingIn">
+    <div class="ms-Grid-row">
+      <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12 text-centered">
+        <img src="images/exo-icon-64.png" class="welcomeIcon">
+        <div class="ms-Dialog-header">
+          <p class="ms-Dialog-title ms-font-xxl ms-fontColor-yellow">eXo Platform</p>
+        </div>
+      </div>
+    </div>
+    <div class="ms-Grid-row"> <!-- ms-bgColor-themeDarkAlt ms-borderColor-themeDark -->
+      <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12 text-centered ms-font-m-plus ">
+        <div class="ms-Spinner ms-Spinner--large ms-fontColor-themeLighterAlt progressSpinner"
+             style="display: inline-block;"></div>
+        <div class="ms-fontColor-themeLight" th:text="#{Outlook.login.signingIn}" />
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

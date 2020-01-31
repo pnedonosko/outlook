@@ -1,8 +1,9 @@
 /**
  * Outlook Login and Welcome screen.
  */
-(function() {
-	Office.initialize = function(reason) {
+(function($) {
+	$(function() {
+		//Office.initialize = function(reason) {
 		function getRequestParameter(name) {
 			var url = window.location.href;
 			name = name.replace(/[\[\]]/g, "\\$&");
@@ -41,12 +42,12 @@
 				expires = "";
 			}
 			(toDocument ? toDocument : document).cookie = name + "=" + encodeURIComponent(value) + expires + "; path=" + (toPath ? toPath : "/")
-			    + (toDomain ? "; domain=" + toDomain : "");
+				+ (toDomain ? "; domain=" + toDomain : "");
 		}
 
 		var $welcome = $("#welcomePage");
 		var $signInProgress = $("#signInProgress");
-		var spinner = new fabric.Spinner($signInProgress.find(".ms-Spinner").get(0));
+		//var spinner = new fabric.Spinner($signInProgress.find(".ms-Spinner").get(0));
 		var $error = $("#outlook-error");
 
 		var $messageBanner = $error.find(".ms-MessageBanner");
@@ -61,7 +62,7 @@
 
 			if ($signInProgress.is(":visible")) {
 				$signInProgress.hide("blind");
-				spinner.stop();
+				//spinner.stop();
 			}
 
 			$errorText.empty();
@@ -73,6 +74,7 @@
 			});
 			return message;
 		}
+
 		function clearError() {
 			$error.hide("blind");
 			$errorText.empty();
@@ -87,14 +89,14 @@
 				var $signInButton = $signInDialog.find("button.signIn");
 				var $userName = $signInDialog.find("input[name='userName']");
 				var $password = $signInDialog.find("input[name='password']");
-				$userName.change(function() {
+				$userName.change(function () {
 					if ($(this).val()) {
 						$signInButton.prop("disabled", false);
 					} else {
 						$signInButton.prop("disabled", true);
 					}
 				});
-				$signInDialog.find("form").submit(function(event) {
+				$signInDialog.find("form").submit(function (event) {
 					event.preventDefault();
 					$signInDialog.hide();
 					if ($signInDialog.data("cancel")) {
@@ -105,44 +107,44 @@
 						var userName = $userName.val();
 						if (userName && userName.length > 0) {
 							var password = $password.val();
-							var initialURI = getRequestParameter("initialURI");
+							var initialURI = getRequestParameter("target");
 
-							spinner.start();
+							//spinner.start();
 							$welcome.hide();
 							$signInProgress.show("blind");
 
 							var $portalLogin = $.ajax({
-							  async : true,
-							  type : "POST",
-							  url : "/portal/login",
-							  data : {
-							    initialURI : initialURI,
-							    username : userName,
-							    password : password,
-							    rememberme : true
-							  }
+								async : true,
+								type : "POST",
+								url : "/portal/login",
+								data : {
+									initialURI : "/outlook/login",
+									username : userName,
+									password : password,
+									rememberme : true
+								}
 							});
-							$portalLogin.done(function(data, textStatus, jqXHR) {
+							$portalLogin.done(function (data, textStatus, jqXHR) {
 								console.log("[" + jqXHR.status + "] " + textStatus);
 
 								// check does user session alive actually
 								var $user = $.get("/portal/rest/outlook/userinfo");
 								var $sessionProcess = $.Deferred();
-								$user.done(function(info) {
+								$user.done(function (info) {
 									if (info && (typeof info == "object") && info.authenticated) {
 										$sessionProcess.resolve();
 									} else {
 										$sessionProcess.reject();
 									}
 								});
-								$user.fail(function() {
+								$user.fail(function () {
 									$sessionProcess.reject();
 								});
-								$sessionProcess.done(function() {
+								$sessionProcess.done(function () {
 									setCookie("remembermeoutlook", "_init_me", 120000, document, "/portal/intranet/outlook");
 									window.location = initialURI;
 								});
-								$sessionProcess.fail(function() {
+								$sessionProcess.fail(function () {
 									$password.val("");
 									var $data = $(data);
 									var signinFailMessage = $data.find(".signinFail").text();
@@ -163,7 +165,7 @@
 									}
 								});
 							});
-							$portalLogin.fail(function(jqXHR, textStatus, errorThrown) {
+							$portalLogin.fail(function (jqXHR, textStatus, errorThrown) {
 								// it's system/net error
 								console.log("[" + jqXHR.status + "] " + errorThrown);
 								// TODO i18n here
@@ -173,10 +175,10 @@
 						} // else, stay in the form (Login button disabled)
 					}
 				});
-				$signInDialog.find("button.cancel").click(function() {
+				$signInDialog.find("button.cancel").click(function () {
 					$signInDialog.data("cancel", true);
 				});
-				$signInExoButton.click(function() {
+				$signInExoButton.click(function () {
 					clearError();
 					$signInDialog.removeData("cancel");
 					$signInDialog.show();
@@ -185,5 +187,6 @@
 				$signInExoButton.prop("disabled", false);
 			}
 		}
-	};
-})();
+		//};
+	});
+})(jQuery);
