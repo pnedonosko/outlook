@@ -441,19 +441,19 @@
       <bt:Urls>
         <!-- bt:Url id="functionFile" DefaultValue="$BASE_URL/outlook/login/menu;"/ -->
 
-        <bt:Url id="readUrl" DefaultValue="$BASE_URL/outlook/rest"/>
-        <bt:Url id="searchUrl" DefaultValue="$BASE_URL/outlook/rest?command=search"/>
-        <bt:Url id="userInfoReadUrl" DefaultValue="$BASE_URL/outlook/rest?command=userInfoRead"/>
-        <bt:Url id="userInfoComposeUrl" DefaultValue="$BASE_URL/outlook/rest?command=userInfoCompose"/>
+        <bt:Url id="readUrl" DefaultValue="$BASE_URL/outlook/app"/>
+        <bt:Url id="searchUrl" DefaultValue="$BASE_URL/outlook/app?command=search"/>
+        <bt:Url id="userInfoReadUrl" DefaultValue="$BASE_URL/outlook/app?command=userInfoRead"/>
+        <bt:Url id="userInfoComposeUrl" DefaultValue="$BASE_URL/outlook/app?command=userInfoCompose"/>
 
-        <bt:Url id="postStatusUrl" DefaultValue="$BASE_URL/outlook/rest?command=postStatus"/>
-        <bt:Url id="startDiscussionUrl" DefaultValue="$BASE_URL/outlook/rest?command=startDiscussion"/>
+        <bt:Url id="postStatusUrl" DefaultValue="$BASE_URL/outlook/app?command=postStatus"/>
+        <bt:Url id="startDiscussionUrl" DefaultValue="$BASE_URL/outlook/app?command=startDiscussion"/>
 
-        <bt:Url id="addAttachmentUrl" DefaultValue="$BASE_URL/outlook/rest?command=addAttachment"/>
-        <bt:Url id="saveAttachmentUrl" DefaultValue="$BASE_URL/outlook/rest?command=saveAttachment"/>
-        <bt:Url id="convertToStatusUrl" DefaultValue="$BASE_URL/outlook/rest?command=convertToStatus"/>
-        <bt:Url id="convertToWikiUrl" DefaultValue="$BASE_URL/outlook/rest?command=convertToWiki"/>
-        <bt:Url id="convertToForumUrl" DefaultValue="$BASE_URL/outlook/rest?command=convertToForum"/>
+        <bt:Url id="addAttachmentUrl" DefaultValue="$BASE_URL/outlook/app?command=addAttachment"/>
+        <bt:Url id="saveAttachmentUrl" DefaultValue="$BASE_URL/outlook/app?command=saveAttachment"/>
+        <bt:Url id="convertToStatusUrl" DefaultValue="$BASE_URL/outlook/app?command=convertToStatus"/>
+        <bt:Url id="convertToWikiUrl" DefaultValue="$BASE_URL/outlook/app?command=convertToWiki"/>
+        <bt:Url id="convertToForumUrl" DefaultValue="$BASE_URL/outlook/app?command=convertToForum"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="appDescription" DefaultValue="Interact with your eXo collaborative intranet directly from Outlook">
