@@ -23,6 +23,7 @@ import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.IdentityConstants;
 
 import java.net.URI;
 import java.util.Scanner;
@@ -54,9 +55,6 @@ public class InfoService extends RESTServiceBase {
 
   /** The Constant DEFAULT_DISPLAY_NAME. */
   public static final String DEFAULT_DISPLAY_NAME = "eXo Platform";
-
-  /** The anonymous user ID. */
-  public static final String ANONYMOUS_USER       = "__anonim";
 
   /**
    * Instantiates a new info service.
@@ -145,7 +143,7 @@ public class InfoService extends RESTServiceBase {
     info.append("{");
     try {
       final String userId = ConversationState.getCurrent().getIdentity().getUserId();
-      if (userId != null && !userId.equals(ANONYMOUS_USER)) {
+      if (userId != null && !userId.equals(IdentityConstants.ANONIM)) {
         info.append("\"authenticated\": true,");
         info.append("\"userId\": \"");
         info.append(userId);
