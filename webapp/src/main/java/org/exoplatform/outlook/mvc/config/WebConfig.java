@@ -2,14 +2,15 @@ package org.exoplatform.outlook.mvc.config;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
+import org.exoplatform.outlook.mvc.interceptor.LocaleInitInterceptor;
 import org.exoplatform.outlook.mvc.interceptor.OutlookCurrentContainerRequestLifeCycleInterceptor;
+import org.exoplatform.outlook.mvc.model.CustomMessageSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
@@ -44,6 +45,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new LocaleInitInterceptor()).addPathPatterns("/*");
     registry.addInterceptor(new OutlookCurrentContainerRequestLifeCycleInterceptor()).addPathPatterns("/app/*");
   }
 
@@ -75,11 +77,10 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
     return resolver;
   }
 
-  @Bean
+  @Bean(name = "messageSource")
   @Description("Spring Message Resolver")
-  public ResourceBundleMessageSource messageSource() {
-    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    messageSource.setBasename("locale/outlook/messages");
-    return messageSource;
+  public CustomMessageSource messageSource() {
+    CustomMessageSource customMessageSource = new CustomMessageSource();
+    return customMessageSource;
   }
 }
