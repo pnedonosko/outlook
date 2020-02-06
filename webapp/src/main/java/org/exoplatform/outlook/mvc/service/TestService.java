@@ -3,6 +3,7 @@ package org.exoplatform.outlook.mvc.service;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.outlook.mvc.model.IdentityManagerWrapper;
 import org.exoplatform.outlook.portlet.IdentityInfo;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -13,6 +14,7 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,9 @@ import java.util.List;
 public class TestService {
 
     private static final Log log = ExoLogger.getLogger(TestService.class);
+
+    @Inject
+    IdentityManagerWrapper identityManagerW;
 
     public List<IdentityInfo> findUsersByEmail(String emails, String excludeOne) throws Exception {
         List<IdentityInfo> list = new ArrayList<>();
@@ -29,6 +34,8 @@ public class TestService {
             for (String email : emails.split(",")) {
                 User user = findUserByEmail(email.toLowerCase());
                 if (user != null) {
+                    IdentityManager testIdentity = identityManagerW.getIdentityManager();
+
                     IdentityManager identityManager =
                             (IdentityManager) currentContainer
                                     .getComponentInstance(IdentityManager.class);
