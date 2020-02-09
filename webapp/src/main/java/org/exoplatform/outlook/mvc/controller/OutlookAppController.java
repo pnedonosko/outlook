@@ -1,5 +1,6 @@
 package org.exoplatform.outlook.mvc.controller;
 
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.outlook.mvc.service.TestService;
 import org.exoplatform.outlook.portlet.IdentityInfo;
 import org.exoplatform.services.log.ExoLogger;
@@ -11,13 +12,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
 @RequestMapping(value = "/app")
-public class OutlookManifestURLsAppController {
+public class OutlookAppController {
 
-  private static final Log log = ExoLogger.getLogger(OutlookManifestURLsAppController.class);
+  private static final Log log = ExoLogger.getLogger(OutlookAppController.class);
 
   private TestService      testService;
 
@@ -64,7 +66,7 @@ public class OutlookManifestURLsAppController {
     return "test.html";
   }
 
-  @RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+  @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public String getManifestURLsResponse(Model model, @RequestParam(value = "command") String command) {
 
     /*
@@ -80,6 +82,30 @@ public class OutlookManifestURLsAppController {
      * "$BASE_URL/outlook/app?command=convertToForum"
      */
 
-    return "test.html";
+    return "react/build/index.html";
+  }
+
+  @RequestMapping(value = "/js-properties", method = RequestMethod.GET)
+  public String getJSProperties(Model model, HttpServletRequest request) {
+    model.addAttribute("baseName", getBaseName(request));
+    model.addAttribute("currentRestContextName", PortalContainer.getCurrentRestContextName());
+
+    String language = request.getLocale().getLanguage();
+    String country = request.getLocale().getCountry();
+    if (country != null && country.length() > 0) {
+      language += "_" + country;
+    }
+
+    model.addAttribute("language", language);
+    return "properties.js";
+  }
+
+  private static String getBaseName(HttpServletRequest request) {
+    StringBuilder baseBuilder = new StringBuilder(request.getScheme());
+    baseBuilder.append("://");
+    baseBuilder.append(request.getServerName());
+    baseBuilder.append(":");
+    baseBuilder.append(request.getServerPort());
+    return baseBuilder.toString();
   }
 }
