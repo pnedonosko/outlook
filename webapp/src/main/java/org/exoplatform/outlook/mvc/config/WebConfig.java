@@ -35,6 +35,10 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/static/**").addResourceLocations("/WEB-INF/views/react/build/static/");
+    registry.addResourceHandler("/*.js").addResourceLocations("/WEB-INF/views/react/build/");
+    registry.addResourceHandler("/*.json").addResourceLocations("/WEB-INF/views/react/build/");
+    registry.addResourceHandler("/*.ico").addResourceLocations("/WEB-INF/views/react/build/");
     registry.addResourceHandler("/**").addResourceLocations("/");
   }
 
@@ -82,5 +86,24 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
   public CustomMessageSource messageSource() {
     CustomMessageSource customMessageSource = new CustomMessageSource();
     return customMessageSource;
+  }
+
+  @Bean
+  public ViewResolver javascriptViewResolver() {
+    ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+    resolver.setTemplateEngine(templateEngine(javascriptTemplateResolver()));
+    resolver.setContentType("application/javascript");
+    resolver.setCharacterEncoding("UTF-8");
+    resolver.setViewNames(new String[] { "*.js" });
+    return resolver;
+  }
+
+  private ITemplateResolver javascriptTemplateResolver() {
+    SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+    resolver.setApplicationContext(applicationContext);
+    resolver.setPrefix("/WEB-INF/js/");
+    resolver.setCacheable(false);
+    resolver.setTemplateMode(TemplateMode.JAVASCRIPT);
+    return resolver;
   }
 }
