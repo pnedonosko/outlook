@@ -3,6 +3,7 @@ package org.exoplatform.outlook.mvc.controller;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.outlook.mvc.service.TestService;
 import org.exoplatform.outlook.portlet.IdentityInfo;
+import org.exoplatform.outlook.utils.PortalLocaleUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequestMapping(value = "/app")
@@ -90,8 +92,13 @@ public class OutlookAppController {
     model.addAttribute("baseName", getBaseName(request));
     model.addAttribute("currentRestContextName", PortalContainer.getCurrentRestContextName());
 
-    String language = request.getLocale().getLanguage();
-    String country = request.getLocale().getCountry();
+    // User locale
+    Locale userLocale = request.getLocale();
+
+    userLocale = PortalLocaleUtils.getCurrentUserLocale(userLocale);
+
+    String language = userLocale.getLanguage();
+    String country = userLocale.getCountry();
     if (country != null && country.length() > 0) {
       language += "_" + country;
     }
