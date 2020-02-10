@@ -2,7 +2,6 @@ package org.exoplatform.outlook.mvc.config;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
-import org.exoplatform.outlook.mvc.interceptor.LocaleInitInterceptor;
 import org.exoplatform.outlook.mvc.interceptor.OutlookCurrentContainerRequestLifeCycleInterceptor;
 import org.exoplatform.outlook.mvc.model.CustomMessageSource;
 import org.springframework.context.ApplicationContext;
@@ -49,7 +48,6 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new LocaleInitInterceptor()).addPathPatterns("/*");
     registry.addInterceptor(new OutlookCurrentContainerRequestLifeCycleInterceptor()).addPathPatterns("/app/*");
   }
 

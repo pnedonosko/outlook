@@ -1,26 +1,21 @@
 package org.exoplatform.outlook.mvc.model;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.outlook.utils.PortalLocaleUtils;
+import org.exoplatform.services.resources.ResourceBundleService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Keeps links to resource bundles and uses them as message source.
+ * The wrapper for ResourceBundleService.
  */
 public class CustomMessageSource implements MessageSource {
 
-  Map<Locale, List<ResourceBundle>> concurrentLocales = new ConcurrentHashMap<>();
-
-  public boolean containsLocale(Locale locale) {
-    return concurrentLocales.containsKey(locale);
-  }
-
-  public void addLocale(Locale locale, List<ResourceBundle> resourceBundles) {
-    this.concurrentLocales.put(locale, resourceBundles);
-  }
+  private static final String[] RESOURCE_BUNDLE_NAMES = { "locale.outlook.Login", "locale.outlook.Outlook" };
 
   @Override
   public String getMessage(String code, Object[] objects, String defaultMessage, Locale locale) {
@@ -65,12 +60,22 @@ public class CustomMessageSource implements MessageSource {
 
   private String getMessage(String code, Locale locale) {
     String message = null;
-    for (ResourceBundle resourceBundle : concurrentLocales.get(locale)) {
+
+    locale = PortalLocaleUtils.getCurrentUserLocale(locale);
+
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    ResourceBundleService resourceBundleService =
+                                                (ResourceBundleService) currentContainer.getComponentInstance(ResourceBundleService.class);
+
+    ResourceBundle resourceBundle;
+    for (String resourceBundleName : RESOURCE_BUNDLE_NAMES) {
+      resourceBundle = resourceBundleService.getResourceBundle(resourceBundleName, locale);
       if (resourceBundle.containsKey(code)) {
         message = resourceBundle.getString(code);
         break;
       }
     }
+
     return message;
   }
 }
