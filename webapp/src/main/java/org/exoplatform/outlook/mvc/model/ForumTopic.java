@@ -32,7 +32,7 @@ public class ForumTopic {
 
   /** The title. */
   protected final String title;
-  
+
   /** The link. */
   protected final String link;
 

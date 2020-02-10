@@ -37,7 +37,7 @@ public class MessageItem {
 
   /** The id. */
   public String                    id;
-  
+
   /** The body. */
   public String                    body;
 
@@ -47,11 +47,11 @@ public class MessageItem {
 
   /** The user. */
   @NotNull
-  public EmailAddressDetails user;
+  public EmailAddressDetails       user;
 
   /** The from. */
   @NotNull
-  public EmailAddressDetails from;
+  public EmailAddressDetails       from;
 
   /** The to. */
   public List<EmailAddressDetails> to;

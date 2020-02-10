@@ -32,7 +32,7 @@ public class WikiPage {
 
   /** The title. */
   protected final String title;
-  
+
   /** The link. */
   protected final String link;
 
