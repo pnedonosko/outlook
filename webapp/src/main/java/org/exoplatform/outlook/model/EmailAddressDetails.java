@@ -17,63 +17,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.outlook.mvc.model;
+package org.exoplatform.outlook.model;
 
 /**
  * Created by The eXo Platform SAS.
  *
  * @author <a href="mailto:pnedonosko@exoplatform.com">Peter Nedonosko</a>
- * @version $Id: ForumTopic.java 00000 Sep 8, 2016 pnedonosko $
+ * @version $Id: EmailAddressDetails.java 00000 Jul 11, 2016 pnedonosko $
  */
-public class ForumTopic {
+@Deprecated // TODO not used 
+public class EmailAddressDetails {
 
-  /** The id. */
-  protected final String id;
+  /** The name. */
+  public String name;
 
-  /** The title. */
-  protected final String title;
+  /** The email. */
+  public String email;
 
-  /** The link. */
-  protected final String link;
-
-  /**
-   * Instantiates a new forum topic.
-   *
-   * @param id the id
-   * @param title the title
-   * @param link the link
-   */
-  public ForumTopic(String id, String title, String link) {
-    super();
-    this.id = id;
-    this.title = title;
-    this.link = link;
-  }
-
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Gets the title.
-   *
-   * @return the title
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Gets the link.
-   *
-   * @return the link
-   */
-  public String getLink() {
-    return link;
-  }
 }

@@ -17,15 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.outlook.mvc.model;
+package org.exoplatform.outlook.model;
 
 /**
  * Created by The eXo Platform SAS.
  *
  * @author <a href="mailto:pnedonosko@exoplatform.com">Peter Nedonosko</a>
- * @version $Id: AttachmentSource.java 00000 Aug 11, 2016 pnedonosko $
+ * @version $Id: UserWikiPage.java 00000 Aug 16, 2016 pnedonosko $
  */
-public class AttachmentSource {
+public class WikiPage {
 
   /** The id. */
   protected final String id;
@@ -33,36 +33,21 @@ public class AttachmentSource {
   /** The title. */
   protected final String title;
 
-  /** The root path. */
-  protected final String rootPath;
-
-  /** The root label. */
-  protected final String rootLabel;
+  /** The link. */
+  protected final String link;
 
   /**
-   * Instantiates a new attachment source.
+   * Instantiates a new wiki page.
    *
    * @param id the id
    * @param title the title
-   * @param rootPath the root path
-   * @param rootLabel the root label
+   * @param link the link
    */
-  protected AttachmentSource(String id, String title, String rootPath, String rootLabel) {
+  public WikiPage(String id, String title, String link) {
     super();
     this.id = id;
     this.title = title;
-    this.rootPath = rootPath;
-    this.rootLabel = rootLabel;
-  }
-
-  /**
-   * Instantiates a new attachment source.
-   *
-   * @param id the id
-   * @param title the title
-   */
-  protected AttachmentSource(String id, String title) {
-    this(id, title, null, null);
+    this.link = link;
   }
 
   /**
@@ -84,21 +69,11 @@ public class AttachmentSource {
   }
 
   /**
-   * Gets the root path.
+   * Gets the link.
    *
-   * @return the rootPath
+   * @return the link
    */
-  public String getRootPath() {
-    return rootPath;
+  public String getLink() {
+    return link;
   }
-
-  /**
-   * Gets the root label.
-   *
-   * @return the rootLabel
-   */
-  public String getRootLabel() {
-    return rootLabel;
-  }
-
 }

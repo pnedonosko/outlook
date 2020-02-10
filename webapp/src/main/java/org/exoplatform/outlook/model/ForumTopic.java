@@ -17,36 +17,55 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.outlook.mvc.model;
+package org.exoplatform.outlook.model;
 
 /**
  * Created by The eXo Platform SAS.
  *
  * @author <a href="mailto:pnedonosko@exoplatform.com">Peter Nedonosko</a>
- * @version $Id: ActivityStatus.java 00000 Jul 11, 2016 pnedonosko $
+ * @version $Id: ForumTopic.java 00000 Sep 8, 2016 pnedonosko $
  */
-public class ActivityStatus {
+public class ForumTopic {
 
-  /** The user name. */
-  final String userName;
+  /** The id. */
+  protected final String id;
 
-  /** The space name. */
-  final String spaceName;
+  /** The title. */
+  protected final String title;
 
   /** The link. */
-  final String link;
+  protected final String link;
 
   /**
-   * Instantiates a new activity status.
+   * Instantiates a new forum topic.
    *
-   * @param userName the user name
-   * @param spaceName the space name
+   * @param id the id
+   * @param title the title
    * @param link the link
    */
-  public ActivityStatus(String userName, String spaceName, String link) {
-    this.userName = userName;
-    this.spaceName = spaceName;
+  public ForumTopic(String id, String title, String link) {
+    super();
+    this.id = id;
+    this.title = title;
     this.link = link;
+  }
+
+  /**
+   * Gets the id.
+   *
+   * @return the id
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Gets the title.
+   *
+   * @return the title
+   */
+  public String getTitle() {
+    return title;
   }
 
   /**
@@ -57,23 +76,4 @@ public class ActivityStatus {
   public String getLink() {
     return link;
   }
-
-  /**
-   * Gets the target name.
-   *
-   * @return the target name
-   */
-  public String getTargetName() {
-    return isSpace() ? spaceName : userName;
-  }
-
-  /**
-   * Checks if is space.
-   *
-   * @return true, if is space
-   */
-  public boolean isSpace() {
-    return spaceName != null;
-  }
-
 }

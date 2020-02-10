@@ -17,55 +17,36 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.outlook.mvc.model;
+package org.exoplatform.outlook.model;
 
 /**
  * Created by The eXo Platform SAS.
  *
  * @author <a href="mailto:pnedonosko@exoplatform.com">Peter Nedonosko</a>
- * @version $Id: UserWikiPage.java 00000 Aug 16, 2016 pnedonosko $
+ * @version $Id: ActivityStatus.java 00000 Jul 11, 2016 pnedonosko $
  */
-public class WikiPage {
+public class ActivityStatus {
 
-  /** The id. */
-  protected final String id;
+  /** The user name. */
+  final String userName;
 
-  /** The title. */
-  protected final String title;
+  /** The space name. */
+  final String spaceName;
 
   /** The link. */
-  protected final String link;
+  final String link;
 
   /**
-   * Instantiates a new wiki page.
+   * Instantiates a new activity status.
    *
-   * @param id the id
-   * @param title the title
+   * @param userName the user name
+   * @param spaceName the space name
    * @param link the link
    */
-  public WikiPage(String id, String title, String link) {
-    super();
-    this.id = id;
-    this.title = title;
+  public ActivityStatus(String userName, String spaceName, String link) {
+    this.userName = userName;
+    this.spaceName = spaceName;
     this.link = link;
-  }
-
-  /**
-   * Gets the id.
-   *
-   * @return the id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Gets the title.
-   *
-   * @return the title
-   */
-  public String getTitle() {
-    return title;
   }
 
   /**
@@ -76,4 +57,23 @@ public class WikiPage {
   public String getLink() {
     return link;
   }
+
+  /**
+   * Gets the target name.
+   *
+   * @return the target name
+   */
+  public String getTargetName() {
+    return isSpace() ? spaceName : userName;
+  }
+
+  /**
+   * Checks if is space.
+   *
+   * @return true, if is space
+   */
+  public boolean isSpace() {
+    return spaceName != null;
+  }
+
 }

@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.model;
+package org.exoplatform.outlook.model;
 
 import java.text.DateFormat;
 import java.util.Locale;
