@@ -25,6 +25,9 @@ public class OutlookAppController {
 
   private TestService      testService;
 
+  private static final String OUTLOOK = "outlook";
+  private static final String OUTLOOK_SPRING = "app";
+
   @Autowired
   public void setTestService(TestService testService) {
     this.testService = testService;
@@ -69,7 +72,9 @@ public class OutlookAppController {
   }
 
   @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-  public String getManifestURLsResponse(Model model, @RequestParam(value = "command") String command) {
+  public String getManifestURLsResponse(Model model,
+                                        @RequestParam(value = "command") String command,
+                                        HttpServletRequest request) {
 
     /*
      * "$BASE_URL/outlook/app" "$BASE_URL/outlook/app?command=search"
@@ -84,17 +89,11 @@ public class OutlookAppController {
      * "$BASE_URL/outlook/app?command=convertToForum"
      */
 
-    return "react/build/index.html";
-  }
-
-  @RequestMapping(value = "/js-properties", method = RequestMethod.GET)
-  public String getJSProperties(Model model, HttpServletRequest request) {
     model.addAttribute("baseName", getBaseName(request));
     model.addAttribute("currentRestContextName", PortalContainer.getCurrentRestContextName());
 
     // User locale
     Locale userLocale = request.getLocale();
-
     userLocale = PortalLocaleUtils.getCurrentUserLocale(userLocale);
 
     String language = userLocale.getLanguage();
@@ -104,7 +103,10 @@ public class OutlookAppController {
     }
 
     model.addAttribute("language", language);
-    return "properties.js";
+    model.addAttribute("outlook", OUTLOOK);
+    model.addAttribute("spring", OUTLOOK_SPRING);
+
+    return "index.html";
   }
 
   private static String getBaseName(HttpServletRequest request) {
