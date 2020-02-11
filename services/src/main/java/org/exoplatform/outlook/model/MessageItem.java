@@ -24,8 +24,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import juzu.Format;
-
 /**
  * Created by The eXo Platform SAS.
  *
@@ -57,11 +55,11 @@ public class MessageItem {
   public List<EmailAddressDetails> to;
 
   /** The created. */
-  @Format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+  //@Format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   public Date                      created;
 
   /** The modified. */
-  @Format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+  //@Format("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   public Date                      modified;
 
 }
