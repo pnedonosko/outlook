@@ -5,7 +5,7 @@ let config = {
   // set the entry point of the application
   // can use multiple entry
   entry: {
-    outlook: './src/main/webapp/react/index.js'
+    outlook: './src/main/webapp/react-app/index.js'
   },
   output: {
     filename: 'js/[name].bundle.js',
