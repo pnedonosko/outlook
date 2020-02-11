@@ -21,55 +21,13 @@ import java.util.Locale;
 @RequestMapping(value = "/app")
 public class OutlookAppController {
 
-  private static final Log log = ExoLogger.getLogger(OutlookAppController.class);
+  private static final Log    log            = ExoLogger.getLogger(OutlookAppController.class);
 
-  private TestService      testService;
+  private TestService         testService;
 
-  private static final String OUTLOOK = "outlook";
+  private static final String OUTLOOK        = "outlook";
+
   private static final String OUTLOOK_SPRING = "app";
-
-  @Autowired
-  public void setTestService(TestService testService) {
-    this.testService = testService;
-  }
-
-  @RequestMapping(value = "/test-thymeleaf", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-  public String getTestThymeleaf(Model model, @RequestParam(value = "email") String email) {
-
-    log.warn("[TestController]: start ");
-
-    ConversationState convo = ConversationState.getCurrent();
-    if (convo != null) {
-      String currentUserId = convo.getIdentity().getUserId();
-      model.addAttribute("user", currentUserId);
-      log.warn("currentUserId - " + currentUserId);
-    } else {
-      model.addAttribute("user", null);
-      log.warn("ConversationState is null");
-    }
-
-    List<IdentityInfo> list = null;
-    try {
-      list = testService.findUsersByEmail(email, null);
-    } catch (Exception e) {
-      log.error("findUsersByEmail Exception", e);
-    }
-
-    if (list != null) {
-      log.warn("[TestController]: list length: " + list.size());
-
-      try {
-        log.warn("[TestController]: getFullName " + list.toArray(new IdentityInfo[0])[0].getFullName());
-        model.addAttribute("fullName", list.toArray(new IdentityInfo[0])[0].getFullName());
-      } catch (Exception e) {
-        log.warn("[TestController]: getFullName error ", e);
-      }
-    } else {
-      log.warn("[TestController]: list is null ");
-    }
-
-    return "test.html";
-  }
 
   @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public String getManifestURLsResponse(Model model,
