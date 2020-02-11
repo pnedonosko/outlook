@@ -20,8 +20,6 @@ package org.exoplatform.outlook.model;
 
 import java.util.List;
 
-import org.exoplatform.outlook.portlet.ActivityInfo;
-import org.exoplatform.outlook.portlet.IdentityInfo;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class UserInfo extends IdentityInfo {
