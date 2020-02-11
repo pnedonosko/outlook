@@ -3,7 +3,7 @@ package org.exoplatform.outlook.mvc.config;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
 import org.exoplatform.outlook.mvc.interceptor.OutlookCurrentContainerRequestLifeCycleInterceptor;
-import org.exoplatform.outlook.mvc.model.CustomMessageSource;
+import org.exoplatform.outlook.mvc.localization.CustomMessageSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
