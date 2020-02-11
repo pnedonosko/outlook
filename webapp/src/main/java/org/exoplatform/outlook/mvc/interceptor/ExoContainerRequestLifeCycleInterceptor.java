@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-public class OutlookCurrentContainerRequestLifeCycleInterceptor extends HandlerInterceptorAdapter {
+public class ExoContainerRequestLifeCycleInterceptor extends HandlerInterceptorAdapter {
 
   /** The Constant LOG. */
-  protected static final Logger LOG = LoggerFactory.getLogger(OutlookCurrentContainerRequestLifeCycleInterceptor.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(ExoContainerRequestLifeCycleInterceptor.class);
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -33,7 +33,7 @@ public class LoginController {
   @RequestMapping(value = "/logout", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    LOG.warn("[LoginController logout()]: start ");
+    LOG.warn("[LoginController logout()]: start "); // TODO why warn? is it a problem like event?
 
     loginService.logout(request, response);
 
@@ -46,7 +46,7 @@ public class LoginController {
   @RequestMapping(value = "/login", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public String login(HttpServletRequest request, HttpServletResponse response) {
 
-    LOG.warn("[LoginController login()] ");
+    LOG.warn("[LoginController login()] "); // TODO why warn? is it a problem like event?
 
     return "login.html";
   }
