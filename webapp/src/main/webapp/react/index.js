@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-import Form from './Form'
 
+//test example (can be deleted)
 const inputs = [{
   name: "username",
   placeholder: "username",
@@ -21,5 +21,5 @@ const props = {name: 'loginForm', method: 'POST', action: '/perform_login', inpu
 
 const params = new URLSearchParams(window.location.search)
 
-ReactDOM.render(<Form {...props} error={params.get('error')} />, document.getElementById('container'))
+ReactDOM.render(<Form {...props} error={params.get('error')} />, document.getElementById('container'));
 

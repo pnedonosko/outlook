@@ -1,0 +1,46 @@
+{
+  "name": "outlook",
+  "version": "1.0.0",
+  "description": "react app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pnedonosko/outlook"
+  },
+  "scripts": {
+    "start": "webpack --config webpack.dev.js --mode development",
+    "dev": "webpack-dev-server --config webpack.dev.js --mode development --hot",
+    "watch": "webpack --config webpack.dev.js --progress --colors --watch -d",
+    "build": "webpack --config webpack.prod.js --mode production"
+  },
+  "author": "eXo",
+  "license": "LGPL",
+  "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/preset-react": "^7.7.4",
+    "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.0.5",
+    "style-loader": "^1.0.0",
+    "css-loader": "^3.2.0",
+    "jest": "^24.9.0",
+    "jquery": "^3.3.1",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "eslint": "^6.7.1",
+    "acorn": "^7.1.0",
+    "browserslist": "^4.7.3",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.2.0",
+    "react-tooltip": "^3.11.2"
+  }
+}

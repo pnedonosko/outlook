@@ -55,6 +55,8 @@
     <junit.version>4.12</junit.version>
     <org.mockito.version>2.2.11</org.mockito.version>
     <httpclient-test.version>4.3.6</httpclient-test.version>
+
+    <com.github.eirslett.frontend.version>1.8.0</com.github.eirslett.frontend.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -116,4 +118,17 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Maven Plugin for JS and CSS bundling and Unit Test execution -->
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>${com.github.eirslett.frontend.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
