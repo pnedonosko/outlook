@@ -57,7 +57,7 @@ public class OutlookAppController {
     String language = userLocale.getLanguage();
     String country = userLocale.getCountry();
     if (country != null && country.length() > 0) {
-      language += "_" + country;
+      language += "_" + country; // TODO use StringBuilder it's quicker
     }
 
     model.addAttribute("language", language);
