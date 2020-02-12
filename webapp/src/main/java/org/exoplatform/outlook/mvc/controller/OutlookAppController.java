@@ -1,34 +1,45 @@
 package org.exoplatform.outlook.mvc.controller;
 
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.outlook.mvc.service.TestService;
-import org.exoplatform.outlook.portlet.IdentityInfo;
 import org.exoplatform.outlook.utils.PortalLocaleUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.ConversationState;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Locale;
 
+/**
+ * The Outlook app controller.
+ */
 @Controller
 @RequestMapping(value = "/app")
 public class OutlookAppController {
 
-  private static final Log    log            = ExoLogger.getLogger(OutlookAppController.class);
+  /** The Constant LOG. */
+  private static final Log      LOG            = ExoLogger.getLogger(OutlookAppController.class);
 
-  private TestService         testService;
+  /**
+   * The constant OUTLOOK.
+   */
+  protected static final String OUTLOOK        = "outlook";
 
-  private static final String OUTLOOK        = "outlook";
+  /**
+   * The constant OUTLOOK_SPRING.
+   */
+  protected static final String OUTLOOK_SPRING = "app";
 
-  private static final String OUTLOOK_SPRING = "app";
-
+  /**
+   * Gets manifest URLs response.
+   *
+   * @param model the model
+   * @param command the command
+   * @param request the request
+   * @return the react base page
+   */
   @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public String getManifestURLsResponse(Model model,
                                         @RequestParam(value = "command") String command,
@@ -47,8 +58,10 @@ public class OutlookAppController {
      * "$BASE_URL/outlook/app?command=convertToForum"
      */
 
-    model.addAttribute("baseName", getBaseName(request));
-    model.addAttribute("currentRestContextName", PortalContainer.getCurrentRestContextName());
+    String baseName = getBaseName(request);
+    model.addAttribute("baseName", baseName);
+    model.addAttribute("currentRestContextName",
+                       new StringBuilder(baseName).append("/").append(PortalContainer.getCurrentRestContextName()).toString());
 
     // User locale
     Locale userLocale = request.getLocale();
@@ -57,12 +70,13 @@ public class OutlookAppController {
     String language = userLocale.getLanguage();
     String country = userLocale.getCountry();
     if (country != null && country.length() > 0) {
-      language += "_" + country; // TODO use StringBuilder it's quicker
+      language = new StringBuilder(language).append("_").append(country).toString();
     }
 
     model.addAttribute("language", language);
-    model.addAttribute("outlook", OUTLOOK);
-    model.addAttribute("spring", OUTLOOK_SPRING);
+    model.addAttribute("outlook", new StringBuilder(baseName).append("/").append(OUTLOOK).toString());
+    model.addAttribute("spring",
+                       new StringBuilder(baseName).append("/").append(OUTLOOK).append("/").append(OUTLOOK_SPRING).toString());
 
     return "index.html";
   }
