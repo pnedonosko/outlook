@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import './app.less';
-import TipOfTheDay from './tip-of-the-day/tip-of-the-day';
+import React, { Component } from "react";
+import "./app.less";
+import TheApp from "./TheApp/TheApp";
 
 class App extends Component {
   // TODO real app name & markup
