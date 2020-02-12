@@ -18,7 +18,6 @@
  */
 package org.exoplatform.outlook.utils;
 
-import org.apache.commons.lang3.LocaleUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
@@ -83,7 +82,7 @@ public class PortalLocaleUtils {
         lang = profile.getAttribute(Constants.USER_LANGUAGE);
       }
       if (lang != null && lang.trim().length() > 0) {
-        return LocaleUtils.toLocale(lang); // TODO don't use third party, just JVM here
+        return Locale.forLanguageTag(lang);
       }
     }
     return null;
