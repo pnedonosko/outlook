@@ -1,25 +1,31 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import './index.css'
+import React from "react"
+import ReactDOM from "react-dom"
+import App from "./app.js";
+
+// TODO make eXo non global, e.g. via AMD wrapping the app bundle.js
+// service URL should link to a starting point in our HATEOAS/HAL 
+const props = {eXo: eXo, service: "/outlook/app"}
+ReactDOM.render(<App {...props}/>, document.getElementById("outlook-app"));
+
+// TODO temporal for dev tests
+//import './index.css' // TODO cleanup
 
 //test example (can be deleted)
-const inputs = [{
-  name: "username",
-  placeholder: "username",
-  type: "text"
-},{
-  name: "password",
-  placeholder: "password",
-  type: "password"
-},{
-  type: "submit",
-  value: "Submit",
-  className: "btn" 
-}]
+//const inputs = [{
+//name: "username",
+//placeholder: "username",
+//type: "text"
+//},{
+//name: "password",
+//placeholder: "password",
+//type: "password"
+//},{
+//type: "submit",
+//value: "Submit",
+//className: "btn" 
+//}]
 
-const props = {name: 'loginForm', method: 'POST', action: '/perform_login', inputs: inputs}
-
-const params = new URLSearchParams(window.location.search)
-
-ReactDOM.render(<Form {...props} error={params.get('error')} />, document.getElementById('container'));
+//const props = {eXo: 'loginForm', method: 'POST', action: '/perform_login', inputs: inputs}
+//const params = new URLSearchParams(window.location.search)
+//ReactDOM.render(<Form {...props} error={params.get('error')} />, document.getElementById('container'));
 
