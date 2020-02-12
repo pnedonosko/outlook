@@ -6,7 +6,8 @@ const webpackCommonConfig = require('./webpack.common.js');
 const app = 'outlook';
 
 // add the server path to your server location path
-const exoServerPath = "/eXo/outlook/platform-6.0.0-M16";
+// const exoServerPath = "/eXo/outlook/platform-6.0.0-M16";
+const exoServerPath = 'D:/sasha_work/2020-02/platform3/platform-6.0.0-M16';
 
 let config = merge(webpackCommonConfig, {
   output: {
