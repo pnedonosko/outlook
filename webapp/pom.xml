@@ -227,8 +227,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <!-- <arguments>run build</arguments> --> 
-              <arguments>run watch</arguments>
+              <arguments>run build</arguments> 
             </configuration>
           </execution>
         </executions>
