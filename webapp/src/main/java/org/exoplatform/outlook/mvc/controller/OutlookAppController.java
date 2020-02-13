@@ -41,9 +41,7 @@ public class OutlookAppController {
    * @return the react base page
    */
   @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-  public String getManifestURLsResponse(Model model,
-                                        @RequestParam(value = "command") String command,
-                                        HttpServletRequest request) {
+  public String getIndex(Model model, @RequestParam(value = "command") String command, HttpServletRequest request) {
 
     /*
      * "$BASE_URL/outlook/app" "$BASE_URL/outlook/app?command=search"
