@@ -1,51 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}">
+<html xmlns:th="http://www.thymeleaf.org" th:with="lang=${#locale.language}" th:lang="${lang}" data-framework="typescript">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Index</title>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Index</title>
+        <!-- Office JavaScript API -->
+        <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.1/css/fabric.min.css"
+        />
 
-  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/Office.js"></script>
-  <script src="/outlook/js/outlook.bundle.js"></script>
+        <script th:inline="javascript">
+            eXo = {};
+            eXo.env = {};
+            eXo.env.portal = {};
+            eXo.env.app = {};
+            eXo.env.app.rest = {};
 
-  <script th:inline="javascript">
-    eXo = {};
-    eXo.env = {};
-    eXo.env.portal = {};
-    eXo.env.app = {};
-    eXo.env.app.rest = {};
+            // base name
+            eXo.env.portal.context = [[${baseName}]];
+            eXo.env.app.context = eXo.env.portal.context;
 
-    // base name
-    eXo.env.portal.context = [[${baseName}]];
-    eXo.env.app.context = eXo.env.portal.context;
+            // portal rest
+            eXo.env.portal.rest = [[${currentRestContextName}]];
 
-    // portal rest
-    eXo.env.portal.rest = [[${currentRestContextName}]];
+            // language
+            eXo.env.portal.language = [[${language}]];
 
-    // language
-    eXo.env.portal.language = [[${language}]];
+            // getting a language of the user
+            const lang = (eXo && eXo.env && eXo.env.portal && eXo.env.portal.language) || 'en';
 
-    // getting a language of the user
-    const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || "en";
+            // outlook
+            eXo.env.app.outlook = [[${outlook}]];
 
-    // outlook
-    eXo.env.app.outlook = [[${outlook}]];
+            // outlook spring
+            eXo.env.app.spring = [[${spring}]];
 
-    // outlook spring
-    eXo.env.app.spring = [[${spring}]];
-
-    /*
+            /*
     // example of getting  Outlook Resource Bundle url (use GET request in order to get JSON resource)
     const resourceBundleName = "locale.outlook.Outlook";
     const url = eXo.env.portal.rest + "/i18n/bundle/" + resourceBundleName + "-" + lang + ".json";
     console.log("url: " + url);
     */
-
-    eXo.env.app.rest.resourcesBundle = eXo.env.portal.rest + "/i18n/bundle";
-  </script>
-</head>
-<body>
-  <div id="outlook-app">
-  </div>
-</body>
+            eXo.env.app.rest.resourcesBundle = eXo.env.portal.rest + '/i18n/bundle';
+        </script>
+    </head>
+    <body>
+        <div id="outlook-app"></div>
+        <script src="/outlook/js/outlook.bundle.js"></script>
+    </body>
 </html>

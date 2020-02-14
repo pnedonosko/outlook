@@ -8,8 +8,7 @@ let config = {
         outlook: './src/main/webapp/react-app/index.tsx'
     },
     output: {
-        filename: 'js/[name].bundle.js',
-        libraryTarget: 'amd'
+        filename: 'js/[name].bundle.js'
     },
     module: {
         rules: [
@@ -42,7 +41,7 @@ let config = {
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js', '.html']
     }
 };
 
