@@ -6,9 +6,9 @@ import App from './app';
 // service URL should link to a starting point in our HATEOAS/HAL
 // const props = {eXo: eXo, service: "/outlook/app"}
 ReactDOM.render(
-    // <App {...props} />,
-    <App />,
-    document.getElementById('outlook-app')
+	// <App {...props} />,
+	<App />,
+	document.getElementById('outlook-app')
 );
 
 // TODO temporal for dev tests
