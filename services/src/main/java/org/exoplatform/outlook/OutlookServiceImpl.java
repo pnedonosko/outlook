@@ -2043,7 +2043,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
                                   String portalName,
                                   String nodeURI,
                                   HierarchyNode node) throws OutlookException {
-    // WebDAV URL
+    /*// WebDAV URL
     initWebDAVLink(node);
 
     // Portal URL
@@ -2073,7 +2073,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
     } else {
       LOG.warn("Portal request not found. Node URL will be its WebDAV link. Node: " + node.getPath());
       node.setUrl(node.getWebdavUrl());
-    }
+    }*/
   }
 
   /**
