@@ -58,29 +58,67 @@ public class InfoService extends RESTServiceBase {
 
   /**
    * Instantiates a new info service.
-   *
    */
   public InfoService() {
   }
 
   /**
-   * Outlook add-in manifest for registration in Microsoft Office365 or Exchange server. <br>
+   * Outlook add-in manifest for registration in Microsoft Office365 or Exchange
+   * server (Juzu). <br>
    * 
    * @param uriInfo - request info
    * @param request {@link HttpServletRequest}
    * @param guid {@link String} existing add-in GUID or {@code null}
-   * @param hostName {@link String} with a host name (and optionally port) or {@code null}
+   * @param hostName {@link String} with a host name (and optionally port) or
+   *          {@code null}
    * @param displayName the display name
    * @return {@link Response}
    */
   @GET
   @Path("/manifest")
   @Produces("text/xml")
-  public Response getManifest(@Context UriInfo uriInfo,
-                           @Context HttpServletRequest request,
-                           @QueryParam("guid") String guid,
-                           @QueryParam("hostName") String hostName,
-                           @QueryParam("displayName") String displayName) {
+  public Response getManifestForJuzu(@Context UriInfo uriInfo,
+                                     @Context HttpServletRequest request,
+                                     @QueryParam("guid") String guid,
+                                     @QueryParam("hostName") String hostName,
+                                     @QueryParam("displayName") String displayName) {
+    return generateManifestResponse(uriInfo, request, guid, hostName, displayName, "/manifest/exo-outlook-manifest.template.xml");
+  }
+
+  /**
+   * Outlook add-in manifest for registration in Microsoft Office365 or Exchange
+   * server (Spring). <br>
+   *
+   * @param uriInfo - request info
+   * @param request {@link HttpServletRequest}
+   * @param guid {@link String} existing add-in GUID or {@code null}
+   * @param hostName {@link String} with a host name (and optionally port) or
+   *          {@code null}
+   * @param displayName the display name
+   * @return {@link Response}
+   */
+  @GET
+  @Path("/manifest2")
+  @Produces("text/xml")
+  public Response getManifestForSpring(@Context UriInfo uriInfo,
+                                       @Context HttpServletRequest request,
+                                       @QueryParam("guid") String guid,
+                                       @QueryParam("hostName") String hostName,
+                                       @QueryParam("displayName") String displayName) {
+    return generateManifestResponse(uriInfo,
+                                    request,
+                                    guid,
+                                    hostName,
+                                    displayName,
+                                    "/manifest/exo-outlook-manifest2.template.xml");
+  }
+
+  private Response generateManifestResponse(UriInfo uriInfo,
+                                            HttpServletRequest request,
+                                            String guid,
+                                            String hostName,
+                                            String displayName,
+                                            String template) {
     String clientHost = getClientHost(request);
 
     if (LOG.isDebugEnabled()) {
@@ -104,13 +142,13 @@ public class InfoService extends RESTServiceBase {
     String serverURL = serverHostBuilder.toString();
 
     ResponseBuilder resp;
-    try (Scanner mScanner = new Scanner(getClass().getResourceAsStream("/manifest/exo-outlook-manifest.template.xml"),
-                                        "UTF-8").useDelimiter("\\A")) {
+    try (Scanner mScanner = new Scanner(getClass().getResourceAsStream(template), "UTF-8").useDelimiter("\\A")) {
       String mTemplate = mScanner.next();
       String manifest = mTemplate.replaceAll("\\$BASE_URL", serverURL);
 
       if (guid == null || (guid = guid.trim()).length() == 0) {
-        // Generate RFC4122 version 4 UUID (as observed in https://github.com/OfficeDev/generator-office)
+        // Generate RFC4122 version 4 UUID (as observed in
+        // https://github.com/OfficeDev/generator-office)
         guid = UUID.randomUUID().toString();
       }
       manifest = manifest.replaceAll("\\$GUID", guid);
