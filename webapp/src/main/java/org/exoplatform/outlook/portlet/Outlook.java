@@ -349,7 +349,7 @@ public class Outlook {
   @Inject
   @Path("userInfoRead.gtmpl")
   org.exoplatform.outlook.portlet.templates.userInfoRead            userInfoRead;
-  
+
   /**
    * The user info for Compose mode.
    */
@@ -428,7 +428,7 @@ public class Outlook {
    */
   @Inject
   ResourceBundleSerializer                                      i18nJSON;
-  
+
   /**
    * Instantiates a new outlook.
    */
@@ -538,7 +538,6 @@ public class Outlook {
    * @return the response
    */
   @View
-  @Route("/")
   public Response index(String command, RequestContext resourceContext) {
     Collection<MenuItem> menu = new ArrayList<MenuItem>();
     if (command == null) {
@@ -580,6 +579,7 @@ public class Outlook {
    * @param message the message
    * @return the response
    */
+  @View
   public Response error(String message) {
     return error.with().message(message).ok();
   }
@@ -1248,7 +1248,7 @@ public class Outlook {
     try {
       String clientEnc = context.getClientContext().getCharacterEncoding();
       final Charset clientCs = loadEncoding(clientEnc);
-      
+
       String currentUsername = context.getSecurityContext().getRemoteUser();
       Set<String> currentUserGroupIds = organization.getMembershipHandler()
                                                     .findMembershipsByUser(currentUsername)
@@ -1268,18 +1268,18 @@ public class Outlook {
                                                           }
                                                         })
                                                         .collect(Collectors.toSet());*/
-      
+
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, user, true);
       List<IdentityInfo> connectionList = getConnectionsList(user);
-      
+
       // TODO cleanup
       //List<ExoSocialActivity> top20visible = activityManager.getActivitiesWithListAccess(userIdentity, currentUserIdentity)
       //                                                      .loadAsList(0, 20);
       List<ExoSocialActivity> top20 = activityManager.getActivitiesByPoster(userIdentity).loadAsList(0, 20);
-      
+
       // Use Apache Tika to parse activity title w/o HTML
       HtmlParser htmlParser = new HtmlParser();
-      
+
       List<ActivityInfo> activities = top20.stream().filter(a -> {
         String streamId = a.getStreamOwner();
         return streamId != null
@@ -1976,7 +1976,7 @@ public class Outlook {
     }
     return list;
   }
-  
+
   private Charset loadEncoding(String name) {
     if (name == null || name.length() == 0) {
       name = "UTF8";
@@ -1988,8 +1988,8 @@ public class Outlook {
       return Charset.defaultCharset();
     }
   }
-  
+
   private String cutText(String text, int limit) {
-    return text.length() > limit ? text.substring(0,  limit) : text; 
+    return text.length() > limit ? text.substring(0,  limit) : text;
   }
 }

@@ -20,11 +20,11 @@
 
 -->
 <web-app
-        version="3.0"
-        metadata-complete="true"
-        xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    version="3.0"
+    metadata-complete="true"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
   <display-name>outlook</display-name>
 
   <!-- <absolute-ordering />-->
@@ -36,15 +36,15 @@
     <name>spring_web</name>
   </absolute-ordering>
 
-  <!--<context-param>
+  <context-param>
     <param-name>juzu.inject</param-name>
     <param-value>guice</param-value>
   </context-param>
   <context-param>
     <param-name>juzu.request_encoding</param-name>
     <param-value>UTF-8</param-value>
-  </context-param>-->
-  
+  </context-param>
+
   <filter>
     <filter-name>ResourceRequestFilter</filter-name>
     <filter-class>org.exoplatform.portal.application.ResourceRequestFilter</filter-class>
@@ -98,17 +98,17 @@
     <filter-name>OutlookLoginFilter</filter-name>
     <url-pattern>/app/*</url-pattern>
   </filter-mapping>
-  
+
   <listener>
     <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
   </listener>
-  
-  <!--<servlet>
+
+  <servlet>
     <servlet-name>GateInServlet</servlet-name>
     <servlet-class>org.gatein.wci.api.GateInServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
-  </servlet>-->
- <!-- <servlet>
+  </servlet>
+  <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
@@ -123,42 +123,25 @@
       <param-name>juzu.resource_bundle</param-name>
       <param-value>locale.outlook.Login</param-value>
     </init-param>
-  </servlet>-->
-  <!--<servlet>
+  </servlet>
+  <servlet>
     <servlet-name>AssetServlet</servlet-name>
     <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
-  
+
   <servlet-mapping>
     <servlet-name>GateInServlet</servlet-name>
     <url-pattern>/gateinservlet</url-pattern>
-  </servlet-mapping>-->
- <!-- <servlet-mapping>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>JuzuServlet</servlet-name>
     <url-pattern>/login/*</url-pattern>
-  </servlet-mapping>-->
-  <!--<servlet-mapping>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>AssetServlet</servlet-name>
     <url-pattern>/assets/*</url-pattern>
-  </servlet-mapping>-->
-
-  <!--<servlet>
-    <servlet-name>JuzuOutlookServlet</servlet-name>
-    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
-    <init-param>
-      <param-name>juzu.app_name</param-name>
-      <param-value>org.exoplatform.outlook.portlet</param-value>
-    </init-param>
-    <init-param>
-      <param-name>juzu.inject</param-name>
-      <param-value>guice</param-value>
-    </init-param>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>JuzuOutlookServlet</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>-->
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>TestServlet</servlet-name>
