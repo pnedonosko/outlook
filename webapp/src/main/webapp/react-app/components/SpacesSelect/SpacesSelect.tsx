@@ -1,12 +1,12 @@
 import * as React from "react";
-import "./spaces-select.less";
+import "./SpacesSelect.less";
 import { Dropdown, IDropdownStyles, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 
 const dropdownStyles: Partial<IDropdownStyles> = {
   dropdown: { width: 300 }
 };
 
-const spacesSelect: React.SFC = () => {
+const SpacesSelect: React.FC = () => {
   const [spaces, setSpaces] = React.useState<IDropdownOption[]>();
 
   React.useEffect(() => {
@@ -22,4 +22,4 @@ const spacesSelect: React.SFC = () => {
   );
 };
 
-export default spacesSelect;
+export default SpacesSelect;

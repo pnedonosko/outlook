@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import SaveAttachments from "./containers/SaveAttachments/save-attachments";
+import SaveAttachments from "./containers/SaveAttachments";
 
 let isOfficeInitialized = false;
 const exoVariables = {
