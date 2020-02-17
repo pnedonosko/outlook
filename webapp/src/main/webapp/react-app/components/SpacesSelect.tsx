@@ -2,11 +2,17 @@ import * as React from "react";
 import "./SpacesSelect.less";
 import { Dropdown, IDropdownStyles, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 
+interface ISpacesSelectProps {
+  isOptional: boolean;
+  description: string;
+  onSelectSpace: Function;
+}
+
 const dropdownStyles: Partial<IDropdownStyles> = {
   dropdown: { width: 300 }
 };
 
-const SpacesSelect: React.FC = () => {
+const SpacesSelect: React.FC<ISpacesSelectProps> = (props: ISpacesSelectProps) => {
   const [spaces, setSpaces] = React.useState<IDropdownOption[]>();
 
   React.useEffect(() => {
@@ -18,7 +24,15 @@ const SpacesSelect: React.FC = () => {
   }, []);
 
   return (
-    <Dropdown placeholder="Select to space" label="Save to space" options={spaces} styles={dropdownStyles} />
+    <>
+      <Dropdown
+        label={"Target space" + (props.isOptional ? " (optional)" : "")}
+        options={spaces}
+        styles={dropdownStyles}
+        onChange={(_, selected) => props.onSelectSpace(selected)}
+      />
+      <div>{props.description}</div>
+    </>
   );
 };
 
