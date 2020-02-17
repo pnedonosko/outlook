@@ -1,23 +1,19 @@
 import * as React from "react";
 import "./index.less";
-import SpacesSelect from "../../components/SpacesSelect/SpacesSelect";
+import SpacesSelect from "../../components/SpacesSelect";
 import { Panel } from "office-ui-fabric-react/lib/Panel";
 import { DefaultButton } from "office-ui-fabric-react/lib/Button";
 import SelectAttachments from "./SelectAttachments";
-
-export interface IAttachment {
-  name: string;
-  size: string;
-  id: string;
-};
+import TextMessage from "../../components/TextMessage";
 
 interface ISaveAttachmentsState {
   isPanelOpen: boolean;
-  attachments?: IAttachment[];
-};
+  selectionDetails: string;
+  attachments?: Office.AttachmentDetails[];
+}
 
 class SaveAttachments extends React.Component {
-  state: ISaveAttachmentsState = { isPanelOpen: false, attachments: [] };
+  state: ISaveAttachmentsState = { isPanelOpen: false, selectionDetails: "No items selected" };
 
   constructor(props) {
     super(props);
@@ -25,18 +21,22 @@ class SaveAttachments extends React.Component {
   }
 
   componentDidMount() {
-    // getting letter attachment from Office namespace
+    // getting letter attachment from Office namespace: Office.context.mailbox.item.attachments
     this.setState({
       attachments: [
-        { name: 'first-picture.img', size: '20 KB', id: '1' },
-        { name: 'second-picture.png', size: '14 KB', id: '2' }
+        { name: "first-picture.img", size: 20, id: "1", attachmentType: "file" },
+        { name: "second-picture.png", size: 14, id: "2", attachmentType: "file" }
       ]
     });
   }
 
   togglePanel = () => {
     this.setState((prevState: ISaveAttachmentsState) => ({ isPanelOpen: !prevState.isPanelOpen }));
-  }
+  };
+
+  getSelection = (details: string) => {
+    this.setState({ selectionDetails: details });
+  };
 
   render(): JSX.Element {
     return (
@@ -51,8 +51,14 @@ class SaveAttachments extends React.Component {
         >
           <div className="outlook-command-container outlook-save-attachments">
             <h4 className="outlook-title">Save Attachments</h4>
-            <div className="outlook-description">Here you can save attachments as documents inside the intranet.</div>
-            <SelectAttachments attachments={this.state.attachments} />
+            <div className="outlook-description">
+              Here you can save attachments as documents inside the intranet.
+            </div>
+            <SelectAttachments attachments={this.state.attachments} onSelectItem={this.getSelection} />
+            <TextMessage
+              label="Include a message(optional)"
+              description="This message will be included in the activity stream post about the saved attachment."
+            />
             <SpacesSelect />
           </div>
         </Panel>
