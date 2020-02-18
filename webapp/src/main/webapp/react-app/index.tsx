@@ -1,6 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import SaveAttachments from "./containers/SaveAttachments";
+import { initializeIcons } from "@uifabric/icons";
+
+initializeIcons();
 
 let isOfficeInitialized = false;
 const exoVariables = {

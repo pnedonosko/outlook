@@ -2,11 +2,13 @@ import * as React from "react";
 import "./index.less";
 import SpacesSelect from "../../components/SpacesSelect";
 import { Panel } from "office-ui-fabric-react/lib/Panel";
-import { DefaultButton } from "office-ui-fabric-react/lib/Button";
+import { PrimaryButton, DefaultButton } from "office-ui-fabric-react/lib/Button";
 import SelectAttachments from "./SelectAttachments";
 import TextMessage from "../../components/TextMessage";
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react";
+import DestinationFolder from "./DestinationFolder";
+import AddFolder from "./AddFolder";
 
 interface ISaveAttachmentsState {
   isPanelOpen: boolean;
@@ -14,6 +16,7 @@ interface ISaveAttachmentsState {
   attachments?: Office.AttachmentDetails[];
   message?: string;
   selectedSpace?: any;
+  showFolderDialog?: boolean;
 }
 
 class SaveAttachments extends React.Component {
@@ -51,6 +54,16 @@ class SaveAttachments extends React.Component {
     this.setState({ selectedSpace: space });
   };
 
+  addNewFolder = (name: string) => {
+    // POST new folder
+    console.log(name);
+    this.setState({ showFolderDialog: false });
+  };
+
+  saveAttachments = () => {
+    // request to save attachments
+  };
+
   render(): JSX.Element {
     let saveAttachmentContent = <Spinner size={SpinnerSize.large} />;
     if (this.state.attachments) {
@@ -72,6 +85,15 @@ class SaveAttachments extends React.Component {
               description="Select the space where the attachments will be saved"
               onSelectSpace={this.getSpace}
             />
+            <DestinationFolder onShowDialog={() => this.setState({ showFolderDialog: true })} />
+            {this.state.showFolderDialog ? (
+              <AddFolder
+                onAddFolder={(name: string) => this.addNewFolder(name)}
+                onCloseFolder={() => this.setState({ showFolderDialog: false })}
+              />
+            ) : null}
+            <PrimaryButton onClick={this.saveAttachments} text="Save" />
+            <DefaultButton text="Cancel" />
           </div>
         ) : (
           <MessageBar
