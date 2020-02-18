@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./convert-to-wiki.less";
+import "./index.less";
 
 class ConvertToWiki extends React.Component {
   render() {

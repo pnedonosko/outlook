@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import SaveAttachments from "./containers/SaveAttachments";
 import { initializeIcons } from "@uifabric/icons";
 
 initializeIcons();
@@ -14,21 +13,26 @@ const exoVariables = {
   spring: window["eXo"].env.app.spring
 };
 
-const render = Component => {
-  ReactDOM.render(
-    <Component isOfficeInitialized={isOfficeInitialized} {...exoVariables} />,
-    document.getElementById("outlook-app")
-  );
+// variable that define what component should be loaded
+const command = 'SaveAttachments';
+
+const render = (componentName: string) => {
+  import(`./containers/${componentName}`).then(module => {
+    ReactDOM.render(
+      <module.default isOfficeInitialized={isOfficeInitialized} {...exoVariables} />,
+      document.getElementById("outlook-app")
+    );
+  });
 };
 
 /* Render application after Office initializes */
 Office.initialize = () => {
   isOfficeInitialized = true;
-  render(SaveAttachments);
+  render(command);
 };
 
 /* Initial render showing a progress bar */
-render(SaveAttachments);
+render(command);
 
 // TODO make eXo non global, e.g. via AMD wrapping the app bundle.js
 // service URL should link to a starting point in our HATEOAS/HAL

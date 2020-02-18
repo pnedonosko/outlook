@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./convert-to-activity.less";
+import "./index.less";
 
 class ConvertToActivity extends React.Component {
   render() {

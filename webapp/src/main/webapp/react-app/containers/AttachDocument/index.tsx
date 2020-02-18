@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./attach-document.less";
+import "./index.less";
 
 class AttachDocument extends React.Component {
   render() {

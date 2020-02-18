@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./post-activity.less";
+import "./index.less";
 
 class PostActivity extends React.Component {
   render() {

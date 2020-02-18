@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./start-discussion.less";
+import "./index.less";
 
 class StartDiscussion extends React.Component {
   render() {

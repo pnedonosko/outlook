@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./convert-to-forum.less";
+import "./index.less";
 
 class ConvertToForum extends React.Component {
   render() {
