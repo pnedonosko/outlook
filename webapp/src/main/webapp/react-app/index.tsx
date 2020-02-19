@@ -14,7 +14,7 @@ const exoVariables = {
 };
 
 // variable that define what component should be loaded
-const command = 'SaveAttachments';
+const command = "SaveAttachments";
 
 const render = (componentName: string) => {
   import(`./containers/${componentName}`).then(module => {

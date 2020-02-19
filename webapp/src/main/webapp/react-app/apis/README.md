@@ -1,0 +1,1 @@
+This folder was created for testing and should be deleted after integration with BackEnd.

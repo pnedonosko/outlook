@@ -1,11 +1,13 @@
 import * as React from "react";
 import "./SpacesSelect.less";
 import { Dropdown, IDropdownStyles, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
+import axios from "axios";
 
 interface ISpacesSelectProps {
   isOptional: boolean;
   description: string;
   onSelectSpace: Function;
+  user: any;
 }
 
 const dropdownStyles: Partial<IDropdownStyles> = {
@@ -16,11 +18,16 @@ const SpacesSelect: React.FC<ISpacesSelectProps> = (props: ISpacesSelectProps) =
   const [spaces, setSpaces] = React.useState<IDropdownOption[]>();
 
   React.useEffect(() => {
-    // GET request for user spaces, now mocked data
-    setSpaces([
-      { key: "id1", text: "First space" },
-      { key: "id2", text: "Second space" }
-    ]);
+    axios.get(props.user._links.user.href).then(({ data }) => {
+      axios.get(data._links.spaces.href).then(res => {
+        const iterableSpaces = res.data._embedded.spaces.map(({ id, title, _links }) => ({
+          key: id,
+          text: title,
+          _links: _links
+        }));
+        setSpaces(iterableSpaces);
+      });
+    });
   }, []);
 
   return (

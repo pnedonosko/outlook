@@ -9,6 +9,7 @@ import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react";
 import DestinationFolder from "./DestinationFolder";
 import AddFolder from "./AddFolder";
+import axios from "../../axios-entry-point";
 
 interface ISaveAttachmentsState {
   isPanelOpen: boolean;
@@ -17,6 +18,7 @@ interface ISaveAttachmentsState {
   message?: string;
   selectedSpace?: any;
   showFolderDialog?: boolean;
+  user?: any;
 }
 
 class SaveAttachments extends React.Component {
@@ -28,6 +30,9 @@ class SaveAttachments extends React.Component {
   }
 
   componentDidMount() {
+    axios.get("/exo").then(({ data }) => {
+      this.setState({ user: data });
+    });
     // getting letter attachment from Office namespace: Office.context.mailbox.item.attachments
     this.setState({
       attachments: [
@@ -50,7 +55,6 @@ class SaveAttachments extends React.Component {
   };
 
   getSpace = (space: any) => {
-    console.log(space);
     this.setState({ selectedSpace: space });
   };
 
@@ -84,8 +88,12 @@ class SaveAttachments extends React.Component {
               isOptional
               description="Select the space where the attachments will be saved"
               onSelectSpace={this.getSpace}
+              user={this.state.user}
             />
-            <DestinationFolder onShowDialog={() => this.setState({ showFolderDialog: true })} />
+            <DestinationFolder
+              onShowDialog={() => this.setState({ showFolderDialog: true })}
+              space={this.state.selectedSpace ? this.state.selectedSpace : null}
+            />
             {this.state.showFolderDialog ? (
               <AddFolder
                 onAddFolder={(name: string) => this.addNewFolder(name)}
