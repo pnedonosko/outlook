@@ -50,6 +50,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/app/*");
     registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/v1/*");
+    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/exo/*");
   }
 
   @Bean
