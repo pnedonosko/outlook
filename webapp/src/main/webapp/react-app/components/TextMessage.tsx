@@ -5,6 +5,7 @@ interface ITextFieldProps {
   label: string;
   description: string;
   onTextChange: Function;
+  placeholder?: string;
 }
 
 function TextMessage(props: ITextFieldProps): React.ReactElement {
@@ -15,6 +16,7 @@ function TextMessage(props: ITextFieldProps): React.ReactElement {
         multiline
         rows={3}
         onChange={(_, newText: string) => props.onTextChange(newText)}
+        placeholder={props.placeholder ? props.placeholder : ""}
       />
       <div>{props.description}</div>
     </>
