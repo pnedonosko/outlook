@@ -940,6 +940,8 @@ public class Outlook {
 
         String userId = context.getSecurityContext().getRemoteUser();
 
+        // TODO ensure it's safe link to access user content w/o auth (from MS side)
+        // what variants possible: MS Auth, SSO, JSON Web Token, others?
         LinkResource res = contentLink.createUrl(userId, nodePath, prefix.toString());
 
         return Response.ok()
