@@ -2,7 +2,7 @@ import * as React from "react";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
 import { IconButton } from "office-ui-fabric-react";
 import "./DestinationFolder.less";
-import axios from "axios";
+// import axios from "axios";
 import { IColumn, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
 
 interface IDestinationFolderProps {
@@ -17,12 +17,19 @@ function DestinationFolder(props: IDestinationFolderProps): React.ReactElement {
 
   React.useEffect(() => {
     if (props.space) {
-      axios.get(props.space._links.self.href).then(({ data }) => {
-        axios.get(data._links.documents.href).then(res => {
-          setDocuments(res.data.documents);
-          listColumns = res.data.documents.map(({ id, name }) => ({ key: id, fieldName: name, name: name }));
-        });
-      });
+      // axios.get(props.space._links.self.href).then(({ data }) => {
+      //   axios.get(data._links.documents.href).then(res => {
+      //     setDocuments(res.data.documents);
+      //     listColumns = res.data.documents.map(({ id, name }) => ({ key: id, fieldName: name, name: name }));
+      //   });
+      // });
+      setDocuments([{ id: "11", type: "folder", name: "doc1" }]);
+      listColumns = [{ id: "11", type: "folder", name: "doc1" }].map(({ id, name }) => ({
+        key: id,
+        fieldName: name,
+        name: name,
+        minWidth: 200
+      }));
     }
   }, [props.space]);
 

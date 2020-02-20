@@ -1,33 +1,29 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { initializeIcons } from "@uifabric/icons";
+import OutlookApp from "./OutlookApp";
 
 initializeIcons();
 
-let isOfficeInitialized = false;
-const exoVariables = {
-  context: window["eXo"].env.portal.context,
-  rest: window["eXo"].env.portal.rest,
-  language: window["eXo"].env.portal.language,
-  outlook: window["eXo"].env.app.outlook,
-  spring: window["eXo"].env.app.spring
-};
+// let isOfficeInitialized = false;
+// const exoVariables = {
+//   context: window["eXo"].env.portal.context,
+//   rest: window["eXo"].env.portal.rest,
+//   language: window["eXo"].env.portal.language,
+//   outlook: window["eXo"].env.app.outlook,
+//   spring: window["eXo"].env.app.spring
+// };
 
 // variable that define what component should be loaded
 const command = "SaveAttachments";
 
 const render = (componentName: string) => {
-  import(`./containers/${componentName}`).then(module => {
-    ReactDOM.render(
-      <module.default isOfficeInitialized={isOfficeInitialized} {...exoVariables} />,
-      document.getElementById("outlook-app")
-    );
-  });
+  ReactDOM.render(<OutlookApp componentName={componentName} />, document.getElementById("outlook-app"));
 };
 
 /* Render application after Office initializes */
 Office.initialize = () => {
-  isOfficeInitialized = true;
+  // isOfficeInitialized = true;
   render(command);
 };
 

@@ -1,7 +1,6 @@
 import * as React from "react";
 import "./index.less";
 import SpacesSelect from "../../components/SpacesSelect";
-import { Panel } from "office-ui-fabric-react/lib/Panel";
 import { PrimaryButton, DefaultButton } from "office-ui-fabric-react/lib/Button";
 import SelectAttachments from "./SelectAttachments";
 import TextMessage from "../../components/TextMessage";
@@ -9,30 +8,24 @@ import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
 import { MessageBar, MessageBarType } from "office-ui-fabric-react";
 import DestinationFolder from "./DestinationFolder";
 import AddFolder from "./AddFolder";
-import axios from "../../axios-entry-point";
+import { IContainerProps } from "../../OutlookApp";
 
 interface ISaveAttachmentsState {
-  isPanelOpen: boolean;
   attachmentSelection: string;
   attachments?: Office.AttachmentDetails[];
   message?: string;
   selectedSpace?: any;
   showFolderDialog?: boolean;
-  user?: any;
 }
 
-class SaveAttachments extends React.Component {
-  state: ISaveAttachmentsState = { isPanelOpen: false, attachmentSelection: "No items selected" };
+class SaveAttachments extends React.Component<IContainerProps> {
+  state: ISaveAttachmentsState = { attachmentSelection: "No items selected" };
 
-  constructor(props) {
+  constructor(props: IContainerProps) {
     super(props);
-    console.log(props);
   }
 
   componentDidMount() {
-    axios.get("/exo").then(({ data }) => {
-      this.setState({ user: data });
-    });
     // getting letter attachment from Office namespace: Office.context.mailbox.item.attachments
     this.setState({
       attachments: [
@@ -41,10 +34,6 @@ class SaveAttachments extends React.Component {
       ]
     });
   }
-
-  togglePanel = () => {
-    this.setState((prevState: ISaveAttachmentsState) => ({ isPanelOpen: !prevState.isPanelOpen }));
-  };
 
   getSelection = (details: string) => {
     this.setState({ attachmentSelection: details });
@@ -88,7 +77,7 @@ class SaveAttachments extends React.Component {
               isOptional
               description="Select the space where the attachments will be saved"
               onSelectSpace={this.getSpace}
-              user={this.state.user}
+              user={this.props.user}
             />
             <DestinationFolder
               onShowDialog={() => this.setState({ showFolderDialog: true })}
@@ -114,20 +103,7 @@ class SaveAttachments extends React.Component {
         );
     }
 
-    return (
-      <>
-        {/* Button and Panel components will be deleted in the future. For testing purposes. */}
-        <DefaultButton text="Open panel" onClick={this.togglePanel} />
-        <Panel
-          headerText="Sample panel"
-          isOpen={this.state.isPanelOpen}
-          onDismiss={this.togglePanel}
-          closeButtonAriaLabel="Close"
-        >
-          {saveAttachmentContent}
-        </Panel>
-      </>
-    );
+    return saveAttachmentContent;
   }
 }
 
