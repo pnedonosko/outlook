@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * The Folder info.
  */
-public class FolderInfo {
+public class FolderInfo extends GeneralInfoBox {
 
   /** The Constant LOG. */
   private static final Log   LOG = ExoLogger.getLogger(FolderInfo.class);
@@ -25,12 +25,12 @@ public class FolderInfo {
 
   private Set<SubfolderInfo> subfolders;
 
-    /**
-     * Instantiates a new Folder info.
-     *
-     * @param folder the folder
-     */
-    public FolderInfo(Folder folder) {
+  /**
+   * Instantiates a new Folder info.
+   *
+   * @param folder the folder
+   */
+  public FolderInfo(Folder folder) {
     setPath(folder.getPath());
     setPathLabel(folder.getPathLabel());
     setUrl(folder.getUrl());
@@ -55,75 +55,75 @@ public class FolderInfo {
 
   }
 
-    /**
-     * Gets path.
-     *
-     * @return the path
-     */
-    public String getPath() {
+  /**
+   * Gets path.
+   *
+   * @return the path
+   */
+  public String getPath() {
     return path;
   }
 
-    /**
-     * Sets path.
-     *
-     * @param path the path
-     */
-    public void setPath(String path) {
+  /**
+   * Sets path.
+   *
+   * @param path the path
+   */
+  public void setPath(String path) {
     this.path = path;
   }
 
-    /**
-     * Gets path label.
-     *
-     * @return the path label
-     */
-    public String getPathLabel() {
+  /**
+   * Gets path label.
+   *
+   * @return the path label
+   */
+  public String getPathLabel() {
     return pathLabel;
   }
 
-    /**
-     * Sets path label.
-     *
-     * @param pathLabel the path label
-     */
-    public void setPathLabel(String pathLabel) {
+  /**
+   * Sets path label.
+   *
+   * @param pathLabel the path label
+   */
+  public void setPathLabel(String pathLabel) {
     this.pathLabel = pathLabel;
   }
 
-    /**
-     * Gets url.
-     *
-     * @return the url
-     */
-    public String getUrl() {
+  /**
+   * Gets url.
+   *
+   * @return the url
+   */
+  public String getUrl() {
     return url;
   }
 
-    /**
-     * Sets url.
-     *
-     * @param url the url
-     */
-    public void setUrl(String url) {
+  /**
+   * Sets url.
+   *
+   * @param url the url
+   */
+  public void setUrl(String url) {
     this.url = url;
   }
 
-    /**
-     * Gets subfolders.
-     *
-     * @return the subfolders
-     */
-    public Set<SubfolderInfo> getSubfolders() {
+  /**
+   * Gets subfolders.
+   *
+   * @return the subfolders
+   */
+  public Set<SubfolderInfo> getSubfolders() {
     return subfolders;
   }
 
-    /**
-     * Sets subfolders.
-     *
-     * @param subfolders the subfolders
-     */
-    public void setSubfolders(Set<SubfolderInfo> subfolders) {
+  /**
+   * Sets subfolders.
+   *
+   * @param subfolders the subfolders
+   */
+  public void setSubfolders(Set<SubfolderInfo> subfolders) {
     this.subfolders = subfolders;
   }
 
@@ -133,49 +133,49 @@ public class FolderInfo {
 
     private String lastModified;
 
-      /**
-       * Instantiates a new Subfolder info.
-       *
-       * @param subfolder the subfolder
-       */
-      public SubfolderInfo(Folder subfolder) {
+    /**
+     * Instantiates a new Subfolder info.
+     *
+     * @param subfolder the subfolder
+     */
+    public SubfolderInfo(Folder subfolder) {
       setTitle(subfolder.getTitle());
       setLastModified(subfolder.getLastModified());
     }
 
-      /**
-       * Gets title.
-       *
-       * @return the title
-       */
-      public String getTitle() {
+    /**
+     * Gets title.
+     *
+     * @return the title
+     */
+    public String getTitle() {
       return title;
     }
 
-      /**
-       * Sets title.
-       *
-       * @param title the title
-       */
-      public void setTitle(String title) {
+    /**
+     * Sets title.
+     *
+     * @param title the title
+     */
+    public void setTitle(String title) {
       this.title = title;
     }
 
-      /**
-       * Gets last modified.
-       *
-       * @return the last modified
-       */
-      public String getLastModified() {
+    /**
+     * Gets last modified.
+     *
+     * @return the last modified
+     */
+    public String getLastModified() {
       return lastModified;
     }
 
-      /**
-       * Sets last modified.
-       *
-       * @param lastModified the last modified
-       */
-      public void setLastModified(String lastModified) {
+    /**
+     * Sets last modified.
+     *
+     * @param lastModified the last modified
+     */
+    public void setLastModified(String lastModified) {
       this.lastModified = lastModified;
     }
   }

@@ -5,7 +5,7 @@ import org.exoplatform.outlook.jcr.File;
 /**
  * The type File info.
  */
-public class FileInfo {
+public class FileInfo extends GeneralInfoBox {
 
   private String name;
 

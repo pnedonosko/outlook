@@ -11,6 +11,9 @@ import org.exoplatform.outlook.jcr.Folder;
 import org.exoplatform.outlook.mvc.hateoas.ressupport.ParametersListResourceSupportWrapper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
@@ -30,7 +33,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * The type Document controller.
  */
 @RestController
-@RequestMapping(value = "/exo/document")
+@RequestMapping(value = "/v2/exo/document")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class DocumentController {
 
@@ -61,15 +64,15 @@ public class DocumentController {
    * @return the parameters list resource support wrapper
    */
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.POST, produces = HAL_AND_JSON)
-  public ParametersListResourceSupportWrapper postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
-                                                           @RequestParam(value = "comment", required = false) String comment,
-                                                           @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
-                                                           @RequestParam(value = "userEmail", required = false) String userEmail,
-                                                           @RequestParam(value = "userName", required = false) String userName,
-                                                           @RequestParam(value = "messageId", required = false) String messageId,
-                                                           @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
-                                                           @RequestParam(value = "formParam") String formParam,
-                                                           HttpServletRequest request) {
+  public PagedResources<? extends GeneralInfoBox> postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
+                                                               @RequestParam(value = "comment", required = false) String comment,
+                                                               @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
+                                                               @RequestParam(value = "userEmail", required = false) String userEmail,
+                                                               @RequestParam(value = "userName", required = false) String userName,
+                                                               @RequestParam(value = "messageId", required = false) String messageId,
+                                                               @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
+                                                               @RequestParam(value = "formParam") String formParam,
+                                                               HttpServletRequest request) {
 
     PathMatcher pathMatcher = new AntPathMatcher();
 
@@ -88,37 +91,31 @@ public class DocumentController {
       groupId = matcher.group(0).substring(1);
     }
 
-    ParametersListResourceSupportWrapper parametersListResourceSupportWrapper = null;
+    PagedResources<? extends GeneralInfoBox> resources = null;
 
     switch (formParam) {
     case ADD_FOLDER:
-      parametersListResourceSupportWrapper = addFolder(DPARENT_PATH, DOC_NAME, groupId);
+      resources = addFolder(DPARENT_PATH, DOC_NAME, groupId);
       break;
     case SAVE_ATTACHMENT:
-      parametersListResourceSupportWrapper = saveAttachment(DPARENT_PATH,
-                                                            DOC_NAME,
-                                                            groupId,
-                                                            comment,
-                                                            ewsUrl,
-                                                            userEmail,
-                                                            userName,
-                                                            messageId,
-                                                            attachmentToken);
+      resources =
+                saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
+
       break;
     }
 
-    return parametersListResourceSupportWrapper;
+    return resources;
   }
 
-  private ParametersListResourceSupportWrapper saveAttachment(String DPARENT_PATH,
-                                                              String ATTACHMENT_IDS,
-                                                              String groupId,
-                                                              String comment,
-                                                              String ewsUrl,
-                                                              String userEmail,
-                                                              String userName,
-                                                              String messageId,
-                                                              String attachmentToken) {
+  private PagedResources<FileInfo> saveAttachment(String DPARENT_PATH,
+                                                  String ATTACHMENT_IDS,
+                                                  String groupId,
+                                                  String comment,
+                                                  String ewsUrl,
+                                                  String userEmail,
+                                                  String userName,
+                                                  String messageId,
+                                                  String attachmentToken) {
     if (groupId != null && DPARENT_PATH != null && ewsUrl != null && userEmail != null && messageId != null
         && attachmentToken != null && ATTACHMENT_IDS != null) {
       try {
@@ -171,7 +168,19 @@ public class DocumentController {
                                                                                            .slash(new StringBuilder(ATTACHMENT_IDS).append(params))
                                                                                            .withSelfRel());
 
-            return parametersListResourceSupportWrapper;
+            List<Link> links = new LinkedList<>();
+            links.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1))
+                                                            .slash(ATTACHMENT_IDS)
+                                                            .withSelfRel());
+
+            List<FolderInfo> folderInfos = new LinkedList<>();
+            folderInfos.add(new FolderInfo(folder));
+
+            PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderInfos.size(), 1, folderInfos.size(), 1);
+
+            PagedResources<FileInfo> fileInfoPagedResources = new PagedResources<>(fileInfos, metadata, links);
+
+            return fileInfoPagedResources;
           } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment IDs (attachmentIds) are empty");
           }
@@ -196,7 +205,7 @@ public class DocumentController {
     }
   }
 
-  private ParametersListResourceSupportWrapper addFolder(String DPARENT_PATH, String NAME, String groupId) {
+  private PagedResources<FolderInfo> addFolder(String DPARENT_PATH, String NAME, String groupId) {
     if (NAME != null && NAME.length() > 0) {
       ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
       OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
@@ -215,7 +224,17 @@ public class DocumentController {
                                                                                        .slash(new StringBuilder(NAME).append(params))
                                                                                        .withSelfRel());
 
-        return parametersListResourceSupportWrapper;
+        List<Link> links = new LinkedList<>();
+        links.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
+
+        List<FolderInfo> folderInfos = new LinkedList<>();
+        folderInfos.add(new FolderInfo(folder));
+
+        PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderInfos.size(), 1, folderInfos.size(), 1);
+
+        PagedResources<FolderInfo> folders = new PagedResources<>(folderInfos, metadata, links);
+
+        return folders;
       } catch (BadParameterException e) {
         if (LOG.isDebugEnabled()) {
           LOG.debug("Error adding folder " + DPARENT_PATH + "/" + NAME + ". " + e.getMessage());

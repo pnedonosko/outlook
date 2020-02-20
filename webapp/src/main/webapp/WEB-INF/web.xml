@@ -105,7 +105,7 @@
   </filter>
   <filter-mapping>
     <filter-name>OutlookRestLoginFilter</filter-name>
-    <url-pattern>/exo/*</url-pattern>
+    <url-pattern>/v2/*</url-pattern>
   </filter-mapping>
 
   <listener>
