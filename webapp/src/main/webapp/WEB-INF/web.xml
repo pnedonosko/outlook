@@ -99,6 +99,15 @@
     <url-pattern>/app/*</url-pattern>
   </filter-mapping>
 
+  <filter>
+    <filter-name>OutlookRestLoginFilter</filter-name>
+    <filter-class>org.exoplatform.outlook.server.filter.RestLoginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>OutlookRestLoginFilter</filter-name>
+    <url-pattern>/exo/*</url-pattern>
+  </filter-mapping>
+
   <listener>
     <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
   </listener>
