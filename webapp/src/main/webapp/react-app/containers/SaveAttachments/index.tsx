@@ -21,10 +21,6 @@ interface ISaveAttachmentsState {
 class SaveAttachments extends React.Component<IContainerProps> {
   state: ISaveAttachmentsState = { attachmentSelection: "No items selected" };
 
-  constructor(props: IContainerProps) {
-    super(props);
-  }
-
   componentDidMount() {
     // getting letter attachment from Office namespace: Office.context.mailbox.item.attachments
     this.setState({
