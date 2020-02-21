@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.rest.controller;
+package org.exoplatform.outlook.app.view.controller;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -17,9 +17,9 @@ public class LoginController {
   private static final Log   LOG           = ExoLogger.getLogger(LoginController.class);
 
   /** The Constant OUTLOOK_LOGIN_TEMPLATE. */
-  public static final String OUTLOOK_LOGIN = "/outlook/login";
+  public static final String OUTLOOK_LOGIN = "/outlook/app-login";
 
-  @RequestMapping(value = "/login", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+  @RequestMapping(value = "/app-login", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public String login(HttpServletRequest request, HttpServletResponse response) {
     return "login.html";
   }

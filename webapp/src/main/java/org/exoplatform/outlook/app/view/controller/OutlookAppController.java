@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.rest.controller;
+package org.exoplatform.outlook.app.view.controller;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.outlook.utils.PortalLocaleUtils;

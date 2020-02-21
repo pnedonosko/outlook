@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.rest.config;
+package org.exoplatform.outlook.app.config;
 
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;

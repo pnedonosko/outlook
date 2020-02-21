@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.rest.controller;
+package org.exoplatform.outlook.app.rest.info;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.PagedResources;

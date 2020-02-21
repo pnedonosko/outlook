@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.rest.hateoas.ressupport;
+package org.exoplatform.outlook.app.rest.hateoas.ressupport;
 
 /**
  * The Param.

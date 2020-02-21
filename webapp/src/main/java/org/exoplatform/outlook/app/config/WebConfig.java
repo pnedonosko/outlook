@@ -1,9 +1,9 @@
-package org.exoplatform.outlook.rest.config;
+package org.exoplatform.outlook.app.config;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
-import org.exoplatform.outlook.rest.interceptor.ExoContainerRequestLifeCycleInterceptor;
-import org.exoplatform.outlook.rest.localization.CustomMessageSource;
+import org.exoplatform.outlook.app.rest.interceptor.ExoContainerRequestLifeCycleInterceptor;
+import org.exoplatform.outlook.app.rest.localization.CustomMessageSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "org.exoplatform.outlook.rest")
+@ComponentScan(basePackages = "org.exoplatform.outlook.app")
 public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   private ApplicationContext applicationContext;
