@@ -5,10 +5,12 @@ import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.wcm.core.NodetypeConstant;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 
 import javax.jcr.RepositoryException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -58,6 +60,19 @@ public class FolderInfo extends GeneralInfoBox {
     setLastModifier(folder.getLastModifier());
     setExplorerPath(folder.getPathLabel());
     setExplorerLink(folder.getUrl());
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    try {
+      setCreated(formatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_DATE_CREATED).getDate().getTime()));
+    } catch (RepositoryException e) {
+      LOG.error(e);
+    }
+
+    try {
+      setAuthor(folder.getNode().getProperty(NodetypeConstant.EXO_OWNER).getString());
+    } catch (RepositoryException e) {
+      LOG.error(e);
+    }
 
     Set<Folder> fullSubfolders = null;
 
