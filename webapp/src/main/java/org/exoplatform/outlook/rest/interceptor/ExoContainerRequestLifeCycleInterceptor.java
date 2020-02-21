@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.interceptor;
+package org.exoplatform.outlook.rest.interceptor;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;

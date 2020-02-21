@@ -1,11 +1,11 @@
-package org.exoplatform.outlook.mvc.controller;
+package org.exoplatform.outlook.rest.controller;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
-import org.exoplatform.outlook.mvc.hateoas.ressupport.ParametersListResourceSupportWrapper;
+import org.exoplatform.outlook.rest.hateoas.ressupport.ParametersListResourceSupportWrapper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.springframework.hateoas.Link;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.*;
 

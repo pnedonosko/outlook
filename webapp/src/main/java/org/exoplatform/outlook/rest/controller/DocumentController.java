@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.controller;
+package org.exoplatform.outlook.rest.controller;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -8,12 +8,11 @@ import org.exoplatform.outlook.OutlookSpace;
 import org.exoplatform.outlook.OutlookUser;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
-import org.exoplatform.outlook.mvc.hateoas.ressupport.ParametersListResourceSupportWrapper;
+import org.exoplatform.outlook.rest.hateoas.ressupport.ParametersListResourceSupportWrapper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;

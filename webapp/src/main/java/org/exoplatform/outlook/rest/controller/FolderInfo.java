@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.controller;
+package org.exoplatform.outlook.rest.controller;
 
 import org.exoplatform.outlook.OutlookException;
 import org.exoplatform.outlook.jcr.File;
@@ -35,7 +35,7 @@ public class FolderInfo extends GeneralInfoBox {
 
   private String           lastModifier;
 
-  private String           pathLabel;
+  private String           explorerPath;
 
   private String           explorerLink;
 
@@ -56,7 +56,7 @@ public class FolderInfo extends GeneralInfoBox {
     setTitle(folder.getTitle());
     setModified(folder.getLastModified());
     setLastModifier(folder.getLastModifier());
-    setPathLabel(folder.getPathLabel());
+    setExplorerPath(folder.getPathLabel());
     setExplorerLink(folder.getUrl());
 
     Set<Folder> fullSubfolders = null;
@@ -131,17 +131,17 @@ public class FolderInfo extends GeneralInfoBox {
    *
    * @return the path label
    */
-  public String getPathLabel() {
-    return pathLabel;
+  public String getExplorerPath() {
+    return explorerPath;
   }
 
   /**
    * Sets path label.
    *
-   * @param pathLabel the path label
+   * @param explorerPath the path label
    */
-  public void setPathLabel(String pathLabel) {
-    this.pathLabel = pathLabel;
+  public void setExplorerPath(String explorerPath) {
+    this.explorerPath = explorerPath;
   }
 
   /**

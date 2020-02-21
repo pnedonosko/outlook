@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.hateoas.ressupport;
+package org.exoplatform.outlook.rest.hateoas.ressupport;
 
 import org.springframework.hateoas.ResourceSupport;
 

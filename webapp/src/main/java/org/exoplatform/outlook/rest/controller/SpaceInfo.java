@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.controller;
+package org.exoplatform.outlook.rest.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

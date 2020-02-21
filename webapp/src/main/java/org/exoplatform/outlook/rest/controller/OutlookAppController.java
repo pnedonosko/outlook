@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.controller;
+package org.exoplatform.outlook.rest.controller;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.outlook.utils.PortalLocaleUtils;

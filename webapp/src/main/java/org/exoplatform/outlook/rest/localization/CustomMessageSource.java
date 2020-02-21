@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.localization;
+package org.exoplatform.outlook.rest.localization;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;

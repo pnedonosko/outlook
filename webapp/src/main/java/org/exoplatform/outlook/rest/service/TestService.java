@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.service;
+package org.exoplatform.outlook.rest.service;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
