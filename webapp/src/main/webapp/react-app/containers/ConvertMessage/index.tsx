@@ -8,6 +8,7 @@ import { getId } from "office-ui-fabric-react/lib/Utilities";
 import { Stack } from "office-ui-fabric-react/lib/Stack";
 import { ConvertMessageTypes, IConvertMessageConfig } from "./convert-message.types";
 import { Spinner, SpinnerSize } from "office-ui-fabric-react";
+import TextMessage from "../../components/TextMessage";
 
 export interface IConvertMessageProps extends IContainerProps {
   type: ConvertMessageTypes;
@@ -20,6 +21,7 @@ interface IConvertMessageState {
   messageTitle?: string;
   error?: string;
   selectedSpace?: any;
+  activityMessage?: string;
 }
 
 class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessageState> {
@@ -57,6 +59,10 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
     this.setState({ selectedSpace: space });
   };
 
+  getMessage = (text: string) => {
+    this.setState({ activityMessage: text });
+  };
+
   renderLabel = (props: ITextFieldProps): JSX.Element => (
     <Stack horizontal verticalAlign="center">
       <span id={this.labelId}>{props.label}</span>
@@ -76,8 +82,18 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
       <div className="outlook-command-container outlook-save-attachments">
         <h4 className="outlook-title">{this.state.config.header}</h4>
         <div className="outlook-description">{this.state.config.description}</div>
-        <TextField label={this.state.config.fields.title.label} defaultValue={this.state.messageTitle} />
-        <div>{this.state.config.fields.title.description}</div>
+        {this.props.type === ConvertMessageTypes.Activity ? (
+          <TextMessage
+            label="Message (optional)"
+            description="Leave a message upon sharing this email"
+            onTextChange={this.getMessage}
+          />
+        ) : (
+          <>
+            <TextField label={this.state.config.fields.title.label} defaultValue={this.state.messageTitle} />
+            <div>{this.state.config.fields.title.description}</div>
+          </>
+        )}
         {this.state.messageContent ? (
           <TextField
             aria-labelledby={this.labelId}
