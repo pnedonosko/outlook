@@ -64,15 +64,15 @@ public class DocumentController {
    * @return the parameters list resource support wrapper
    */
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.POST, produces = HAL_AND_JSON)
-  public PagedResources<? extends GeneralInfoBox> postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
-                                                               @RequestParam(value = "comment", required = false) String comment,
-                                                               @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
-                                                               @RequestParam(value = "userEmail", required = false) String userEmail,
-                                                               @RequestParam(value = "userName", required = false) String userName,
-                                                               @RequestParam(value = "messageId", required = false) String messageId,
-                                                               @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
-                                                               @RequestParam(value = "formParam") String formParam,
-                                                               HttpServletRequest request) {
+  public GeneralInfoBox postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
+                                     @RequestParam(value = "comment", required = false) String comment,
+                                     @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
+                                     @RequestParam(value = "userEmail", required = false) String userEmail,
+                                     @RequestParam(value = "userName", required = false) String userName,
+                                     @RequestParam(value = "messageId", required = false) String messageId,
+                                     @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
+                                     @RequestParam(value = "formParam") String formParam,
+                                     HttpServletRequest request) {
 
     PathMatcher pathMatcher = new AntPathMatcher();
 
@@ -91,15 +91,17 @@ public class DocumentController {
       groupId = matcher.group(0).substring(1);
     }
 
-    PagedResources<? extends GeneralInfoBox> resources = null;
+    GeneralInfoBox resources = null;
 
     switch (formParam) {
     case ADD_FOLDER:
       resources = addFolder(DPARENT_PATH, DOC_NAME, groupId);
       break;
     case SAVE_ATTACHMENT:
-      resources =
-                saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
+      /*
+       * resources = saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl,
+       * userEmail, userName, messageId, attachmentToken);
+       */
 
       break;
     }
@@ -174,7 +176,7 @@ public class DocumentController {
                                                             .withSelfRel());
 
             List<FolderInfo> folderInfos = new LinkedList<>();
-            folderInfos.add(new FolderInfo(folder));
+            // folderInfos.add(new FolderInfo(folder));
 
             PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderInfos.size(), 1, folderInfos.size(), 1);
 
@@ -205,36 +207,31 @@ public class DocumentController {
     }
   }
 
-  private PagedResources<FolderInfo> addFolder(String DPARENT_PATH, String NAME, String groupId) {
+  private FolderInfo addFolder(String DPARENT_PATH, String NAME, String groupId) {
     if (NAME != null && NAME.length() > 0) {
       ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
       OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
       try {
         Folder folder = outlook.getSpace(groupId).getFolder(DPARENT_PATH);
         folder.addSubfolder(NAME);
-        ParametersListResourceSupportWrapper parametersListResourceSupportWrapper = new ParametersListResourceSupportWrapper();
-        parametersListResourceSupportWrapper.setName("addFolder");
-        parametersListResourceSupportWrapper.addParameter("folder", new FolderInfo(folder));
+        Folder addedFolder = null;
 
-        Map<String, String> paramsMap = new HashMap<>(1);
-        paramsMap.put("formParam", "addFolder");
-        String params = generateParameters(paramsMap);
-
-        parametersListResourceSupportWrapper.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1))
-                                                                                       .slash(new StringBuilder(NAME).append(params))
-                                                                                       .withSelfRel());
+        for (Folder fold : folder.getSubfolders()) {
+          if (fold.getName().equals(NAME)) {
+            addedFolder = fold;
+            break;
+          }
+        }
 
         List<Link> links = new LinkedList<>();
         links.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
 
-        List<FolderInfo> folderInfos = new LinkedList<>();
-        folderInfos.add(new FolderInfo(folder));
+        PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(addedFolder.getSubfolders().size(),
+                                                                               1,
+                                                                               addedFolder.getSubfolders().size(),
+                                                                               1);
 
-        PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderInfos.size(), 1, folderInfos.size(), 1);
-
-        PagedResources<FolderInfo> folders = new PagedResources<>(folderInfos, metadata, links);
-
-        return folders;
+        return new FolderInfo(addedFolder, metadata, links);
       } catch (BadParameterException e) {
         if (LOG.isDebugEnabled()) {
           LOG.debug("Error adding folder " + DPARENT_PATH + "/" + NAME + ". " + e.getMessage());
