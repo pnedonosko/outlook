@@ -15,7 +15,7 @@ initializeIcons();
 // };
 
 // variable that define what component should be loaded
-const command = "SaveAttachments";
+const command = "ConvertToForum";
 
 const render = (componentName: string) => {
   ReactDOM.render(<OutlookApp componentName={componentName} />, document.getElementById("outlook-app"));
