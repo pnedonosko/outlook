@@ -2,6 +2,8 @@ package org.exoplatform.outlook.app.rest.info;
 
 import org.exoplatform.outlook.jcr.File;
 
+import java.util.Objects;
+
 /**
  * The type File info.
  */
@@ -160,5 +162,32 @@ public class FileInfo extends GeneralInfoBox {
    */
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
+    FileInfo fileInfo = (FileInfo) o;
+    return isFolder() == fileInfo.isFolder() && Objects.equals(getName(), fileInfo.getName())
+        && Objects.equals(getFullPath(), fileInfo.getFullPath()) && Objects.equals(getPathLabel(), fileInfo.getPathLabel())
+        && Objects.equals(getUrl(), fileInfo.getUrl()) && Objects.equals(getWebdavUrl(), fileInfo.getWebdavUrl())
+        && Objects.equals(getTitle(), fileInfo.getTitle());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(),
+                        getName(),
+                        isFolder(),
+                        getFullPath(),
+                        getPathLabel(),
+                        getUrl(),
+                        getWebdavUrl(),
+                        getTitle());
   }
 }

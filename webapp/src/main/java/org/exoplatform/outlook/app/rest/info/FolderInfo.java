@@ -89,10 +89,9 @@ public class FolderInfo extends GeneralInfoBox {
     if (fullSubfolders != null) {
       subfolders = new HashSet<>(fullSubfolders.size());
 
-      Set<SubfolderInfo> finalSubfolders = subfolders;
-      fullSubfolders.forEach((v) -> {
-        finalSubfolders.add(new SubfolderInfo(v));
-      });
+      for (Folder fold : fullSubfolders) {
+        subfolders.add(new SubfolderInfo(fold));
+      }
     }
 
     Set<File> fullFiles = null;
@@ -110,10 +109,9 @@ public class FolderInfo extends GeneralInfoBox {
     if (fullFiles != null) {
       subfiles = new HashSet<>(fullFiles.size());
 
-      Set<FileInfo> finalSubfiles = subfiles;
-      fullFiles.forEach((v) -> {
-        finalSubfiles.add(new FileInfo(v));
-      });
+      for (File f : fullFiles) {
+        subfiles.add(new FileInfo(f));
+      }
     }
 
     Children children = new Children(subfiles, subfolders);
@@ -335,6 +333,21 @@ public class FolderInfo extends GeneralInfoBox {
      */
     public void setLastModified(String lastModified) {
       this.lastModified = lastModified;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      SubfolderInfo that = (SubfolderInfo) o;
+      return Objects.equals(getTitle(), that.getTitle()) && Objects.equals(getLastModified(), that.getLastModified());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(getTitle(), getLastModified());
     }
   }
 

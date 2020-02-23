@@ -76,22 +76,9 @@ public class DocumentController {
                                      @RequestParam(value = "formParam") String formParam,
                                      HttpServletRequest request) {
 
-    PathMatcher pathMatcher = new AntPathMatcher();
+    String DPARENT_PATH = getDocumentParentPath(request);
 
-    String mvcPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-    String mvcPath = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
-    String DPARENT_PATH = pathMatcher.extractPathWithinPattern(mvcPattern, mvcPath);
-
-    DPARENT_PATH = new StringBuilder("/").append(DPARENT_PATH, 0, DPARENT_PATH.lastIndexOf("/")).toString();
-
-    String groupId = "";
-
-    Pattern pattern = Pattern.compile("(?:.)[/]{1}[\\w]*[/]{1}[\\w]*");
-    Matcher matcher = pattern.matcher(DPARENT_PATH);
-
-    if (matcher.find()) {
-      groupId = matcher.group(0).substring(1);
-    }
+    String groupId = getGroupId(DPARENT_PATH);
 
     GeneralInfoBox resources = null;
 
@@ -173,9 +160,7 @@ public class DocumentController {
                                                                                            .withSelfRel());
 
             List<Link> links = new LinkedList<>();
-            links.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1))
-                                                            .slash(ATTACHMENT_IDS)
-                                                            .withSelfRel());
+            links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(ATTACHMENT_IDS).withSelfRel());
 
             List<FolderInfo> folderInfos = new LinkedList<>();
             // folderInfos.add(new FolderInfo(folder));
@@ -226,7 +211,7 @@ public class DocumentController {
         }
 
         List<Link> links = new LinkedList<>();
-        links.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
+        links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
 
         PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(addedFolder.getSubfolders().size(),
                                                                                1,
@@ -264,4 +249,81 @@ public class DocumentController {
     }
     return parameters.substring(0, parameters.length());
   }
+
+  /**
+   * Gets document.
+   *
+   * @param DOC_NAME the doc name
+   * @param request the request
+   * @return the document
+   */
+  @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.GET, produces = HAL_AND_JSON)
+  public GeneralInfoBox getDocument(@PathVariable("DOC_NAME") String DOC_NAME, HttpServletRequest request) {
+
+    String DPARENT_PATH = getDocumentParentPath(request);
+
+    String groupId = getGroupId(DPARENT_PATH);
+
+    GeneralInfoBox resources = null;
+
+    if (!DOC_NAME.contains(".")) {
+      resources = getFolder(DPARENT_PATH, DOC_NAME, groupId);
+    } else {
+      // get attachment
+    }
+
+    return resources;
+  }
+
+  private FolderInfo getFolder(String DPARENT_PATH, String NAME, String groupId) {
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
+    String folderPath = null;
+    try {
+      folderPath = new StringBuilder(DPARENT_PATH).append("/").append(NAME).toString();
+      Folder folder = outlook.getSpace(groupId).getFolder(folderPath);
+
+      List<Link> links = new LinkedList<>();
+      links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
+
+      int folderFilesAndSubfolders = folder.getSubfolders().size() + folder.getFiles().size();
+      PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderFilesAndSubfolders,
+                                                                             1,
+                                                                             folderFilesAndSubfolders,
+                                                                             1);
+      return new FolderInfo(folder, metadata, links);
+    } catch (BadParameterException e) {
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Error reading folder " + folderPath + ". " + e.getMessage());
+      }
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error reading folder " + folderPath);
+    } catch (Throwable e) {
+      LOG.error("Error reading folder " + folderPath, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading folder " + folderPath);
+    }
+  }
+
+  private String getDocumentParentPath(HttpServletRequest request) {
+    PathMatcher pathMatcher = new AntPathMatcher();
+
+    String mvcPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
+    String mvcPath = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
+    String DPARENT_PATH = pathMatcher.extractPathWithinPattern(mvcPattern, mvcPath);
+
+    DPARENT_PATH = new StringBuilder("/").append(DPARENT_PATH, 0, DPARENT_PATH.lastIndexOf("/")).toString();
+    return DPARENT_PATH;
+  }
+
+  private String getGroupId(String DPARENT_PATH) {
+    String groupId = "";
+
+    Pattern pattern = Pattern.compile("(?:.)[/]{1}[\\w]*[/]{1}[\\w]*");
+    Matcher matcher = pattern.matcher(DPARENT_PATH);
+
+    if (matcher.find()) {
+      groupId = matcher.group(0).substring(1);
+    }
+    return groupId;
+  }
+
 }
