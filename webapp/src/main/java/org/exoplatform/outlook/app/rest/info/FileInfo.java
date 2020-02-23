@@ -1,7 +1,9 @@
 package org.exoplatform.outlook.app.rest.info;
 
 import org.exoplatform.outlook.jcr.File;
-
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import javax.jcr.RepositoryException;
 import java.util.Objects;
 
 /**
@@ -9,19 +11,22 @@ import java.util.Objects;
  */
 public class FileInfo extends GeneralInfoBox {
 
-  private String  name;
+  /** The Constant LOG. */
+  private static final Log LOG = ExoLogger.getLogger(FileInfo.class);
 
-  private boolean isFolder;
+  private String           name;
 
-  private String  fullPath;
+  private boolean          isFolder;
 
-  private String  pathLabel;
+  private String           fullPath;
 
-  private String  url;
+  private String           pathLabel;
 
-  private String  webdavUrl;
+  private String           url;
 
-  private String  title;
+  private String           webdavUrl;
+
+  private String           title;
 
   /**
    * Instantiates a new Subfile info.
@@ -31,7 +36,11 @@ public class FileInfo extends GeneralInfoBox {
   public FileInfo(File file) {
     setName(file.getName());
     setIsFolder(file.isFolder());
-    setFullPath(file.getFullPath());
+    try {
+      setFullPath(file.getNode().getPath());
+    } catch (RepositoryException e) {
+      LOG.error(e);
+    }
     setPathLabel(file.getPathLabel());
     setUrl(file.getUrl());
     setWebdavUrl(file.getWebdavUrl());

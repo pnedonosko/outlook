@@ -56,14 +56,24 @@ public class FolderInfo extends GeneralInfoBox {
     setName(folder.getName());
     setPath(folder.getPath());
     setTitle(folder.getTitle());
-    setModified(folder.getLastModified());
-    setLastModifier(folder.getLastModifier());
     setExplorerPath(folder.getPathLabel());
     setExplorerLink(folder.getUrl());
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     try {
       setCreated(formatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_DATE_CREATED).getDate().getTime()));
+    } catch (RepositoryException e) {
+      LOG.error(e);
+    }
+
+    try {
+      setModified(formatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_LAST_MODIFIED_DATE).getDate().getTime()));
+    } catch (RepositoryException e) {
+      LOG.error(e);
+    }
+
+    try {
+      setLastModifier(folder.getNode().getProperty(NodetypeConstant.EXO_LAST_MODIFIER).getString());
     } catch (RepositoryException e) {
       LOG.error(e);
     }
@@ -296,7 +306,16 @@ public class FolderInfo extends GeneralInfoBox {
      */
     public SubfolderInfo(Folder subfolder) {
       setTitle(subfolder.getTitle());
-      setLastModified(subfolder.getLastModified());
+
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+      try {
+        setLastModified(formatter.format(subfolder.getNode()
+                                                  .getProperty(NodetypeConstant.EXO_LAST_MODIFIED_DATE)
+                                                  .getDate()
+                                                  .getTime()));
+      } catch (RepositoryException e) {
+        LOG.error(e);
+      }
     }
 
     /**
