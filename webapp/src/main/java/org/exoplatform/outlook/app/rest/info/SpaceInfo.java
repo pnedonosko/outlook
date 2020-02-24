@@ -31,16 +31,16 @@ public class SpaceInfo {
   String                   title;
 
   /**
-   * The Root folder path.
+   * The Root path.
    */
-  @JsonProperty("rootFolderPath")
-  String                   rootFolderPath; // TODO rootPath
+  @JsonProperty("rootPath")
+  String                   rootPath;
 
   /**
-   * The Root folder default subfolder path.
+   * The Default folder path.
    */
-  @JsonProperty("rootFolderDefaultSubfolderPath")
-  String                   rootFolderDefaultSubfolderPath; // TODO defaultFolderPath
+  @JsonProperty("defaultFolderPath")
+  String                   defaultFolderPath;
 
   /**
    * Instantiates a new Outlook space json.
@@ -51,7 +51,7 @@ public class SpaceInfo {
     this.groupId = outlookSpace.getGroupId();
     this.title = outlookSpace.getTitle();
     try {
-      this.rootFolderPath = outlookSpace.getRootFolder().getPath();
+      this.rootPath = outlookSpace.getRootFolder().getPath();
     } catch (OutlookException e) {
       LOG.error(e);
     } catch (RepositoryException e) {
@@ -59,7 +59,7 @@ public class SpaceInfo {
     }
 
     try {
-      this.rootFolderDefaultSubfolderPath = outlookSpace.getRootFolder().getDefaultSubfolder().getPath();
+      this.defaultFolderPath = outlookSpace.getRootFolder().getDefaultSubfolder().getPath();
     } catch (OutlookException e) {
       LOG.error(e);
     } catch (RepositoryException e) {

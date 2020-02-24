@@ -5,7 +5,7 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
-import org.exoplatform.outlook.app.rest.hateoas.ressupport.ParametersListResourceSupportWrapper;
+import org.exoplatform.outlook.app.rest.resource.ParametersListResourceSupportWrapper;
 import org.exoplatform.outlook.app.rest.info.SpaceInfo;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -25,6 +25,7 @@ import java.util.*;
 /**
  * The Attachment controller.
  */
+@Deprecated
 @RestController
 @RequestMapping(value = "/v1")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)

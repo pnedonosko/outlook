@@ -11,15 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
-@RequestMapping(value = "/")
+@RequestMapping(value = "/login")
 public class LoginController {
 
   private static final Log   LOG           = ExoLogger.getLogger(LoginController.class);
 
-  /** The Constant OUTLOOK_LOGIN_TEMPLATE. */
-  public static final String OUTLOOK_LOGIN = "/outlook/app-login";
-
-  @RequestMapping(value = "/app-login", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+  @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
   public String login(HttpServletRequest request, HttpServletResponse response) {
     return "login.html";
   }

@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.app.rest.hateoas.ressupport;
+package org.exoplatform.outlook.app.rest.resource;
 
 import org.springframework.hateoas.ResourceSupport;
 
@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * The Parameters list resource support wrapper.
  */
+@Deprecated
 public class ParametersListResourceSupportWrapper extends ResourceSupport {
 
   /**

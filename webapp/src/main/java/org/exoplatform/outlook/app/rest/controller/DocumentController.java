@@ -39,16 +39,16 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class DocumentController {
 
   /** The Constant LOG. */
-  private static final Log    LOG             = ExoLogger.getLogger(DocumentController.class);
+  private static final Log    LOG          = ExoLogger.getLogger(DocumentController.class);
 
   /** The Constant HAL_AND_JSON. */
-  private static final String HAL_AND_JSON    = "application/hal+json";
+  private static final String HAL_AND_JSON = "application/hal+json";
 
-  /** The Constant SAVE_ATTACHMENT. */
-  private static final String SAVE_ATTACHMENT = "saveAttachment";
+  /** The Constant ATTACHMENT. */
+  private static final String ATTACHMENT   = "attachment";
 
-  /** The Constant ADD_FOLDER. */
-  private static final String ADD_FOLDER      = "addFolder";
+  /** The Constant FOLDER. */
+  private static final String FOLDER       = "folder";
 
   /**
    * Post document parameters list.
@@ -60,7 +60,7 @@ public class DocumentController {
    * @param userName the user name
    * @param messageId the message id
    * @param attachmentToken the attachment token
-   * @param formParam the form param
+   * @param resourceType the resource type
    * @param request the request
    * @return the parameters list resource support wrapper
    */
@@ -72,26 +72,26 @@ public class DocumentController {
                                      @RequestParam(value = "userName", required = false) String userName,
                                      @RequestParam(value = "messageId", required = false) String messageId,
                                      @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
-                                     @RequestParam(value = "formParam") String formParam,
+                                     @RequestParam(value = "resourceType") String resourceType,
                                      HttpServletRequest request) {
 
     String DPARENT_PATH = getDocumentParentPath(request);
 
     String groupId = getGroupId(DPARENT_PATH);
 
-    GeneralInfoBox resources = null; // TODO why multiply resources?
+    GeneralInfoBox resource = null;
 
-    switch (formParam) { // TODO bad name of the request parameter - we need resource type to add
-    case ADD_FOLDER:
-      resources = addFolder(DPARENT_PATH, DOC_NAME, groupId);
+    switch (resourceType) {
+    case FOLDER:
+      resource = addFolder(DPARENT_PATH, DOC_NAME, groupId);
       break;
-    case SAVE_ATTACHMENT:
-      resources =
-                saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
+    case ATTACHMENT:
+      resource =
+               saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
       break;
     }
 
-    return resources;
+    return resource;
   }
 
   private AttachmentInfo saveAttachment(String DPARENT_PATH,
@@ -226,15 +226,15 @@ public class DocumentController {
 
     String groupId = getGroupId(DPARENT_PATH);
 
-    GeneralInfoBox resources = null;
+    GeneralInfoBox resource = null;
 
     if (!DOC_NAME.contains(".")) {
-      resources = getFolder(DPARENT_PATH, DOC_NAME, groupId);
+      resource = getFolder(DPARENT_PATH, DOC_NAME, groupId);
     } else {
       // get file
     }
 
-    return resources;
+    return resource;
   }
 
   private FolderInfo getFolder(String DPARENT_PATH, String NAME, String groupId) {

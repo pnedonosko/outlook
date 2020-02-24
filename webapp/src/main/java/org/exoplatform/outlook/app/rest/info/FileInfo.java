@@ -34,11 +34,6 @@ public class FileInfo extends GeneralInfoBox {
 
   private String           name;
 
-  // TODO Do we really need this on file class, why not in the abstract and then impl where/what required?
-  // See below
-  @Deprecated
-  private boolean          isFolder;  
-
   private String           fullPath;
 
   private String           pathLabel;
@@ -101,25 +96,6 @@ public class FileInfo extends GeneralInfoBox {
    */
   public void setUrl(String url) {
     this.url = url;
-  }
-
-  /**
-   * Is folder boolean.
-   *
-   * @return the boolean
-   */
-  @Deprecated //TODO we don't need it at all, as it never used outside, no sense to rely on it in hash/equals
-  public boolean isFolder() {
-    return false;
-  }
-
-  /**
-   * Sets folder.
-   *
-   * @param isFolder is the folder boolean
-   */
-  public void setIsFolder(boolean isFolder) {
-    assert isFolder : "File cannot be a folder";
   }
 
   /**
@@ -200,26 +176,14 @@ public class FileInfo extends GeneralInfoBox {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    // TODO super should not be used as it doesn't contain business logic
-    if (!super.equals(o))
-      return false;
     FileInfo fileInfo = (FileInfo) o;
-    return isFolder() == fileInfo.isFolder() && Objects.equals(getName(), fileInfo.getName())
-        && Objects.equals(getFullPath(), fileInfo.getFullPath()) && Objects.equals(getPathLabel(), fileInfo.getPathLabel())
-        && Objects.equals(getUrl(), fileInfo.getUrl()) && Objects.equals(getWebdavUrl(), fileInfo.getWebdavUrl())
-        && Objects.equals(getTitle(), fileInfo.getTitle());
+    return Objects.equals(getName(), fileInfo.getName()) && Objects.equals(getFullPath(), fileInfo.getFullPath())
+        && Objects.equals(getPathLabel(), fileInfo.getPathLabel()) && Objects.equals(getUrl(), fileInfo.getUrl())
+        && Objects.equals(getWebdavUrl(), fileInfo.getWebdavUrl()) && Objects.equals(getTitle(), fileInfo.getTitle());
   }
 
   @Override
   public int hashCode() {
-    // TODO super.hashCode() should not be used - it doesn't contain business logic
-    return Objects.hash(super.hashCode(),
-                        getName(),
-                        isFolder(),
-                        getFullPath(),
-                        getPathLabel(),
-                        getUrl(),
-                        getWebdavUrl(),
-                        getTitle());
+    return Objects.hash(getName(), getFullPath(), getPathLabel(), getUrl(), getWebdavUrl(), getTitle());
   }
 }

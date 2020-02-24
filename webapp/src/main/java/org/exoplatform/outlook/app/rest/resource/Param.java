@@ -1,8 +1,9 @@
-package org.exoplatform.outlook.app.rest.hateoas.ressupport;
+package org.exoplatform.outlook.app.rest.resource;
 
 /**
  * The Param.
  */
+@Deprecated
 public class Param {
 
     /**

@@ -16,7 +16,7 @@ import java.util.Locale;
  * The Outlook app controller.
  */
 @Controller
-@RequestMapping(value = "/app")
+@RequestMapping(value = "/view")
 public class OutlookAppController {
 
   /** The Constant LOG. */
