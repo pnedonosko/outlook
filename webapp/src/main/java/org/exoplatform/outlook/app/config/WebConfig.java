@@ -34,11 +34,12 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    // TODO no such path in the WAR: /WEB-INF/views/react/build why we need it?
     registry.addResourceHandler("/static/**").addResourceLocations("/WEB-INF/views/react/build/static/");
     registry.addResourceHandler("/*.js").addResourceLocations("/WEB-INF/views/react/build/");
     registry.addResourceHandler("/*.json").addResourceLocations("/WEB-INF/views/react/build/");
     registry.addResourceHandler("/*.ico").addResourceLocations("/WEB-INF/views/react/build/");
-    registry.addResourceHandler("/**").addResourceLocations("/");
+    registry.addResourceHandler("/**").addResourceLocations("/"); // TODO /app ?
   }
 
   @Override
@@ -49,23 +50,23 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/app/*");
-    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/v1/*");
+    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/v1/*"); // v1 doesn't handled by this app at all
     registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/v2/*");
   }
 
-  @Bean
+  @Bean // TODO Why we need this as a container managed bean? Where it used?
   public ViewResolver htmlViewResolver() {
     ThymeleafViewResolver resolver = new ThymeleafViewResolver();
     resolver.setTemplateEngine(templateEngine(htmlTemplateResolver()));
     resolver.setContentType("text/html");
-    resolver.setCharacterEncoding("UTF-8");
+    resolver.setCharacterEncoding("UTF-8"); // TODO encoding suaully pointed by the HTML doc itself, why we need it here?
     resolver.setViewNames(new String[] { "*.html" });
     return resolver;
   }
 
   private ISpringTemplateEngine templateEngine(ITemplateResolver templateResolver) {
     SpringTemplateEngine engine = new SpringTemplateEngine();
-    engine.addDialect(new LayoutDialect(new GroupingStrategy()));
+    engine.addDialect(new LayoutDialect(new GroupingStrategy())); // TODO why use deprecated?
     engine.addDialect(new Java8TimeDialect());
     engine.setTemplateResolver(templateResolver);
     engine.setTemplateEngineMessageSource(messageSource());
@@ -88,7 +89,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
     return customMessageSource;
   }
 
-  @Bean
+  @Bean // TODO Why we need this as a container managed bean? Where it used?
   public ViewResolver javascriptViewResolver() {
     ThymeleafViewResolver resolver = new ThymeleafViewResolver();
     resolver.setTemplateEngine(templateEngine(javascriptTemplateResolver()));
@@ -101,6 +102,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
   private ITemplateResolver javascriptTemplateResolver() {
     SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
     resolver.setApplicationContext(applicationContext);
+    // TODO Why we need JS resolver on this path where v1 scripts also live?
     resolver.setPrefix("/WEB-INF/js/");
     resolver.setCacheable(false);
     resolver.setTemplateMode(TemplateMode.JAVASCRIPT);

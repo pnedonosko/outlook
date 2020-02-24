@@ -717,8 +717,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
       protected RootFolder(String rootPath, Node node) throws RepositoryException, OutlookException {
         super(rootPath, node);
         initDocumentLink(OutlookSpaceImpl.this, this);
-        hasSubfolders(); // force child reading to init default folder in
-                         // readSubnodes()
+        hasSubfolders(); // force child reading to init default folder in readSubnodes()
       }
 
       /**

@@ -18,14 +18,14 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
   @Override
   protected String[] getServletMappings() {
-    return new String[] { "/" };
+    return new String[] { "/" }; // TODO can this be /app to limit the scope?
   }
 
   @Override
   protected Filter[] getServletFilters() {
     CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
     characterEncodingFilter.setEncoding("UTF-8");
-    characterEncodingFilter.setForceEncoding(true);
+    characterEncodingFilter.setForceEncoding(true); // TODO why we need to force it?
     return new Filter[] { characterEncodingFilter };
   }
 }

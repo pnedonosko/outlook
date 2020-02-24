@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class AttachmentInfo extends GeneralInfoBox {
 
+  // TODO protected fields is better in general, this will let a freedom to extend the class easily
   private String comment;
 
   private String ewsUrl;
@@ -61,7 +62,7 @@ public class AttachmentInfo extends GeneralInfoBox {
       fileInfos.add(new FileInfo(f));
     });
 
-    Collection<Children> contextParams = new ArrayList();
+    Collection<Children> contextParams = new ArrayList(); // TODO generics?
     contextParams.add(new Children(fileInfos));
 
     set_embedded(new EmbeddedContent(contextParams));
@@ -175,6 +176,7 @@ public class AttachmentInfo extends GeneralInfoBox {
     this.attachmentToken = attachmentToken;
   }
 
+  // TODO private?
   private class Children {
 
     private List<FileInfo> files;

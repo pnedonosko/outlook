@@ -21,7 +21,7 @@ public class FolderInfo extends GeneralInfoBox {
   /** The Constant LOG. */
   private static final Log LOG  = ExoLogger.getLogger(FolderInfo.class);
 
-  private final String     type = "folder";
+  private final String     type = "folder"; // TODO is it constant? Then should be in Java naming conventions.
 
   private String           name;
 

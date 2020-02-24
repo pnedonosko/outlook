@@ -79,9 +79,9 @@ public class DocumentController {
 
     String groupId = getGroupId(DPARENT_PATH);
 
-    GeneralInfoBox resources = null;
+    GeneralInfoBox resources = null; // TODO why multiply resources?
 
-    switch (formParam) {
+    switch (formParam) { // TODO bad name of the request parameter - we need resource type to add
     case ADD_FOLDER:
       resources = addFolder(DPARENT_PATH, DOC_NAME, groupId);
       break;

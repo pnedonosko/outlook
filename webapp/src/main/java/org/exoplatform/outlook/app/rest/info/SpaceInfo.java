@@ -34,13 +34,13 @@ public class SpaceInfo {
    * The Root folder path.
    */
   @JsonProperty("rootFolderPath")
-  String                   rootFolderPath;
+  String                   rootFolderPath; // TODO rootPath
 
   /**
    * The Root folder default subfolder path.
    */
   @JsonProperty("rootFolderDefaultSubfolderPath")
-  String                   rootFolderDefaultSubfolderPath;
+  String                   rootFolderDefaultSubfolderPath; // TODO defaultFolderPath
 
   /**
    * Instantiates a new Outlook space json.

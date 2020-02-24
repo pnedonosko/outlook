@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2003-2020 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.outlook.app.rest.info;
 
 import org.exoplatform.outlook.jcr.File;
@@ -16,7 +34,10 @@ public class FileInfo extends GeneralInfoBox {
 
   private String           name;
 
-  private boolean          isFolder;
+  // TODO Do we really need this on file class, why not in the abstract and then impl where/what required?
+  // See below
+  @Deprecated
+  private boolean          isFolder;  
 
   private String           fullPath;
 
@@ -35,7 +56,6 @@ public class FileInfo extends GeneralInfoBox {
    */
   public FileInfo(File file) {
     setName(file.getName());
-    setIsFolder(file.isFolder());
     try {
       setFullPath(file.getNode().getPath());
     } catch (RepositoryException e) {
@@ -88,8 +108,9 @@ public class FileInfo extends GeneralInfoBox {
    *
    * @return the boolean
    */
+  @Deprecated //TODO we don't need it at all, as it never used outside, no sense to rely on it in hash/equals
   public boolean isFolder() {
-    return isFolder;
+    return false;
   }
 
   /**
@@ -98,7 +119,7 @@ public class FileInfo extends GeneralInfoBox {
    * @param isFolder is the folder boolean
    */
   public void setIsFolder(boolean isFolder) {
-    isFolder = isFolder;
+    assert isFolder : "File cannot be a folder";
   }
 
   /**
@@ -179,6 +200,7 @@ public class FileInfo extends GeneralInfoBox {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
+    // TODO super should not be used as it doesn't contain business logic
     if (!super.equals(o))
       return false;
     FileInfo fileInfo = (FileInfo) o;
@@ -190,6 +212,7 @@ public class FileInfo extends GeneralInfoBox {
 
   @Override
   public int hashCode() {
+    // TODO super.hashCode() should not be used - it doesn't contain business logic
     return Objects.hash(super.hashCode(),
                         getName(),
                         isFolder(),
