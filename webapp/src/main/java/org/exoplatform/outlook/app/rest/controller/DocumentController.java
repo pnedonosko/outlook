@@ -6,10 +6,9 @@ import org.exoplatform.outlook.BadParameterException;
 import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.OutlookSpace;
 import org.exoplatform.outlook.OutlookUser;
+import org.exoplatform.outlook.app.rest.info.AttachmentInfo;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
-import org.exoplatform.outlook.app.rest.hateoas.ressupport.ParametersListResourceSupportWrapper;
-import org.exoplatform.outlook.app.rest.info.FileInfo;
 import org.exoplatform.outlook.app.rest.info.FolderInfo;
 import org.exoplatform.outlook.app.rest.info.GeneralInfoBox;
 import org.exoplatform.services.log.ExoLogger;
@@ -87,26 +86,23 @@ public class DocumentController {
       resources = addFolder(DPARENT_PATH, DOC_NAME, groupId);
       break;
     case SAVE_ATTACHMENT:
-      /*
-       * resources = saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl,
-       * userEmail, userName, messageId, attachmentToken);
-       */
-
+      resources =
+                saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
       break;
     }
 
     return resources;
   }
 
-  private PagedResources<FileInfo> saveAttachment(String DPARENT_PATH,
-                                                  String ATTACHMENT_IDS,
-                                                  String groupId,
-                                                  String comment,
-                                                  String ewsUrl,
-                                                  String userEmail,
-                                                  String userName,
-                                                  String messageId,
-                                                  String attachmentToken) {
+  private AttachmentInfo saveAttachment(String DPARENT_PATH,
+                                        String ATTACHMENT_IDS,
+                                        String groupId,
+                                        String comment,
+                                        String ewsUrl,
+                                        String userEmail,
+                                        String userName,
+                                        String messageId,
+                                        String attachmentToken) {
     if (groupId != null && DPARENT_PATH != null && ewsUrl != null && userEmail != null && messageId != null
         && attachmentToken != null && ATTACHMENT_IDS != null) {
       try {
@@ -134,42 +130,21 @@ public class DocumentController {
                                                       attachmentToken,
                                                       attachments.toArray(new String[attachments.size()]));
 
-            List<FileInfo> fileInfos = new LinkedList<>();
-            files.forEach((f) -> {
-              fileInfos.add(new FileInfo(f));
-            });
-
-            ParametersListResourceSupportWrapper parametersListResourceSupportWrapper =
-                                                                                      new ParametersListResourceSupportWrapper();
-            parametersListResourceSupportWrapper.setName("saveAttachment");
-            parametersListResourceSupportWrapper.addParameter("files", fileInfos);
-
-            Map<String, String> paramsMap = new HashMap<>(7);
-            paramsMap.put("comment", comment);
-            paramsMap.put("ewsUrl", ewsUrl);
-            paramsMap.put("userEmail", userEmail);
-            paramsMap.put("userName", userName);
-            paramsMap.put("messageId", messageId);
-            paramsMap.put("attachmentToken", attachmentToken);
-            paramsMap.put("formParam", "addFolder");
-
-            String params = generateParameters(paramsMap);
-
-            parametersListResourceSupportWrapper.add(linkTo(SaveAttachmentController.class).slash(DPARENT_PATH.substring(1))
-                                                                                           .slash(new StringBuilder(ATTACHMENT_IDS).append(params))
-                                                                                           .withSelfRel());
-
             List<Link> links = new LinkedList<>();
             links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(ATTACHMENT_IDS).withSelfRel());
 
-            List<FolderInfo> folderInfos = new LinkedList<>();
-            // folderInfos.add(new FolderInfo(folder));
+            PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(files.size(), 1, files.size(), 1);
 
-            PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderInfos.size(), 1, folderInfos.size(), 1);
-
-            PagedResources<FileInfo> fileInfoPagedResources = new PagedResources<>(fileInfos, metadata, links);
-
-            return fileInfoPagedResources;
+            AttachmentInfo attachmentInfo = new AttachmentInfo(metadata,
+                                                               links,
+                                                               comment,
+                                                               ewsUrl,
+                                                               userEmail,
+                                                               userName,
+                                                               messageId,
+                                                               attachmentToken,
+                                                               files);
+            return attachmentInfo;
           } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment IDs (attachmentIds) are empty");
           }
@@ -237,19 +212,6 @@ public class DocumentController {
 
   }
 
-  private String generateParameters(Map<String, String> paramsMap) {
-    StringBuilder parameters = new StringBuilder("?");
-    if (paramsMap != null && paramsMap.size() > 0) {
-      paramsMap.forEach((k, v) -> {
-        parameters.append(k);
-        parameters.append("=");
-        parameters.append(v);
-        parameters.append("&");
-      });
-    }
-    return parameters.substring(0, parameters.length());
-  }
-
   /**
    * Gets document.
    *
@@ -269,7 +231,7 @@ public class DocumentController {
     if (!DOC_NAME.contains(".")) {
       resources = getFolder(DPARENT_PATH, DOC_NAME, groupId);
     } else {
-      // get attachment
+      // get file
     }
 
     return resources;
