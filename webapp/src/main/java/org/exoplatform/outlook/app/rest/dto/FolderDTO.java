@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.app.rest.info;
+package org.exoplatform.outlook.app.rest.dto;
 
 import org.exoplatform.outlook.OutlookException;
 import org.exoplatform.outlook.jcr.File;
@@ -14,12 +14,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * The Folder info.
+ * The type Folder dto.
  */
-public class FolderInfo extends GeneralInfoBox {
+public class FolderDTO extends AbstractFileResource {
 
   /** The Constant LOG. */
-  private static final Log LOG    = ExoLogger.getLogger(FolderInfo.class);
+  private static final Log LOG    = ExoLogger.getLogger(FolderDTO.class);
 
   private final String     FOLDER = "folder";
 
@@ -48,7 +48,7 @@ public class FolderInfo extends GeneralInfoBox {
    * @param metadata the metadata
    * @param links the links
    */
-  public FolderInfo(Folder folder, PagedResources.PageMetadata metadata, List<Link> links) {
+  public FolderDTO(Folder folder, PagedResources.PageMetadata metadata, List<Link> links) {
 
     set_metadata(new Metadata(metadata));
     add(links);
@@ -94,13 +94,13 @@ public class FolderInfo extends GeneralInfoBox {
       LOG.error(e);
     }
 
-    Set<SubfolderInfo> subfolders = null;
+    Set<SubfolderDTO> subfolders = null;
 
     if (fullSubfolders != null) {
       subfolders = new HashSet<>(fullSubfolders.size());
 
       for (Folder fold : fullSubfolders) {
-        subfolders.add(new SubfolderInfo(fold));
+        subfolders.add(new SubfolderDTO(fold));
       }
     }
 
@@ -114,13 +114,13 @@ public class FolderInfo extends GeneralInfoBox {
       LOG.error(e);
     }
 
-    Set<FileInfo> subfiles = null;
+    Set<FileDTO> subfiles = null;
 
     if (fullFiles != null) {
       subfiles = new HashSet<>(fullFiles.size());
 
       for (File f : fullFiles) {
-        subfiles.add(new FileInfo(f));
+        subfiles.add(new FileDTO(f));
       }
     }
 
@@ -293,7 +293,7 @@ public class FolderInfo extends GeneralInfoBox {
     this.lastModifier = lastModifier;
   }
 
-  private class SubfolderInfo {
+  private class SubfolderDTO {
 
     private String title;
 
@@ -304,7 +304,7 @@ public class FolderInfo extends GeneralInfoBox {
      *
      * @param subfolder the subfolder
      */
-    public SubfolderInfo(Folder subfolder) {
+    public SubfolderDTO(Folder subfolder) {
       setTitle(subfolder.getTitle());
 
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -360,7 +360,7 @@ public class FolderInfo extends GeneralInfoBox {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
-      SubfolderInfo that = (SubfolderInfo) o;
+      SubfolderDTO that = (SubfolderDTO) o;
       return Objects.equals(getTitle(), that.getTitle()) && Objects.equals(getLastModified(), that.getLastModified());
     }
 
@@ -372,9 +372,9 @@ public class FolderInfo extends GeneralInfoBox {
 
   private class Children {
 
-    private Set<FileInfo>      files;
+    private Set<FileDTO>      files;
 
-    private Set<SubfolderInfo> folders;
+    private Set<SubfolderDTO> folders;
 
     /**
      * Instantiates a new Children.
@@ -382,7 +382,7 @@ public class FolderInfo extends GeneralInfoBox {
      * @param files the files
      * @param folders the folders
      */
-    public Children(Set<FileInfo> files, Set<SubfolderInfo> folders) {
+    public Children(Set<FileDTO> files, Set<SubfolderDTO> folders) {
       this.files = files;
       this.folders = folders;
     }
@@ -392,7 +392,7 @@ public class FolderInfo extends GeneralInfoBox {
      *
      * @return the files
      */
-    public Set<FileInfo> getFiles() {
+    public Set<FileDTO> getFiles() {
       return files;
     }
 
@@ -401,7 +401,7 @@ public class FolderInfo extends GeneralInfoBox {
      *
      * @param files the files
      */
-    public void setFiles(Set<FileInfo> files) {
+    public void setFiles(Set<FileDTO> files) {
       this.files = files;
     }
 
@@ -410,7 +410,7 @@ public class FolderInfo extends GeneralInfoBox {
      *
      * @return the folders
      */
-    public Set<SubfolderInfo> getFolders() {
+    public Set<SubfolderDTO> getFolders() {
       return folders;
     }
 
@@ -419,7 +419,7 @@ public class FolderInfo extends GeneralInfoBox {
      *
      * @param folders the folders
      */
-    public void setFolders(Set<SubfolderInfo> folders) {
+    public void setFolders(Set<SubfolderDTO> folders) {
       this.folders = folders;
     }
   }

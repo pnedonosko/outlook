@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.app.rest.info;
+package org.exoplatform.outlook.app.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.PagedResources;
@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * The type General info box.
+ * The type Abstract file resource.
  */
-public abstract class GeneralInfoBox extends ResourceSupport {
+public abstract class AbstractFileResource extends ResourceSupport {
 
   private Metadata        _metadata;
 
@@ -22,7 +22,7 @@ public abstract class GeneralInfoBox extends ResourceSupport {
   /**
    * Instantiates a new General info box.
    */
-  public GeneralInfoBox() {
+  public AbstractFileResource() {
   }
 
   /**
@@ -31,7 +31,7 @@ public abstract class GeneralInfoBox extends ResourceSupport {
    * @param _metadata the metadata
    * @param content the content
    */
-  public GeneralInfoBox(Metadata _metadata, Collection<?> content) {
+  public AbstractFileResource(Metadata _metadata, Collection<?> content) {
     this._metadata = _metadata;
     _embedded = new EmbeddedContent(content);
   }

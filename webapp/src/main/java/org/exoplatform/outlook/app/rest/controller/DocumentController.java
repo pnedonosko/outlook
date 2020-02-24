@@ -6,11 +6,11 @@ import org.exoplatform.outlook.BadParameterException;
 import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.OutlookSpace;
 import org.exoplatform.outlook.OutlookUser;
-import org.exoplatform.outlook.app.rest.info.AttachmentInfo;
+import org.exoplatform.outlook.app.rest.dto.AttachmentDTO;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
-import org.exoplatform.outlook.app.rest.info.FolderInfo;
-import org.exoplatform.outlook.app.rest.info.GeneralInfoBox;
+import org.exoplatform.outlook.app.rest.dto.FolderDTO;
+import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.springframework.hateoas.Link;
@@ -65,21 +65,21 @@ public class DocumentController {
    * @return the parameters list resource support wrapper
    */
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.POST, produces = HAL_AND_JSON)
-  public GeneralInfoBox postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
-                                     @RequestParam(value = "comment", required = false) String comment,
-                                     @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
-                                     @RequestParam(value = "userEmail", required = false) String userEmail,
-                                     @RequestParam(value = "userName", required = false) String userName,
-                                     @RequestParam(value = "messageId", required = false) String messageId,
-                                     @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
-                                     @RequestParam(value = "resourceType") String resourceType,
-                                     HttpServletRequest request) {
+  public AbstractFileResource postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
+                                           @RequestParam(value = "comment", required = false) String comment,
+                                           @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
+                                           @RequestParam(value = "userEmail", required = false) String userEmail,
+                                           @RequestParam(value = "userName", required = false) String userName,
+                                           @RequestParam(value = "messageId", required = false) String messageId,
+                                           @RequestParam(value = "attachmentToken", required = false) String attachmentToken,
+                                           @RequestParam(value = "resourceType") String resourceType,
+                                           HttpServletRequest request) {
 
     String DPARENT_PATH = getDocumentParentPath(request);
 
     String groupId = getGroupId(DPARENT_PATH);
 
-    GeneralInfoBox resource = null;
+    AbstractFileResource resource = null;
 
     switch (resourceType) {
     case FOLDER:
@@ -94,15 +94,15 @@ public class DocumentController {
     return resource;
   }
 
-  private AttachmentInfo saveAttachment(String DPARENT_PATH,
-                                        String ATTACHMENT_IDS,
-                                        String groupId,
-                                        String comment,
-                                        String ewsUrl,
-                                        String userEmail,
-                                        String userName,
-                                        String messageId,
-                                        String attachmentToken) {
+  private AttachmentDTO saveAttachment(String DPARENT_PATH,
+                                       String ATTACHMENT_IDS,
+                                       String groupId,
+                                       String comment,
+                                       String ewsUrl,
+                                       String userEmail,
+                                       String userName,
+                                       String messageId,
+                                       String attachmentToken) {
     if (groupId != null && DPARENT_PATH != null && ewsUrl != null && userEmail != null && messageId != null
         && attachmentToken != null && ATTACHMENT_IDS != null) {
       try {
@@ -135,7 +135,7 @@ public class DocumentController {
 
             PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(files.size(), 1, files.size(), 1);
 
-            AttachmentInfo attachmentInfo = new AttachmentInfo(metadata,
+            AttachmentDTO attachmentDTO = new AttachmentDTO(metadata,
                                                                links,
                                                                comment,
                                                                ewsUrl,
@@ -144,7 +144,7 @@ public class DocumentController {
                                                                messageId,
                                                                attachmentToken,
                                                                files);
-            return attachmentInfo;
+            return attachmentDTO;
           } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment IDs (attachmentIds) are empty");
           }
@@ -169,7 +169,7 @@ public class DocumentController {
     }
   }
 
-  private FolderInfo addFolder(String DPARENT_PATH, String NAME, String groupId) {
+  private FolderDTO addFolder(String DPARENT_PATH, String NAME, String groupId) {
     if (NAME != null && NAME.length() > 0) {
       ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
       OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
@@ -193,7 +193,7 @@ public class DocumentController {
                                                                                addedFolder.getSubfolders().size(),
                                                                                1);
 
-        return new FolderInfo(addedFolder, metadata, links);
+        return new FolderDTO(addedFolder, metadata, links);
       } catch (BadParameterException e) {
         if (LOG.isDebugEnabled()) {
           LOG.debug("Error adding folder " + DPARENT_PATH + "/" + NAME + ". " + e.getMessage());
@@ -220,13 +220,13 @@ public class DocumentController {
    * @return the document
    */
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.GET, produces = HAL_AND_JSON)
-  public GeneralInfoBox getDocument(@PathVariable("DOC_NAME") String DOC_NAME, HttpServletRequest request) {
+  public AbstractFileResource getDocument(@PathVariable("DOC_NAME") String DOC_NAME, HttpServletRequest request) {
 
     String DPARENT_PATH = getDocumentParentPath(request);
 
     String groupId = getGroupId(DPARENT_PATH);
 
-    GeneralInfoBox resource = null;
+    AbstractFileResource resource = null;
 
     if (!DOC_NAME.contains(".")) {
       resource = getFolder(DPARENT_PATH, DOC_NAME, groupId);
@@ -237,7 +237,7 @@ public class DocumentController {
     return resource;
   }
 
-  private FolderInfo getFolder(String DPARENT_PATH, String NAME, String groupId) {
+  private FolderDTO getFolder(String DPARENT_PATH, String NAME, String groupId) {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
     String folderPath = null;
@@ -253,7 +253,7 @@ public class DocumentController {
                                                                              1,
                                                                              folderFilesAndSubfolders,
                                                                              1);
-      return new FolderInfo(folder, metadata, links);
+      return new FolderDTO(folder, metadata, links);
     } catch (BadParameterException e) {
       if (LOG.isDebugEnabled()) {
         LOG.debug("Error reading folder " + folderPath + ". " + e.getMessage());

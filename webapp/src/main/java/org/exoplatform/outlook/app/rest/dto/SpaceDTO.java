@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.app.rest.info;
+package org.exoplatform.outlook.app.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,13 +10,13 @@ import org.exoplatform.services.log.Log;
 import javax.jcr.RepositoryException;
 
 /**
- * The Outlook space json.
+ * The type Space dto.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SpaceInfo {
+public class SpaceDTO {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(SpaceInfo.class);
+  private static final Log LOG = ExoLogger.getLogger(SpaceDTO.class);
 
   /**
    * The Group id.
@@ -47,7 +47,7 @@ public class SpaceInfo {
    *
    * @param outlookSpace the outlook space
    */
-  public SpaceInfo(OutlookSpace outlookSpace) {
+  public SpaceDTO(OutlookSpace outlookSpace) {
     this.groupId = outlookSpace.getGroupId();
     this.title = outlookSpace.getTitle();
     try {

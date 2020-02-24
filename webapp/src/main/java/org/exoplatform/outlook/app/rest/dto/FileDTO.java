@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.outlook.app.rest.info;
+package org.exoplatform.outlook.app.rest.dto;
 
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.services.log.ExoLogger;
@@ -25,12 +25,12 @@ import javax.jcr.RepositoryException;
 import java.util.Objects;
 
 /**
- * The type File info.
+ * The type File dto.
  */
-public class FileInfo extends GeneralInfoBox {
+public class FileDTO extends AbstractFileResource {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(FileInfo.class);
+  private static final Log LOG = ExoLogger.getLogger(FileDTO.class);
 
   private String           name;
 
@@ -49,7 +49,7 @@ public class FileInfo extends GeneralInfoBox {
    *
    * @param file the file
    */
-  public FileInfo(File file) {
+  public FileDTO(File file) {
     setName(file.getName());
     try {
       setFullPath(file.getNode().getPath());
@@ -176,10 +176,10 @@ public class FileInfo extends GeneralInfoBox {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    FileInfo fileInfo = (FileInfo) o;
-    return Objects.equals(getName(), fileInfo.getName()) && Objects.equals(getFullPath(), fileInfo.getFullPath())
-        && Objects.equals(getPathLabel(), fileInfo.getPathLabel()) && Objects.equals(getUrl(), fileInfo.getUrl())
-        && Objects.equals(getWebdavUrl(), fileInfo.getWebdavUrl()) && Objects.equals(getTitle(), fileInfo.getTitle());
+    FileDTO fileDTO = (FileDTO) o;
+    return Objects.equals(getName(), fileDTO.getName()) && Objects.equals(getFullPath(), fileDTO.getFullPath())
+        && Objects.equals(getPathLabel(), fileDTO.getPathLabel()) && Objects.equals(getUrl(), fileDTO.getUrl())
+        && Objects.equals(getWebdavUrl(), fileDTO.getWebdavUrl()) && Objects.equals(getTitle(), fileDTO.getTitle());
   }
 
   @Override

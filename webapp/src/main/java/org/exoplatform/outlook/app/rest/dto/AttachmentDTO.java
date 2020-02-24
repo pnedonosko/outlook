@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.app.rest.info;
+package org.exoplatform.outlook.app.rest.dto;
 
 import org.exoplatform.outlook.jcr.File;
 import org.springframework.hateoas.Link;
@@ -7,9 +7,9 @@ import org.springframework.hateoas.PagedResources;
 import java.util.*;
 
 /**
- * The type Attachment info.
+ * The type Attachment dto.
  */
-public class AttachmentInfo extends GeneralInfoBox {
+public class AttachmentDTO extends AbstractFileResource {
 
   // TODO protected fields is better in general, this will let a freedom to extend the class easily
   private String comment;
@@ -37,15 +37,15 @@ public class AttachmentInfo extends GeneralInfoBox {
    * @param attachmentToken the attachment token
    * @param files the files
    */
-  public AttachmentInfo(PagedResources.PageMetadata metadata,
-                        List<Link> links,
-                        String comment,
-                        String ewsUrl,
-                        String userEmail,
-                        String userName,
-                        String messageId,
-                        String attachmentToken,
-                        List<File> files) {
+  public AttachmentDTO(PagedResources.PageMetadata metadata,
+                       List<Link> links,
+                       String comment,
+                       String ewsUrl,
+                       String userEmail,
+                       String userName,
+                       String messageId,
+                       String attachmentToken,
+                       List<File> files) {
 
     set_metadata(new Metadata(metadata));
     add(links);
@@ -57,13 +57,13 @@ public class AttachmentInfo extends GeneralInfoBox {
     setMessageId(messageId);
     setAttachmentToken(attachmentToken);
 
-    List<FileInfo> fileInfos = new LinkedList<>();
+    List<FileDTO> fileDTOS = new LinkedList<>();
     files.forEach((f) -> {
-      fileInfos.add(new FileInfo(f));
+      fileDTOS.add(new FileDTO(f));
     });
 
     Collection<Children> contextParams = new ArrayList(); // TODO generics?
-    contextParams.add(new Children(fileInfos));
+    contextParams.add(new Children(fileDTOS));
 
     set_embedded(new EmbeddedContent(contextParams));
   }
@@ -179,15 +179,15 @@ public class AttachmentInfo extends GeneralInfoBox {
   // TODO private?
   private class Children {
 
-    private List<FileInfo> files;
+    private List<FileDTO> files;
 
     /**
      * Instantiates a new Children.
      *
-     * @param fileInfos the file infos
+     * @param fileDTOS the file infos
      */
-    public Children(List<FileInfo> fileInfos) {
-      files = fileInfos;
+    public Children(List<FileDTO> fileDTOS) {
+      files = fileDTOS;
     }
 
     /**
@@ -195,7 +195,7 @@ public class AttachmentInfo extends GeneralInfoBox {
      *
      * @return the files
      */
-    public List<FileInfo> getFiles() {
+    public List<FileDTO> getFiles() {
       return files;
     }
 
@@ -204,7 +204,7 @@ public class AttachmentInfo extends GeneralInfoBox {
      *
      * @param files the files
      */
-    public void setFiles(List<FileInfo> files) {
+    public void setFiles(List<FileDTO> files) {
       this.files = files;
     }
   }
