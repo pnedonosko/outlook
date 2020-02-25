@@ -18,19 +18,18 @@
  */
 package org.exoplatform.outlook.app.rest.dto;
 
-import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import javax.jcr.RepositoryException;
 import java.util.Objects;
 
 /**
- * The type File dto.
+ * The type File.
  */
-public class FileDTO extends AbstractFileResource {
+public class File extends AbstractFileResource {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(FileDTO.class);
+  private static final Log LOG = ExoLogger.getLogger(File.class);
 
   private String           name;
 
@@ -45,11 +44,11 @@ public class FileDTO extends AbstractFileResource {
   private String           title;
 
   /**
-   * Instantiates a new Subfile info.
+   * Instantiates a new Subfile.
    *
    * @param file the file
    */
-  public FileDTO(File file) {
+  public File(org.exoplatform.outlook.jcr.File file) {
     setName(file.getName());
     try {
       setFullPath(file.getNode().getPath());
@@ -176,10 +175,10 @@ public class FileDTO extends AbstractFileResource {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    FileDTO fileDTO = (FileDTO) o;
-    return Objects.equals(getName(), fileDTO.getName()) && Objects.equals(getFullPath(), fileDTO.getFullPath())
-        && Objects.equals(getPathLabel(), fileDTO.getPathLabel()) && Objects.equals(getUrl(), fileDTO.getUrl())
-        && Objects.equals(getWebdavUrl(), fileDTO.getWebdavUrl()) && Objects.equals(getTitle(), fileDTO.getTitle());
+    File file = (File) o;
+    return Objects.equals(getName(), file.getName()) && Objects.equals(getFullPath(), file.getFullPath())
+        && Objects.equals(getPathLabel(), file.getPathLabel()) && Objects.equals(getUrl(), file.getUrl())
+        && Objects.equals(getWebdavUrl(), file.getWebdavUrl()) && Objects.equals(getTitle(), file.getTitle());
   }
 
   @Override

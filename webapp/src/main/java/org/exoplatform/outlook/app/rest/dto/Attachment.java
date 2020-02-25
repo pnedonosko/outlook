@@ -1,17 +1,17 @@
 package org.exoplatform.outlook.app.rest.dto;
 
-import org.exoplatform.outlook.jcr.File;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 
 import java.util.*;
 
 /**
- * The type Attachment dto.
+ * The type Attachment.
  */
-public class AttachmentDTO extends AbstractFileResource {
+public class Attachment extends AbstractFileResource {
 
-  // TODO protected fields is better in general, this will let a freedom to extend the class easily
+  // TODO protected fields is better in general, this will let a freedom to extend
+  // the class easily
   private String comment;
 
   private String ewsUrl;
@@ -25,7 +25,7 @@ public class AttachmentDTO extends AbstractFileResource {
   private String attachmentToken;
 
   /**
-   * Instantiates a new Attachment info.
+   * Instantiates a new Attachment.
    *
    * @param metadata the metadata
    * @param links the links
@@ -37,15 +37,15 @@ public class AttachmentDTO extends AbstractFileResource {
    * @param attachmentToken the attachment token
    * @param files the files
    */
-  public AttachmentDTO(PagedResources.PageMetadata metadata,
-                       List<Link> links,
-                       String comment,
-                       String ewsUrl,
-                       String userEmail,
-                       String userName,
-                       String messageId,
-                       String attachmentToken,
-                       List<File> files) {
+  public Attachment(PagedResources.PageMetadata metadata,
+                    List<Link> links,
+                    String comment,
+                    String ewsUrl,
+                    String userEmail,
+                    String userName,
+                    String messageId,
+                    String attachmentToken,
+                    List<org.exoplatform.outlook.jcr.File> files) {
 
     set_metadata(new Metadata(metadata));
     add(links);
@@ -57,9 +57,9 @@ public class AttachmentDTO extends AbstractFileResource {
     setMessageId(messageId);
     setAttachmentToken(attachmentToken);
 
-    List<FileDTO> fileDTOS = new LinkedList<>();
+    List<File> fileDTOS = new LinkedList<>();
     files.forEach((f) -> {
-      fileDTOS.add(new FileDTO(f));
+      fileDTOS.add(new File(f));
     });
 
     Collection<Children> contextParams = new ArrayList(); // TODO generics?
@@ -179,15 +179,15 @@ public class AttachmentDTO extends AbstractFileResource {
   // TODO private?
   private class Children {
 
-    private List<FileDTO> files;
+    private List<File> files;
 
     /**
      * Instantiates a new Children.
      *
-     * @param fileDTOS the file infos
+     * @param files the file infos
      */
-    public Children(List<FileDTO> fileDTOS) {
-      files = fileDTOS;
+    public Children(List<File> files) {
+      this.files = files;
     }
 
     /**
@@ -195,7 +195,7 @@ public class AttachmentDTO extends AbstractFileResource {
      *
      * @return the files
      */
-    public List<FileDTO> getFiles() {
+    public List<File> getFiles() {
       return files;
     }
 
@@ -204,7 +204,7 @@ public class AttachmentDTO extends AbstractFileResource {
      *
      * @param files the files
      */
-    public void setFiles(List<FileDTO> files) {
+    public void setFiles(List<File> files) {
       this.files = files;
     }
   }

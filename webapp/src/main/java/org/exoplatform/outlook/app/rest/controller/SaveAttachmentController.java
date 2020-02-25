@@ -6,7 +6,7 @@ import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.jcr.Folder;
 import org.exoplatform.outlook.app.rest.resource.ParametersListResourceSupportWrapper;
-import org.exoplatform.outlook.app.rest.dto.SpaceDTO;
+import org.exoplatform.outlook.app.rest.dto.Space;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.springframework.hateoas.Link;
@@ -161,8 +161,8 @@ public class SaveAttachmentController {
       ParametersListResourceSupportWrapper parametersListResourceSupportWrapper = new ParametersListResourceSupportWrapper();
       parametersListResourceSupportWrapper.setName("getSaveAttachmentFormUserSpaces");
 
-      List<SpaceDTO> spaces = new LinkedList<>();
-      outlook.getUserSpaces().forEach(space -> spaces.add(new SpaceDTO(space)));
+      List<Space> spaces = new LinkedList<>();
+      outlook.getUserSpaces().forEach(space -> spaces.add(new Space(space)));
       parametersListResourceSupportWrapper.addParameter("spaces", spaces);
 
       parametersListResourceSupportWrapper.add(generateLinks("getSaveAttachmentFormUserSpaces",

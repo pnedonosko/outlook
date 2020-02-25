@@ -6,10 +6,9 @@ import org.exoplatform.outlook.BadParameterException;
 import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.OutlookSpace;
 import org.exoplatform.outlook.OutlookUser;
-import org.exoplatform.outlook.app.rest.dto.AttachmentDTO;
+import org.exoplatform.outlook.app.rest.dto.Attachment;
 import org.exoplatform.outlook.jcr.File;
-import org.exoplatform.outlook.jcr.Folder;
-import org.exoplatform.outlook.app.rest.dto.FolderDTO;
+import org.exoplatform.outlook.app.rest.dto.Folder;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -53,7 +52,7 @@ public class DocumentController {
   /**
    * Post document parameters list.
    *
-   * @param DOC_NAME the doc name
+   * @param docName the doc name
    * @param comment the comment
    * @param ewsUrl the ews url
    * @param userEmail the user email
@@ -65,7 +64,7 @@ public class DocumentController {
    * @return the parameters list resource support wrapper
    */
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.POST, produces = HAL_AND_JSON)
-  public AbstractFileResource postDocument(@PathVariable("DOC_NAME") String DOC_NAME,
+  public AbstractFileResource postDocument(@PathVariable("DOC_NAME") String docName,
                                            @RequestParam(value = "comment", required = false) String comment,
                                            @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
                                            @RequestParam(value = "userEmail", required = false) String userEmail,
@@ -75,36 +74,35 @@ public class DocumentController {
                                            @RequestParam(value = "resourceType") String resourceType,
                                            HttpServletRequest request) {
 
-    String DPARENT_PATH = getDocumentParentPath(request);
+    String dParentPath = getDocumentParentPath(request);
 
-    String groupId = getGroupId(DPARENT_PATH);
+    String groupId = getGroupId(dParentPath);
 
     AbstractFileResource resource = null;
 
     switch (resourceType) {
     case FOLDER:
-      resource = addFolder(DPARENT_PATH, DOC_NAME, groupId);
+      resource = addFolder(dParentPath, docName, groupId);
       break;
     case ATTACHMENT:
-      resource =
-               saveAttachment(DPARENT_PATH, DOC_NAME, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
+      resource = saveAttachment(dParentPath, docName, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
       break;
     }
 
     return resource;
   }
 
-  private AttachmentDTO saveAttachment(String DPARENT_PATH,
-                                       String ATTACHMENT_IDS,
-                                       String groupId,
-                                       String comment,
-                                       String ewsUrl,
-                                       String userEmail,
-                                       String userName,
-                                       String messageId,
-                                       String attachmentToken) {
-    if (groupId != null && DPARENT_PATH != null && ewsUrl != null && userEmail != null && messageId != null
-        && attachmentToken != null && ATTACHMENT_IDS != null) {
+  private Attachment saveAttachment(String dParentPath,
+                                    String attachmentIds,
+                                    String groupId,
+                                    String comment,
+                                    String ewsUrl,
+                                    String userEmail,
+                                    String userName,
+                                    String messageId,
+                                    String attachmentToken) {
+    if (groupId != null && dParentPath != null && ewsUrl != null && userEmail != null && messageId != null
+        && attachmentToken != null && attachmentIds != null) {
       try {
         ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
         OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
@@ -113,14 +111,14 @@ public class DocumentController {
         if (space != null) {
           // Remove empty attachments in the array
           List<String> attachments = new ArrayList<String>();
-          for (String aid : ATTACHMENT_IDS.split(",")) {
+          for (String aid : attachmentIds.split(",")) {
             aid = aid.trim();
             if (aid.length() > 0) {
               attachments.add(aid);
             }
           }
           if (attachments.size() > 0) {
-            Folder folder = space.getFolder(DPARENT_PATH);
+            org.exoplatform.outlook.jcr.Folder folder = space.getFolder(dParentPath);
             OutlookUser user = outlook.getUser(userEmail, userName, ewsUrl);
             List<File> files = outlook.saveAttachment(space,
                                                       folder,
@@ -131,20 +129,20 @@ public class DocumentController {
                                                       attachments.toArray(new String[attachments.size()]));
 
             List<Link> links = new LinkedList<>();
-            links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(ATTACHMENT_IDS).withSelfRel());
+            links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(attachmentIds).withSelfRel());
 
             PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(files.size(), 1, files.size(), 1);
 
-            AttachmentDTO attachmentDTO = new AttachmentDTO(metadata,
-                                                               links,
-                                                               comment,
-                                                               ewsUrl,
-                                                               userEmail,
-                                                               userName,
-                                                               messageId,
-                                                               attachmentToken,
-                                                               files);
-            return attachmentDTO;
+            Attachment attachment = new Attachment(metadata,
+                                                   links,
+                                                   comment,
+                                                   ewsUrl,
+                                                   userEmail,
+                                                   userName,
+                                                   messageId,
+                                                   attachmentToken,
+                                                   files);
+            return attachment;
           } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment IDs (attachmentIds) are empty");
           }
@@ -161,51 +159,51 @@ public class DocumentController {
       }
     } else {
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Error in saving attachment request: spaceName='" + groupId + "' path=" + DPARENT_PATH + " ewsUrl='" + ewsUrl
+        LOG.debug("Error in saving attachment request: spaceName='" + groupId + "' path=" + dParentPath + " ewsUrl='" + ewsUrl
             + "' userEmail='" + userEmail + "' messageId='" + messageId + "' attachmentToken(size)='"
-            + (attachmentToken != null ? attachmentToken.length() : "null") + "' attachmentIds='" + ATTACHMENT_IDS + "'");
+            + (attachmentToken != null ? attachmentToken.length() : "null") + "' attachmentIds='" + attachmentIds + "'");
       }
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error in saving attachment request. Please reload the page.");
     }
   }
 
-  private FolderDTO addFolder(String DPARENT_PATH, String NAME, String groupId) {
-    if (NAME != null && NAME.length() > 0) {
+  private Folder addFolder(String dParentPath, String name, String groupId) {
+    if (name != null && name.length() > 0) {
       ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
       OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
       try {
-        Folder folder = outlook.getSpace(groupId).getFolder(DPARENT_PATH);
-        folder.addSubfolder(NAME);
-        Folder addedFolder = null;
+        org.exoplatform.outlook.jcr.Folder folder = outlook.getSpace(groupId).getFolder(dParentPath);
+        folder.addSubfolder(name);
+        org.exoplatform.outlook.jcr.Folder addedFolder = null;
 
-        for (Folder fold : folder.getSubfolders()) {
-          if (fold.getName().equals(NAME)) {
+        for (org.exoplatform.outlook.jcr.Folder fold : folder.getSubfolders()) {
+          if (fold.getName().equals(name)) {
             addedFolder = fold;
             break;
           }
         }
 
         List<Link> links = new LinkedList<>();
-        links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
+        links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(name).withSelfRel());
 
         PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(addedFolder.getSubfolders().size(),
                                                                                1,
                                                                                addedFolder.getSubfolders().size(),
                                                                                1);
 
-        return new FolderDTO(addedFolder, metadata, links);
+        return new Folder(addedFolder, metadata, links);
       } catch (BadParameterException e) {
         if (LOG.isDebugEnabled()) {
-          LOG.debug("Error adding folder " + DPARENT_PATH + "/" + NAME + ". " + e.getMessage());
+          LOG.debug("Error adding folder " + dParentPath + "/" + name + ". " + e.getMessage());
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error adding folder " + DPARENT_PATH + "/" + NAME);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error adding folder " + dParentPath + "/" + name);
       } catch (Throwable e) {
-        LOG.error("Error adding folder " + DPARENT_PATH + "/" + NAME, e);
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding folder " + DPARENT_PATH + "/" + NAME);
+        LOG.error("Error adding folder " + dParentPath + "/" + name, e);
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding folder " + dParentPath + "/" + name);
       }
     } else {
       if (LOG.isDebugEnabled()) {
-        LOG.debug("Null or zero-length folder name to add in " + DPARENT_PATH);
+        LOG.debug("Null or zero-length folder name to add in " + dParentPath);
       }
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Folder name required");
     }
@@ -215,12 +213,12 @@ public class DocumentController {
   /**
    * Gets document.
    *
-   * @param DOC_NAME the doc name
+   * @param docName the doc name
    * @param request the request
    * @return the document
    */
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.GET, produces = HAL_AND_JSON)
-  public AbstractFileResource getDocument(@PathVariable("DOC_NAME") String DOC_NAME, HttpServletRequest request) {
+  public AbstractFileResource getDocument(@PathVariable("DOC_NAME") String docName, HttpServletRequest request) {
 
     String DPARENT_PATH = getDocumentParentPath(request);
 
@@ -228,8 +226,8 @@ public class DocumentController {
 
     AbstractFileResource resource = null;
 
-    if (!DOC_NAME.contains(".")) {
-      resource = getFolder(DPARENT_PATH, DOC_NAME, groupId);
+    if (!docName.contains(".")) {
+      resource = getFolder(DPARENT_PATH, docName, groupId);
     } else {
       // get file
     }
@@ -237,23 +235,23 @@ public class DocumentController {
     return resource;
   }
 
-  private FolderDTO getFolder(String DPARENT_PATH, String NAME, String groupId) {
+  private Folder getFolder(String dParentPath, String name, String groupId) {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
     String folderPath = null;
     try {
-      folderPath = new StringBuilder(DPARENT_PATH).append("/").append(NAME).toString();
-      Folder folder = outlook.getSpace(groupId).getFolder(folderPath);
+      folderPath = new StringBuilder(dParentPath).append("/").append(name).toString();
+      org.exoplatform.outlook.jcr.Folder folder = outlook.getSpace(groupId).getFolder(folderPath);
 
       List<Link> links = new LinkedList<>();
-      links.add(linkTo(DocumentController.class).slash(DPARENT_PATH.substring(1)).slash(NAME).withSelfRel());
+      links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(name).withSelfRel());
 
       int folderFilesAndSubfolders = folder.getSubfolders().size() + folder.getFiles().size();
       PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderFilesAndSubfolders,
                                                                              1,
                                                                              folderFilesAndSubfolders,
                                                                              1);
-      return new FolderDTO(folder, metadata, links);
+      return new Folder(folder, metadata, links);
     } catch (BadParameterException e) {
       if (LOG.isDebugEnabled()) {
         LOG.debug("Error reading folder " + folderPath + ". " + e.getMessage());
@@ -276,11 +274,11 @@ public class DocumentController {
     return DPARENT_PATH;
   }
 
-  private String getGroupId(String DPARENT_PATH) {
+  private String getGroupId(String dParentPath) {
     String groupId = "";
 
     Pattern pattern = Pattern.compile("(?:.)[/]{1}[\\w]*[/]{1}[\\w]*");
-    Matcher matcher = pattern.matcher(DPARENT_PATH);
+    Matcher matcher = pattern.matcher(dParentPath);
 
     if (matcher.find()) {
       groupId = matcher.group(0).substring(1);

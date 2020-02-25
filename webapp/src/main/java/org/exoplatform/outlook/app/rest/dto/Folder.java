@@ -1,8 +1,6 @@
 package org.exoplatform.outlook.app.rest.dto;
 
 import org.exoplatform.outlook.OutlookException;
-import org.exoplatform.outlook.jcr.File;
-import org.exoplatform.outlook.jcr.Folder;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.wcm.core.NodetypeConstant;
@@ -14,12 +12,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * The type Folder dto.
+ * The type Folder.
  */
-public class FolderDTO extends AbstractFileResource {
+public class Folder extends AbstractFileResource {
 
   /** The Constant LOG. */
-  private static final Log LOG    = ExoLogger.getLogger(FolderDTO.class);
+  private static final Log LOG    = ExoLogger.getLogger(Folder.class);
 
   private final String     FOLDER = "folder";
 
@@ -42,13 +40,13 @@ public class FolderDTO extends AbstractFileResource {
   private String           explorerLink;
 
   /**
-   * Instantiates a new Folder info.
+   * Instantiates a new Folder.
    *
    * @param folder the folder
    * @param metadata the metadata
    * @param links the links
    */
-  public FolderDTO(Folder folder, PagedResources.PageMetadata metadata, List<Link> links) {
+  public Folder(org.exoplatform.outlook.jcr.Folder folder, PagedResources.PageMetadata metadata, List<Link> links) {
 
     set_metadata(new Metadata(metadata));
     add(links);
@@ -84,7 +82,7 @@ public class FolderDTO extends AbstractFileResource {
       LOG.error(e);
     }
 
-    Set<Folder> fullSubfolders = null;
+    Set<org.exoplatform.outlook.jcr.Folder> fullSubfolders = null;
 
     try {
       fullSubfolders = folder.getSubfolders();
@@ -94,17 +92,17 @@ public class FolderDTO extends AbstractFileResource {
       LOG.error(e);
     }
 
-    Set<SubfolderDTO> subfolders = null;
+    Set<Subfolder> subfolders = null;
 
     if (fullSubfolders != null) {
       subfolders = new HashSet<>(fullSubfolders.size());
 
-      for (Folder fold : fullSubfolders) {
-        subfolders.add(new SubfolderDTO(fold));
+      for (org.exoplatform.outlook.jcr.Folder fold : fullSubfolders) {
+        subfolders.add(new Subfolder(fold));
       }
     }
 
-    Set<File> fullFiles = null;
+    Set<org.exoplatform.outlook.jcr.File> fullFiles = null;
 
     try {
       fullFiles = folder.getFiles();
@@ -114,13 +112,13 @@ public class FolderDTO extends AbstractFileResource {
       LOG.error(e);
     }
 
-    Set<FileDTO> subfiles = null;
+    Set<File> subfiles = null;
 
     if (fullFiles != null) {
       subfiles = new HashSet<>(fullFiles.size());
 
-      for (File f : fullFiles) {
-        subfiles.add(new FileDTO(f));
+      for (org.exoplatform.outlook.jcr.File f : fullFiles) {
+        subfiles.add(new File(f));
       }
     }
 
@@ -293,18 +291,18 @@ public class FolderDTO extends AbstractFileResource {
     this.lastModifier = lastModifier;
   }
 
-  private class SubfolderDTO {
+  private class Subfolder {
 
     private String title;
 
     private String lastModified;
 
     /**
-     * Instantiates a new Subfolder info.
+     * Instantiates a new Subfolder.
      *
      * @param subfolder the subfolder
      */
-    public SubfolderDTO(Folder subfolder) {
+    public Subfolder(org.exoplatform.outlook.jcr.Folder subfolder) {
       setTitle(subfolder.getTitle());
 
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -360,7 +358,7 @@ public class FolderDTO extends AbstractFileResource {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
-      SubfolderDTO that = (SubfolderDTO) o;
+      Subfolder that = (Subfolder) o;
       return Objects.equals(getTitle(), that.getTitle()) && Objects.equals(getLastModified(), that.getLastModified());
     }
 
@@ -372,9 +370,9 @@ public class FolderDTO extends AbstractFileResource {
 
   private class Children {
 
-    private Set<FileDTO>      files;
+    private Set<File>      files;
 
-    private Set<SubfolderDTO> folders;
+    private Set<Subfolder> folders;
 
     /**
      * Instantiates a new Children.
@@ -382,7 +380,7 @@ public class FolderDTO extends AbstractFileResource {
      * @param files the files
      * @param folders the folders
      */
-    public Children(Set<FileDTO> files, Set<SubfolderDTO> folders) {
+    public Children(Set<File> files, Set<Subfolder> folders) {
       this.files = files;
       this.folders = folders;
     }
@@ -392,7 +390,7 @@ public class FolderDTO extends AbstractFileResource {
      *
      * @return the files
      */
-    public Set<FileDTO> getFiles() {
+    public Set<File> getFiles() {
       return files;
     }
 
@@ -401,7 +399,7 @@ public class FolderDTO extends AbstractFileResource {
      *
      * @param files the files
      */
-    public void setFiles(Set<FileDTO> files) {
+    public void setFiles(Set<File> files) {
       this.files = files;
     }
 
@@ -410,7 +408,7 @@ public class FolderDTO extends AbstractFileResource {
      *
      * @return the folders
      */
-    public Set<SubfolderDTO> getFolders() {
+    public Set<Subfolder> getFolders() {
       return folders;
     }
 
@@ -419,7 +417,7 @@ public class FolderDTO extends AbstractFileResource {
      *
      * @param folders the folders
      */
-    public void setFolders(Set<SubfolderDTO> folders) {
+    public void setFolders(Set<Subfolder> folders) {
       this.folders = folders;
     }
   }

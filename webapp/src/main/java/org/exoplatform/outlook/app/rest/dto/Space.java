@@ -10,13 +10,13 @@ import org.exoplatform.services.log.Log;
 import javax.jcr.RepositoryException;
 
 /**
- * The type Space dto.
+ * The type Space.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SpaceDTO {
+public class Space {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(SpaceDTO.class);
+  private static final Log LOG = ExoLogger.getLogger(Space.class);
 
   /**
    * The Group id.
@@ -43,11 +43,11 @@ public class SpaceDTO {
   String                   defaultFolderPath;
 
   /**
-   * Instantiates a new Outlook space json.
+   * Instantiates a new Outlook space.
    *
    * @param outlookSpace the outlook space
    */
-  public SpaceDTO(OutlookSpace outlookSpace) {
+  public Space(OutlookSpace outlookSpace) {
     this.groupId = outlookSpace.getGroupId();
     this.title = outlookSpace.getTitle();
     try {
