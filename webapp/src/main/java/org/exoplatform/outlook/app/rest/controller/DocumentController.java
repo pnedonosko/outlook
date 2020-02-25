@@ -74,7 +74,7 @@ public class DocumentController {
                                            @RequestParam(value = "resourceType") String resourceType,
                                            HttpServletRequest request) {
 
-    String dParentPath = getDocumentParentPath(request);
+    String dParentPath = getDocumentParentPath(request, this);
 
     String groupId = getGroupId(dParentPath);
 
@@ -220,14 +220,14 @@ public class DocumentController {
   @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getDocument(@PathVariable("DOC_NAME") String docName, HttpServletRequest request) {
 
-    String DPARENT_PATH = getDocumentParentPath(request);
+    String dParentPath = getDocumentParentPath(request, this);
 
-    String groupId = getGroupId(DPARENT_PATH);
+    String groupId = getGroupId(dParentPath);
 
     AbstractFileResource resource = null;
 
     if (!docName.contains(".")) {
-      resource = getFolder(DPARENT_PATH, docName, groupId);
+      resource = getFolder(dParentPath, docName, groupId);
     } else {
       // get file
     }
@@ -263,15 +263,13 @@ public class DocumentController {
     }
   }
 
-  private String getDocumentParentPath(HttpServletRequest request) {
-    PathMatcher pathMatcher = new AntPathMatcher();
+  private String getDocumentParentPath(HttpServletRequest request, Object currentController) {
+    String requestURL = request.getRequestURL().toString();
 
-    String mvcPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
-    String mvcPath = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
-    String DPARENT_PATH = pathMatcher.extractPathWithinPattern(mvcPattern, mvcPath);
+    int parentPathStartPint = linkTo(currentController.getClass()).toString().length();
+    int parentPathFinishPoint = requestURL.lastIndexOf("/");
 
-    DPARENT_PATH = new StringBuilder("/").append(DPARENT_PATH, 0, DPARENT_PATH.lastIndexOf("/")).toString();
-    return DPARENT_PATH;
+    return requestURL.substring(parentPathStartPint, parentPathFinishPoint);
   }
 
   private String getGroupId(String dParentPath) {
