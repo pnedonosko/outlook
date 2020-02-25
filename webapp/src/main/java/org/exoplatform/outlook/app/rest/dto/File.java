@@ -21,6 +21,8 @@ package org.exoplatform.outlook.app.rest.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import javax.jcr.RepositoryException;
 import java.util.Objects;
 
@@ -78,7 +80,8 @@ public class File extends AbstractFileResource {
     try {
       fullPath = file.getNode().getPath();
     } catch (RepositoryException e) {
-      LOG.error(e);
+      LOG.error("Error getting a full path to file", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a full path to file");
     }
 
     return fullPath;
