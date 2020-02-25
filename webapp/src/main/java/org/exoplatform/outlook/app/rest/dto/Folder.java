@@ -1,11 +1,14 @@
 package org.exoplatform.outlook.app.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.exoplatform.outlook.OutlookException;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.wcm.core.NodetypeConstant;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.jcr.RepositoryException;
 import java.text.SimpleDateFormat;
@@ -17,27 +20,17 @@ import java.util.*;
 public class Folder extends AbstractFileResource {
 
   /** The Constant LOG. */
-  private static final Log LOG    = ExoLogger.getLogger(Folder.class);
+  private static final Log                           LOG           = ExoLogger.getLogger(Folder.class);
 
-  private final String     FOLDER = "folder";
+  /**
+   * The Date formatter.
+   */
+  protected final SimpleDateFormat                   dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-  private String           name;
-
-  private String           path;
-
-  private String           title;
-
-  private String           created;
-
-  private String           modified;
-
-  private String           author;
-
-  private String           lastModifier;
-
-  private String           explorerPath;
-
-  private String           explorerLink;
+  /**
+   * The Folder.
+   */
+  protected final org.exoplatform.outlook.jcr.Folder folder;
 
   /**
    * Instantiates a new Folder.
@@ -51,36 +44,7 @@ public class Folder extends AbstractFileResource {
     set_metadata(new Metadata(metadata));
     add(links);
 
-    setName(folder.getName());
-    setPath(folder.getPath());
-    setTitle(folder.getTitle());
-    setExplorerPath(folder.getPathLabel());
-    setExplorerLink(folder.getUrl());
-
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    try {
-      setCreated(formatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_DATE_CREATED).getDate().getTime()));
-    } catch (RepositoryException e) {
-      LOG.error(e);
-    }
-
-    try {
-      setModified(formatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_LAST_MODIFIED_DATE).getDate().getTime()));
-    } catch (RepositoryException e) {
-      LOG.error(e);
-    }
-
-    try {
-      setLastModifier(folder.getNode().getProperty(NodetypeConstant.EXO_LAST_MODIFIER).getString());
-    } catch (RepositoryException e) {
-      LOG.error(e);
-    }
-
-    try {
-      setAuthor(folder.getNode().getProperty(NodetypeConstant.EXO_OWNER).getString());
-    } catch (RepositoryException e) {
-      LOG.error(e);
-    }
+    this.folder = folder;
 
     Set<org.exoplatform.outlook.jcr.Folder> fullSubfolders = null;
 
@@ -88,8 +52,11 @@ public class Folder extends AbstractFileResource {
       fullSubfolders = folder.getSubfolders();
     } catch (RepositoryException e) {
       LOG.error(e);
+      LOG.error("Error getting a folder subfolders", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder subfolders");
     } catch (OutlookException e) {
-      LOG.error(e);
+      LOG.error("Error getting a folder subfolders", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder subfolders");
     }
 
     Set<Subfolder> subfolders = null;
@@ -107,9 +74,11 @@ public class Folder extends AbstractFileResource {
     try {
       fullFiles = folder.getFiles();
     } catch (RepositoryException e) {
-      LOG.error(e);
+      LOG.error("Error getting a folder files", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder files");
     } catch (OutlookException e) {
-      LOG.error(e);
+      LOG.error("Error getting a folder files", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder files");
     }
 
     Set<File> subfiles = null;
@@ -134,53 +103,29 @@ public class Folder extends AbstractFileResource {
    *
    * @return the path
    */
+  @JsonProperty("path")
   public String getPath() {
-    return path;
+    return folder.getPath();
   }
 
   /**
-   * Sets path.
-   *
-   * @param path the path
-   */
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  /**
-   * Gets path label.
+   * Gets explorer path (path label).
    *
    * @return the path label
    */
+  @JsonProperty("explorerPath")
   public String getExplorerPath() {
-    return explorerPath;
+    return folder.getPathLabel();
   }
 
   /**
-   * Sets path label.
-   *
-   * @param explorerPath the path label
-   */
-  public void setExplorerPath(String explorerPath) {
-    this.explorerPath = explorerPath;
-  }
-
-  /**
-   * Gets explorer link.
+   * Gets explorer link (url).
    *
    * @return the explorer link
    */
+  @JsonProperty("explorerLink")
   public String getExplorerLink() {
-    return explorerLink;
-  }
-
-  /**
-   * Sets explorer link.
-   *
-   * @param explorerLink the explorer link
-   */
-  public void setExplorerLink(String explorerLink) {
-    this.explorerLink = explorerLink;
+    return folder.getUrl();
   }
 
   /**
@@ -188,17 +133,9 @@ public class Folder extends AbstractFileResource {
    *
    * @return the name
    */
+  @JsonProperty("name")
   public String getName() {
-    return name;
-  }
-
-  /**
-   * Sets name.
-   *
-   * @param name the name
-   */
-  public void setName(String name) {
-    this.name = name;
+    return folder.getName();
   }
 
   /**
@@ -206,17 +143,9 @@ public class Folder extends AbstractFileResource {
    *
    * @return the title
    */
+  @JsonProperty("title")
   public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Sets title.
-   *
-   * @param title the title
-   */
-  public void setTitle(String title) {
-    this.title = title;
+    return folder.getTitle();
   }
 
   /**
@@ -224,17 +153,16 @@ public class Folder extends AbstractFileResource {
    *
    * @return the created
    */
+  @JsonProperty("created")
   public String getCreated() {
+    String created = "";
+    try {
+      created = dateFormatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_DATE_CREATED).getDate().getTime());
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a folder creation date (created)", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder creation date (created)");
+    }
     return created;
-  }
-
-  /**
-   * Sets created.
-   *
-   * @param created the created
-   */
-  public void setCreated(String created) {
-    this.created = created;
   }
 
   /**
@@ -242,17 +170,16 @@ public class Folder extends AbstractFileResource {
    *
    * @return the modified
    */
+  @JsonProperty("modified")
   public String getModified() {
+    String modified = "";
+    try {
+      modified = dateFormatter.format(folder.getNode().getProperty(NodetypeConstant.EXO_LAST_MODIFIED_DATE).getDate().getTime());
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a folder modification date (modified)", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder modification date (modified)");
+    }
     return modified;
-  }
-
-  /**
-   * Sets modified.
-   *
-   * @param modified the modified
-   */
-  public void setModified(String modified) {
-    this.modified = modified;
   }
 
   /**
@@ -260,17 +187,16 @@ public class Folder extends AbstractFileResource {
    *
    * @return the author
    */
+  @JsonProperty("author")
   public String getAuthor() {
+    String author = "";
+    try {
+      author = folder.getNode().getProperty(NodetypeConstant.EXO_OWNER).getString();
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a folder author (author)", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder author (author)");
+    }
     return author;
-  }
-
-  /**
-   * Sets author.
-   *
-   * @param author the author
-   */
-  public void setAuthor(String author) {
-    this.author = author;
   }
 
   /**
@@ -278,24 +204,27 @@ public class Folder extends AbstractFileResource {
    *
    * @return the last modifier
    */
+  @JsonProperty("lastModifier")
   public String getLastModifier() {
+    String lastModifier = "";
+    try {
+      lastModifier = folder.getNode().getProperty(NodetypeConstant.EXO_LAST_MODIFIER).getString();
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a folder last modifier (lastModifier)", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a folder last modifier (lastModifier)");
+    }
     return lastModifier;
   }
 
   /**
-   * Sets last modifier.
-   *
-   * @param lastModifier the last modifier
+   * The type Subfolder.
    */
-  public void setLastModifier(String lastModifier) {
-    this.lastModifier = lastModifier;
-  }
+  protected class Subfolder {
 
-  private class Subfolder {
-
-    private String title;
-
-    private String lastModified;
+    /**
+     * The Subfolder.
+     */
+    protected final org.exoplatform.outlook.jcr.Folder subfolder;
 
     /**
      * Instantiates a new Subfolder.
@@ -303,17 +232,7 @@ public class Folder extends AbstractFileResource {
      * @param subfolder the subfolder
      */
     public Subfolder(org.exoplatform.outlook.jcr.Folder subfolder) {
-      setTitle(subfolder.getTitle());
-
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-      try {
-        setLastModified(formatter.format(subfolder.getNode()
-                                                  .getProperty(NodetypeConstant.EXO_LAST_MODIFIED_DATE)
-                                                  .getDate()
-                                                  .getTime()));
-      } catch (RepositoryException e) {
-        LOG.error(e);
-      }
+      this.subfolder = subfolder;
     }
 
     /**
@@ -321,17 +240,9 @@ public class Folder extends AbstractFileResource {
      *
      * @return the title
      */
+    @JsonProperty("title")
     public String getTitle() {
-      return title;
-    }
-
-    /**
-     * Sets title.
-     *
-     * @param title the title
-     */
-    public void setTitle(String title) {
-      this.title = title;
+      return subfolder.getTitle();
     }
 
     /**
@@ -339,17 +250,20 @@ public class Folder extends AbstractFileResource {
      *
      * @return the last modified
      */
+    @JsonProperty("lastModified")
     public String getLastModified() {
+      String lastModified = "";
+      try {
+        lastModified = dateFormatter.format(subfolder.getNode()
+                                                     .getProperty(NodetypeConstant.EXO_LAST_MODIFIED_DATE)
+                                                     .getDate()
+                                                     .getTime());
+      } catch (RepositoryException e) {
+        LOG.error("Error getting a subfolder last modified date (lastModified)", e);
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                          "Error getting a subfolder last modified date (lastModified)");
+      }
       return lastModified;
-    }
-
-    /**
-     * Sets last modified.
-     *
-     * @param lastModified the last modified
-     */
-    public void setLastModified(String lastModified) {
-      this.lastModified = lastModified;
     }
 
     @Override
@@ -368,11 +282,14 @@ public class Folder extends AbstractFileResource {
     }
   }
 
-  private class Children {
+  /**
+   * The type Children.
+   */
+  protected class Children {
 
-    private Set<File>      files;
+    protected final Set<File>      files;
 
-    private Set<Subfolder> folders;
+    protected final Set<Subfolder> folders;
 
     /**
      * Instantiates a new Children.
@@ -390,17 +307,9 @@ public class Folder extends AbstractFileResource {
      *
      * @return the files
      */
+    @JsonProperty("files")
     public Set<File> getFiles() {
       return files;
-    }
-
-    /**
-     * Sets files.
-     *
-     * @param files the files
-     */
-    public void setFiles(Set<File> files) {
-      this.files = files;
     }
 
     /**
@@ -408,17 +317,9 @@ public class Folder extends AbstractFileResource {
      *
      * @return the folders
      */
+    @JsonProperty("folders")
     public Set<Subfolder> getFolders() {
       return folders;
-    }
-
-    /**
-     * Sets folders.
-     *
-     * @param folders the folders
-     */
-    public void setFolders(Set<Subfolder> folders) {
-      this.folders = folders;
     }
   }
 }
