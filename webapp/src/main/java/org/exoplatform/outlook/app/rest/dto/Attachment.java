@@ -1,5 +1,6 @@
 package org.exoplatform.outlook.app.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 
@@ -10,19 +11,17 @@ import java.util.*;
  */
 public class Attachment extends AbstractFileResource {
 
-  // TODO protected fields is better in general, this will let a freedom to extend
-  // the class easily
-  private String comment;
+  protected final String comment;
 
-  private String ewsUrl;
+  protected final String ewsUrl;
 
-  private String userEmail;
+  protected final String userEmail;
 
-  private String userName;
+  protected final String userName;
 
-  private String messageId;
+  protected final String messageId;
 
-  private String attachmentToken;
+  protected final String attachmentToken;
 
   /**
    * Instantiates a new Attachment.
@@ -50,19 +49,19 @@ public class Attachment extends AbstractFileResource {
     set_metadata(new Metadata(metadata));
     add(links);
 
-    setComment(comment);
-    setEwsUrl(ewsUrl);
-    setUserEmail(userEmail);
-    setUserName(userName);
-    setMessageId(messageId);
-    setAttachmentToken(attachmentToken);
+    this.comment = comment;
+    this.ewsUrl = ewsUrl;
+    this.userEmail = userEmail;
+    this.userName = userName;
+    this.messageId = messageId;
+    this.attachmentToken = attachmentToken;
 
     List<File> fileDTOS = new LinkedList<>();
     files.forEach((f) -> {
       fileDTOS.add(new File(f));
     });
 
-    Collection<Children> contextParams = new ArrayList(); // TODO generics?
+    Collection<Children> contextParams = new ArrayList<>();
     contextParams.add(new Children(fileDTOS));
 
     set_embedded(new EmbeddedContent(contextParams));
@@ -73,17 +72,9 @@ public class Attachment extends AbstractFileResource {
    *
    * @return the comment
    */
+  @JsonProperty("comment")
   public String getComment() {
     return comment;
-  }
-
-  /**
-   * Sets comment.
-   *
-   * @param comment the comment
-   */
-  public void setComment(String comment) {
-    this.comment = comment;
   }
 
   /**
@@ -91,17 +82,9 @@ public class Attachment extends AbstractFileResource {
    *
    * @return the ews url
    */
+  @JsonProperty("ewsUrl")
   public String getEwsUrl() {
     return ewsUrl;
-  }
-
-  /**
-   * Sets ews url.
-   *
-   * @param ewsUrl the ews url
-   */
-  public void setEwsUrl(String ewsUrl) {
-    this.ewsUrl = ewsUrl;
   }
 
   /**
@@ -109,17 +92,9 @@ public class Attachment extends AbstractFileResource {
    *
    * @return the user email
    */
+  @JsonProperty("userEmail")
   public String getUserEmail() {
     return userEmail;
-  }
-
-  /**
-   * Sets user email.
-   *
-   * @param userEmail the user email
-   */
-  public void setUserEmail(String userEmail) {
-    this.userEmail = userEmail;
   }
 
   /**
@@ -127,17 +102,9 @@ public class Attachment extends AbstractFileResource {
    *
    * @return the user name
    */
+  @JsonProperty("userName")
   public String getUserName() {
     return userName;
-  }
-
-  /**
-   * Sets user name.
-   *
-   * @param userName the user name
-   */
-  public void setUserName(String userName) {
-    this.userName = userName;
   }
 
   /**
@@ -145,17 +112,9 @@ public class Attachment extends AbstractFileResource {
    *
    * @return the message id
    */
+  @JsonProperty("messageId")
   public String getMessageId() {
     return messageId;
-  }
-
-  /**
-   * Sets message id.
-   *
-   * @param messageId the message id
-   */
-  public void setMessageId(String messageId) {
-    this.messageId = messageId;
   }
 
   /**
@@ -163,23 +122,14 @@ public class Attachment extends AbstractFileResource {
    *
    * @return the attachment token
    */
+  @JsonProperty("attachmentToken")
   public String getAttachmentToken() {
     return attachmentToken;
   }
 
-  /**
-   * Sets attachment token.
-   *
-   * @param attachmentToken the attachment token
-   */
-  public void setAttachmentToken(String attachmentToken) {
-    this.attachmentToken = attachmentToken;
-  }
+  protected class Children {
 
-  // TODO private?
-  private class Children {
-
-    private List<File> files;
+    protected final List<File> files;
 
     /**
      * Instantiates a new Children.
@@ -197,15 +147,6 @@ public class Attachment extends AbstractFileResource {
      */
     public List<File> getFiles() {
       return files;
-    }
-
-    /**
-     * Sets files.
-     *
-     * @param files the files
-     */
-    public void setFiles(List<File> files) {
-      this.files = files;
     }
   }
 }
