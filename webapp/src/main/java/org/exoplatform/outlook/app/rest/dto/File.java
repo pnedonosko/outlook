@@ -18,6 +18,7 @@
  */
 package org.exoplatform.outlook.app.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import javax.jcr.RepositoryException;
@@ -29,36 +30,20 @@ import java.util.Objects;
 public class File extends AbstractFileResource {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(File.class);
-
-  private String           name;
-
-  private String           fullPath;
-
-  private String           pathLabel;
-
-  private String           url;
-
-  private String           webdavUrl;
-
-  private String           title;
+  private static final Log                         LOG = ExoLogger.getLogger(File.class);
 
   /**
-   * Instantiates a new Subfile.
+   * The File.
+   */
+  protected final org.exoplatform.outlook.jcr.File file;
+
+  /**
+   * Instantiates a new File.
    *
    * @param file the file
    */
   public File(org.exoplatform.outlook.jcr.File file) {
-    setName(file.getName());
-    try {
-      setFullPath(file.getNode().getPath());
-    } catch (RepositoryException e) {
-      LOG.error(e);
-    }
-    setPathLabel(file.getPathLabel());
-    setUrl(file.getUrl());
-    setWebdavUrl(file.getWebdavUrl());
-    setTitle(file.getTitle());
+    this.file = file;
   }
 
   /**
@@ -66,17 +51,9 @@ public class File extends AbstractFileResource {
    *
    * @return the name
    */
+  @JsonProperty("name")
   public String getName() {
-    return name;
-  }
-
-  /**
-   * Sets name.
-   *
-   * @param name the name
-   */
-  public void setName(String name) {
-    this.name = name;
+    return file.getName();
   }
 
   /**
@@ -84,17 +61,9 @@ public class File extends AbstractFileResource {
    *
    * @return the url
    */
+  @JsonProperty("url")
   public String getUrl() {
-    return url;
-  }
-
-  /**
-   * Sets url.
-   *
-   * @param url the url
-   */
-  public void setUrl(String url) {
-    this.url = url;
+    return file.getUrl();
   }
 
   /**
@@ -102,17 +71,17 @@ public class File extends AbstractFileResource {
    *
    * @return the full path
    */
+  @JsonProperty("fullPath")
   public String getFullPath() {
-    return fullPath;
-  }
+    String fullPath = "";
 
-  /**
-   * Sets full path.
-   *
-   * @param fullPath the full path
-   */
-  public void setFullPath(String fullPath) {
-    this.fullPath = fullPath;
+    try {
+      fullPath = file.getNode().getPath();
+    } catch (RepositoryException e) {
+      LOG.error(e);
+    }
+
+    return fullPath;
   }
 
   /**
@@ -120,17 +89,9 @@ public class File extends AbstractFileResource {
    *
    * @return the path label
    */
+  @JsonProperty("pathLabel")
   public String getPathLabel() {
-    return pathLabel;
-  }
-
-  /**
-   * Sets path label.
-   *
-   * @param pathLabel the path label
-   */
-  public void setPathLabel(String pathLabel) {
-    this.pathLabel = pathLabel;
+    return file.getPathLabel();
   }
 
   /**
@@ -138,17 +99,9 @@ public class File extends AbstractFileResource {
    *
    * @return the webdav url
    */
+  @JsonProperty("webdavUrl")
   public String getWebdavUrl() {
-    return webdavUrl;
-  }
-
-  /**
-   * Sets webdav url.
-   *
-   * @param webdavUrl the webdav url
-   */
-  public void setWebdavUrl(String webdavUrl) {
-    this.webdavUrl = webdavUrl;
+    return file.getWebdavUrl();
   }
 
   /**
@@ -156,17 +109,9 @@ public class File extends AbstractFileResource {
    *
    * @return the title
    */
+  @JsonProperty("title")
   public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Sets title.
-   *
-   * @param title the title
-   */
-  public void setTitle(String title) {
-    this.title = title;
+    return file.getTitle();
   }
 
   @Override
