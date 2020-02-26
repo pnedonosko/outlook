@@ -4,14 +4,43 @@ import { IContainerProps } from "../../OutlookApp";
 import { Dropdown } from "office-ui-fabric-react/lib/Dropdown";
 import { Pivot, PivotItem, PivotLinkFormat } from "office-ui-fabric-react/lib/Pivot";
 import { SearchBox } from "office-ui-fabric-react/lib/SearchBox";
-
+import {
+  DetailsList,
+  DetailsListLayoutMode,
+  Selection,
+  IColumn
+} from "office-ui-fabric-react/lib/DetailsList";
+import { MarqueeSelection } from "office-ui-fabric-react/lib/MarqueeSelection";
+import { IconButton, TextField, PrimaryButton, DefaultButton } from "office-ui-fabric-react";
 interface IAttachDocumentState {
-  sources: { key: string; text: string }[];
-  selectedSource: { key: string; text: string };
+  sources: ISource[];
+  selectedSource: ISource;
+  sourceDocuments: ISourceDocument[];
+  selectionDetails?: ISourceDocument[];
+}
+
+interface ISource {
+  key: string;
+  text: string;
+}
+
+export interface ISourceDocument {
+  name: string;
+  type: string;
+  path: string;
 }
 
 class AttachDocument extends React.Component<IContainerProps, IAttachDocumentState> {
-  public state = { sources: [], selectedSource: undefined };
+  public state = { sources: [], selectedSource: undefined, sourceDocuments: [], selectionDetails: [] };
+
+  private selection = new Selection({
+    onSelectionChanged: () => this.setState({ selectionDetails: this.getSelectionDetails() })
+  });
+
+  private columns: IColumn[] = [
+    { key: "name", name: "Name", fieldName: "name", minWidth: 100, maxWidth: 200, isResizable: true },
+    { key: "link", name: "Url", fieldName: "path", minWidth: 100, maxWidth: 200, isResizable: true }
+  ];
 
   componentDidMount() {
     // get spaces, add options 'All spaces' and 'My documents' to dropdown
@@ -24,7 +53,19 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
     });
   }
 
-  private onSourceChange = () => {};
+  private onSourceChange = () => {
+    // get documents from source
+    this.setState({
+      sourceDocuments: [
+        { name: "file.jpg", type: "file", path: "tofile1" },
+        { name: "file.png", type: "file", path: "tofile2" }
+      ]
+    });
+  };
+
+  private getSelectionDetails(): ISourceDocument[] {
+    return this.selection.getSelection() as ISourceDocument[];
+  }
 
   public render(): JSX.Element {
     return (
@@ -49,12 +90,75 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
               onFocus={() => console.log("onFocus called")}
               onBlur={() => console.log("onBlur called")}
             />
+            {this.state.sourceDocuments.length > 0 ? (
+              <MarqueeSelection selection={this.selection}>
+                <DetailsList
+                  items={this.state.sourceDocuments}
+                  columns={this.columns}
+                  setKey="set"
+                  layoutMode={DetailsListLayoutMode.justified}
+                  selection={this.selection}
+                  selectionPreservedOnEmptyClick
+                  ariaLabelForSelectionColumn="Toggle selection"
+                  ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                  checkButtonAriaLabel="Row checkbox"
+                  isHeaderVisible={false}
+                  onRenderItemColumn={renderItemColumn}
+                />
+              </MarqueeSelection>
+            ) : null}
           </PivotItem>
-          <PivotItem headerText="Explore">Explorer</PivotItem>
+          <PivotItem headerText="Explore">
+            <div className="target-folder">
+              <TextField disabled />
+              <div className="target-folder-actions">
+                <IconButton
+                  iconProps={{ iconName: "Up" }}
+                  title="Show folders"
+                  ariaLabel="Show folders"
+                />
+                <IconButton iconProps={{ iconName: "Go" }} title="Open in new tab" ariaLabel="Open in new tab" />
+              </div>
+            </div>
+            <DetailsList
+              items={this.state.sourceDocuments}
+              columns={this.columns}
+              setKey="set"
+              layoutMode={DetailsListLayoutMode.justified}
+              selection={this.selection}
+              selectionPreservedOnEmptyClick
+              ariaLabelForSelectionColumn="Toggle selection"
+              ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+              checkButtonAriaLabel="Row checkbox"
+              isHeaderVisible={false}
+              onRenderItemColumn={renderItemColumn}
+            />
+          </PivotItem>
         </Pivot>
+        <div>
+          <span>Selected documents: </span>
+          {this.state.selectionDetails ? <DetailsList
+            items={this.state.selectionDetails}
+            columns={this.columns}
+            isHeaderVisible={false}
+            onRenderItemColumn={renderItemColumn}
+          /> : null}
+          <div>Selected documents will be attached to the message.</div>
+        </div>
+        <PrimaryButton text="Attach" />
+        <DefaultButton text="Cancel" />
       </div>
     );
   }
 }
 
 export default AttachDocument;
+
+function renderItemColumn(item, _, column: IColumn) {
+  const fieldContent = item[column.fieldName as keyof ISourceDocument] as string;
+  return column.key === "link" ? (
+    <IconButton iconProps={{ iconName: "Go" }} href={fieldContent} />
+  ) : (
+      <span>{fieldContent}</span>
+    );
+}
