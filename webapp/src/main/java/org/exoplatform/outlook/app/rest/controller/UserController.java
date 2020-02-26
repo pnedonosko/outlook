@@ -147,14 +147,9 @@ public class UserController {
     }
 
     List<Link> links = new LinkedList<>();
-    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
-    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
-    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
-    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("parent"));
     links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withSelfRel());
-    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
-    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
-    links.add(linkTo(methodOn(UserController.class).getActivity(userId, OutlookConstant.ACTIVITY_ID)).withRel("getActivity"));
+    links.add(linkTo(DocumentController.class).slash(OutlookConstant.DOCUMENT_PATH).withRel("document"));
 
     int folderFilesAndSubfolders = 0;
     try {
