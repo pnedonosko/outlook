@@ -1,13 +1,29 @@
 package org.exoplatform.outlook.app.rest.controller;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.outlook.OutlookException;
+import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
+import org.exoplatform.outlook.app.rest.dto.Folder;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.jcr.RepositoryException;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * The type User controller.
@@ -78,8 +94,44 @@ public class UserController {
    */
   @RequestMapping(value = "/{UID}/documents", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getDocuments(@PathVariable("UID") String userId) {
-    AbstractFileResource resource = null;
-    return resource;
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
+
+    org.exoplatform.outlook.jcr.Folder rootUserFolder = null;
+
+    try {
+      rootUserFolder = outlook.getUserDocuments().getRootFolder();
+    } catch (OutlookException e) {
+      LOG.error("Error getting a user (" + userId + ") root folder", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a user (" + userId + ") root folder");
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a user (" + userId + ") root folder", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a user (" + userId + ") root folder");
+    }
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withSelfRel());
+
+    int folderFilesAndSubfolders = 0;
+    try {
+      folderFilesAndSubfolders = rootUserFolder.getSubfolders().size() + rootUserFolder.getFiles().size();
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a user (" + userId + ") root folder subfolders or files", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error getting a user (" + userId + ") root folder subfolders or files");
+    } catch (OutlookException e) {
+      LOG.error("Error getting a user (" + userId + ") root folder subfolders or files", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error getting a user (" + userId + ") root folder subfolders or files");
+    }
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderFilesAndSubfolders,
+                                                                           1,
+                                                                           folderFilesAndSubfolders,
+                                                                           1);
+
+    Folder rootFolder = new Folder(rootUserFolder, metadata, links);
+
+    return rootFolder;
   }
 
   /**
