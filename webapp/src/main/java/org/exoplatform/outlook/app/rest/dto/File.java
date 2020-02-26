@@ -21,6 +21,7 @@ package org.exoplatform.outlook.app.rest.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import javax.jcr.RepositoryException;
@@ -29,7 +30,7 @@ import java.util.Objects;
 /**
  * The type File.
  */
-public class File extends AbstractFileResource {
+public class File extends ResourceSupport {
 
   /** The Constant LOG. */
   private static final Log                         LOG = ExoLogger.getLogger(File.class);

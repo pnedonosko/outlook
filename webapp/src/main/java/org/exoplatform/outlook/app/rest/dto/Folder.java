@@ -41,7 +41,7 @@ public class Folder extends AbstractFileResource {
    */
   public Folder(org.exoplatform.outlook.jcr.Folder folder, PagedResources.PageMetadata metadata, List<Link> links) {
 
-    set_metadata(new Metadata(metadata));
+    setMetadata(new Metadata(metadata));
     add(links);
 
     this.folder = folder;
@@ -95,7 +95,7 @@ public class Folder extends AbstractFileResource {
 
     Collection<Children> contextParams = new ArrayList();
     contextParams.add(children);
-    set_embedded(new EmbeddedContent(contextParams));
+    setEmbedded(new EmbeddedContent(contextParams));
   }
 
   /**

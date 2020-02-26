@@ -46,7 +46,7 @@ public class Attachment extends AbstractFileResource {
                     String attachmentToken,
                     List<org.exoplatform.outlook.jcr.File> files) {
 
-    set_metadata(new Metadata(metadata));
+    setMetadata(new Metadata(metadata));
     add(links);
 
     this.comment = comment;
@@ -64,7 +64,7 @@ public class Attachment extends AbstractFileResource {
     Collection<Children> contextParams = new ArrayList<>();
     contextParams.add(new Children(fileDTOS));
 
-    set_embedded(new EmbeddedContent(contextParams));
+    setEmbedded(new EmbeddedContent(contextParams));
   }
 
   /**
