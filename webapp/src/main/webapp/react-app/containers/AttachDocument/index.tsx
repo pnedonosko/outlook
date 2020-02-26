@@ -11,12 +11,21 @@ import {
   IColumn
 } from "office-ui-fabric-react/lib/DetailsList";
 import { MarqueeSelection } from "office-ui-fabric-react/lib/MarqueeSelection";
-import { IconButton, TextField, PrimaryButton, DefaultButton } from "office-ui-fabric-react";
+import {
+  IconButton,
+  TextField,
+  PrimaryButton,
+  DefaultButton,
+  MessageBarType,
+  MessageBar
+} from "office-ui-fabric-react";
+
 interface IAttachDocumentState {
   sources: ISource[];
   selectedSource: ISource;
   sourceDocuments: ISourceDocument[];
   selectionDetails?: ISourceDocument[];
+  resultNotification?: { type: MessageBarType; errors?: string[] };
 }
 
 interface ISource {
@@ -31,7 +40,13 @@ export interface ISourceDocument {
 }
 
 class AttachDocument extends React.Component<IContainerProps, IAttachDocumentState> {
-  public state = { sources: [], selectedSource: undefined, sourceDocuments: [], selectionDetails: [] };
+  public state = {
+    sources: [],
+    selectedSource: undefined,
+    sourceDocuments: [],
+    selectionDetails: [],
+    resultNotification: undefined
+  };
 
   private selection = new Selection({
     onSelectionChanged: () => this.setState({ selectionDetails: this.getSelectionDetails() })
@@ -67,10 +82,36 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
     return this.selection.getSelection() as ISourceDocument[];
   }
 
+  private attachDocuments = () => {
+    // request save attachment with result
+    const res = { status: "error", errors: ["An internal error has occured"] };
+    if (res.status === "error") {
+      this.setState({ resultNotification: { type: MessageBarType.error, errors: res.errors } });
+    } else {
+      this.setState({ resultNotification: { type: MessageBarType.success } });
+    }
+  };
+
+  private renderItemColumn(item, _, column: IColumn) {
+    const fieldContent = item[column.fieldName as keyof ISourceDocument] as string;
+    return column.key === "link" ? (
+      <IconButton iconProps={{ iconName: "Go" }} href={fieldContent} />
+    ) : (
+      <span>{fieldContent}</span>
+    );
+  }
+
   public render(): JSX.Element {
-    return (
-      <div className="outlook-command-container outlook-save-attachments">
-        <h4 className="outlook-title">Attach Document</h4>
+    const attachContent = this.state.resultNotification ? (
+      <MessageBar
+        messageBarType={this.state.resultNotification.type}
+        isMultiline={false}
+        dismissButtonAriaLabel="Close"
+      >
+        {this.state.resultNotification.errors ? this.state.resultNotification.errors[0] : "Successfull!"}
+      </MessageBar>
+    ) : (
+      <>
         <div className="outlook-description">Attach documents from the intranet to this message.</div>
         <Dropdown
           label="Source"
@@ -103,7 +144,7 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
                   ariaLabelForSelectAllCheckbox="Toggle selection for all items"
                   checkButtonAriaLabel="Row checkbox"
                   isHeaderVisible={false}
-                  onRenderItemColumn={renderItemColumn}
+                  onRenderItemColumn={this.renderItemColumn}
                 />
               </MarqueeSelection>
             ) : null}
@@ -112,12 +153,12 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
             <div className="target-folder">
               <TextField disabled />
               <div className="target-folder-actions">
+                <IconButton iconProps={{ iconName: "Up" }} title="Show folders" ariaLabel="Show folders" />
                 <IconButton
-                  iconProps={{ iconName: "Up" }}
-                  title="Show folders"
-                  ariaLabel="Show folders"
+                  iconProps={{ iconName: "Go" }}
+                  title="Open in new tab"
+                  ariaLabel="Open in new tab"
                 />
-                <IconButton iconProps={{ iconName: "Go" }} title="Open in new tab" ariaLabel="Open in new tab" />
               </div>
             </div>
             <DetailsList
@@ -131,34 +172,34 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
               ariaLabelForSelectAllCheckbox="Toggle selection for all items"
               checkButtonAriaLabel="Row checkbox"
               isHeaderVisible={false}
-              onRenderItemColumn={renderItemColumn}
+              onRenderItemColumn={this.renderItemColumn}
             />
           </PivotItem>
         </Pivot>
         <div>
           <span>Selected documents: </span>
-          {this.state.selectionDetails ? <DetailsList
-            items={this.state.selectionDetails}
-            columns={this.columns}
-            isHeaderVisible={false}
-            onRenderItemColumn={renderItemColumn}
-          /> : null}
+          {this.state.selectionDetails ? (
+            <DetailsList
+              items={this.state.selectionDetails}
+              columns={this.columns}
+              isHeaderVisible={false}
+              onRenderItemColumn={this.renderItemColumn}
+            />
+          ) : null}
           <div>Selected documents will be attached to the message.</div>
         </div>
-        <PrimaryButton text="Attach" />
+        <PrimaryButton text="Attach" onClick={this.attachDocuments} />
         <DefaultButton text="Cancel" />
+      </>
+    );
+
+    return (
+      <div className="outlook-command-container outlook-save-attachments">
+        <h4 className="outlook-title">Attach Document</h4>
+        {attachContent}
       </div>
     );
   }
 }
 
 export default AttachDocument;
-
-function renderItemColumn(item, _, column: IColumn) {
-  const fieldContent = item[column.fieldName as keyof ISourceDocument] as string;
-  return column.key === "link" ? (
-    <IconButton iconProps={{ iconName: "Go" }} href={fieldContent} />
-  ) : (
-      <span>{fieldContent}</span>
-    );
-}
