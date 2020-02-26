@@ -109,6 +109,16 @@ public class Folder extends AbstractFileResource {
   }
 
   /**
+   * Gets full path.
+   *
+   * @return the full path
+   */
+  @JsonProperty("fullPath")
+  public String getFullPath() {
+    return folder.getFullPath();
+  }
+
+  /**
    * Gets explorer path (path label).
    *
    * @return the path label
