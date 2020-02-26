@@ -44,8 +44,8 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/view/*");
-    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/v2/*");
+    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/view/**");
+    registry.addInterceptor(new ExoContainerRequestLifeCycleInterceptor()).addPathPatterns("/v2/**");
   }
 
   @Bean
