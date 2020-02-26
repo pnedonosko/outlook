@@ -97,6 +97,36 @@ public class Space {
     return defaultFolderPath;
   }
 
+  @JsonProperty("fullRootPath")
+  public String getFullRootParh() {
+    String defaultFolderPath = "";
+    try {
+      defaultFolderPath = outlookSpace.getRootFolder().getFullPath();
+    } catch (OutlookException e) {
+      LOG.error("Error getting a full root path in the outlook space", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a full root path in the outlook space");
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a full root path in the outlook space", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a full root path in the outlook space");
+    }
+    return defaultFolderPath;
+  }
+
+  @JsonProperty("rootLabel")
+  public String getRootLabel() {
+    String defaultFolderPath = "";
+    try {
+      defaultFolderPath = outlookSpace.getRootFolder().getFullPath();
+    } catch (OutlookException e) {
+      LOG.error("Error getting a root label in the outlook space", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a root label in the outlook space");
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a root label in the outlook space", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting a root label in the outlook space");
+    }
+    return defaultFolderPath;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o)
