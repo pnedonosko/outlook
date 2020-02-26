@@ -15,9 +15,9 @@ import java.util.Iterator;
  */
 public abstract class AbstractFileResource extends ResourceSupport {
 
-  private Metadata        _metadata;
+  protected Metadata        metadata;
 
-  private EmbeddedContent _embedded;
+  protected EmbeddedContent embedded;
 
   /**
    * Instantiates a new General info box.
@@ -28,12 +28,12 @@ public abstract class AbstractFileResource extends ResourceSupport {
   /**
    * Instantiates a new General info box.
    *
-   * @param _metadata the metadata
+   * @param metadata the metadata
    * @param content the content
    */
-  public AbstractFileResource(Metadata _metadata, Collection<?> content) {
-    this._metadata = _metadata;
-    _embedded = new EmbeddedContent(content);
+  public AbstractFileResource(PagedResources.PageMetadata metadata, Collection<?> content) {
+    this.metadata = new Metadata(metadata);
+    embedded = new EmbeddedContent(content);
   }
 
   /**
@@ -42,7 +42,7 @@ public abstract class AbstractFileResource extends ResourceSupport {
    * @return the iterator
    */
   public Iterator<?> iterator() {
-    return this._embedded.content.iterator();
+    return this.embedded.content.iterator();
   }
 
   /**
@@ -50,17 +50,18 @@ public abstract class AbstractFileResource extends ResourceSupport {
    *
    * @return the metadata
    */
-  public Metadata get_metadata() {
-    return _metadata;
+  @JsonProperty("_metadata")
+  public Metadata getMetadata() {
+    return metadata;
   }
 
   /**
    * Sets metadata.
    *
-   * @param _metadata the metadata
+   * @param metadata the metadata
    */
-  public void set_metadata(Metadata _metadata) {
-    this._metadata = _metadata;
+  public void setMetadata(Metadata metadata) {
+    this.metadata = metadata;
   }
 
   /**
@@ -68,17 +69,18 @@ public abstract class AbstractFileResource extends ResourceSupport {
    *
    * @return the embedded
    */
-  public EmbeddedContent get_embedded() {
-    return _embedded;
+  @JsonProperty("_embedded")
+  public EmbeddedContent getEmbedded() {
+    return embedded;
   }
 
   /**
    * Sets embedded.
    *
-   * @param _embedded the embedded
+   * @param embedded the embedded
    */
-  public void set_embedded(EmbeddedContent _embedded) {
-    this._embedded = _embedded;
+  public void setEmbedded(EmbeddedContent embedded) {
+    this.embedded = embedded;
   }
 
   /**
@@ -89,7 +91,7 @@ public abstract class AbstractFileResource extends ResourceSupport {
     /**
      * The Metadata.
      */
-    PagedResources.PageMetadata metadata;
+    protected PagedResources.PageMetadata metadata;
 
     /**
      * Instantiates a new Metadata.
@@ -125,7 +127,7 @@ public abstract class AbstractFileResource extends ResourceSupport {
    */
   protected class EmbeddedContent {
 
-    private Collection<?> content;
+    protected Collection<?> content;
 
     /**
      * Instantiates a new Embedded content.
