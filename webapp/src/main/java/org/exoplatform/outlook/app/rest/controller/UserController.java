@@ -39,6 +39,12 @@ public class UserController {
   /** The Constant HAL_AND_JSON. */
   private static final String HAL_AND_JSON = "application/hal+json";
 
+  /** The Constant USER_ID. */
+  private static final String USER_ID      = "{UID}";
+
+  /** The Constant ACTIVITY_ID. */
+  private static final String ACTIVITY_ID  = "{AID}";
+
   /**
    * Gets root.
    *
@@ -47,6 +53,17 @@ public class UserController {
   @RequestMapping(value = "", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getRoot() {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(USER_ID)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(USER_ID)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(USER_ID)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(USER_ID)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(USER_ID)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(USER_ID)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(USER_ID, ACTIVITY_ID)).withRel("getActivity"));
+
     return resource;
   }
 
@@ -59,6 +76,17 @@ public class UserController {
   @RequestMapping(value = "/{UID}", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getUserInfo(@PathVariable("UID") String userId) {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, ACTIVITY_ID)).withRel("getActivity"));
+
     return resource;
   }
 
@@ -71,6 +99,17 @@ public class UserController {
   @RequestMapping(value = "/{UID}/connections", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getConnections(@PathVariable("UID") String userId) {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, ACTIVITY_ID)).withRel("getActivity"));
+
     return resource;
   }
 
@@ -83,6 +122,17 @@ public class UserController {
   @RequestMapping(value = "/{UID}/spaces", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getSpaces(@PathVariable("UID") String userId) {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, ACTIVITY_ID)).withRel("getActivity"));
+
     return resource;
   }
 
@@ -110,7 +160,14 @@ public class UserController {
     }
 
     List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
     links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, ACTIVITY_ID)).withRel("getActivity"));
 
     int folderFilesAndSubfolders = 0;
     try {
@@ -143,6 +200,17 @@ public class UserController {
   @RequestMapping(value = "/{UID}/activities", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getActivities(@PathVariable("UID") String userId) {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, ACTIVITY_ID)).withRel("getActivity"));
+
     return resource;
   }
 
@@ -155,6 +223,17 @@ public class UserController {
   @RequestMapping(value = "/{UID}/activity", method = RequestMethod.POST, produces = HAL_AND_JSON)
   public AbstractFileResource postActivity(@PathVariable("UID") String userId) {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, ACTIVITY_ID)).withRel("getActivity"));
+
     return resource;
   }
 
@@ -168,6 +247,17 @@ public class UserController {
   @RequestMapping(value = "/{UID}/activity/{AID}", method = RequestMethod.GET, produces = HAL_AND_JSON)
   public AbstractFileResource getActivity(@PathVariable("UID") String userId, @PathVariable("AID") String activityId) {
     AbstractFileResource resource = null;
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("getRoot"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId)).withRel("getUserInfo"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("getConnections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("getSpaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("getDocuments"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("getActivities"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId)).withRel("postActivity"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, activityId)).withSelfRel());
+
     return resource;
   }
 
