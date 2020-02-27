@@ -5,6 +5,7 @@ import org.exoplatform.outlook.OutlookException;
 import org.exoplatform.outlook.OutlookSpace;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -14,7 +15,7 @@ import java.util.Objects;
 /**
  * The type Space.
  */
-public class Space {
+public class Space extends ResourceSupport {
 
   /** The Constant LOG. */
   private static final Log     LOG = ExoLogger.getLogger(Space.class);

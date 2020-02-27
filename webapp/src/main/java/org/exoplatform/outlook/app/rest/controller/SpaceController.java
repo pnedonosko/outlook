@@ -1,14 +1,32 @@
 package org.exoplatform.outlook.app.rest.controller;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.outlook.OutlookException;
+import org.exoplatform.outlook.OutlookService;
+import org.exoplatform.outlook.OutlookSpace;
+import org.exoplatform.outlook.OutlookSpaceException;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
+import org.exoplatform.outlook.app.rest.dto.Space;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.jcr.RepositoryException;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * The type Space controller.
@@ -28,10 +46,41 @@ public class SpaceController {
    * @return the space
    */
   @RequestMapping(value = "/{SID}", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getSpace(@PathVariable("SID") String spaceId) {
-    AbstractFileResource resource = null;
+  public ResourceSupport getSpace(@PathVariable("SID") String spaceId) {
 
-    return resource;
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
+
+    String spaceGroupId = new StringBuilder("/spaces/").append(spaceId).toString();
+
+    OutlookSpace outlookSpace = null;
+    try {
+      outlookSpace = outlook.getSpace(spaceGroupId);
+    } catch (OutlookSpaceException e) {
+      LOG.error("Error getting space (" + spaceGroupId + ")", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
+    } catch (RepositoryException e) {
+      LOG.error("Error getting space (" + spaceGroupId + ")", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
+    } catch (OutlookException e) {
+      LOG.error("Error getting space (" + spaceGroupId + ")", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
+    }
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(RootDiscoveryeXoServiceController.class).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withSelfRel());
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId)).withRel("activities"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(spaceId)).withRel("documents"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(spaceId)).withRel("wiki"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceForum(spaceId)).withRel("forum"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceCalendar(spaceId)).withRel("calendar"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceMembers(spaceId)).withRel("members"));
+
+    Space space = new Space(outlookSpace);
+    space.add(links);
+
+    return space;
   }
 
   /**
