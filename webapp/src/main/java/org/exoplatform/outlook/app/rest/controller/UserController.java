@@ -86,7 +86,7 @@ public class UserController {
     links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
     links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID)).withRel("spaces"));
     links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID)).withRel("documents"));
-    links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID)).withRel("activities"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID, null)).withRel("activities"));
     links.add(linkTo(methodOn(UserController.class).getActivity(OutlookConstant.USER_ID,
                                                                 OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
@@ -159,7 +159,7 @@ public class UserController {
       links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("connections"));
       links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("spaces"));
       links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("documents"));
-      links.add(linkTo(methodOn(UserController.class).getActivities(userId)).withRel("activities"));
+      links.add(linkTo(methodOn(UserController.class).getActivities(userId, null)).withRel("activities"));
       userInfoDTO.add(links);
 
       return userInfoDTO;
@@ -300,8 +300,68 @@ public class UserController {
    * @return the activities
    */
   @RequestMapping(value = "/{UID}/activities", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getActivities(@PathVariable("UID") String userId) {
+  public AbstractFileResource getActivities(@PathVariable("UID") String userId, HttpServletRequest request) {
     AbstractFileResource resource = null;
+
+    final Charset clientCs = loadEncoding(request.getCharacterEncoding());
+
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    ActivityManager activityManager = (ActivityManager) currentContainer.getComponentInstance(ActivityManager.class);
+    IdentityManager identityManager = (IdentityManager) currentContainer.getComponentInstance(IdentityManager.class);
+    OrganizationService organization = (OrganizationService) currentContainer.getComponentInstance(OrganizationService.class);
+
+    Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
+    List<ExoSocialActivity> top100 = activityManager.getActivitiesByPoster(userIdentity).loadAsList(0, 100);
+
+    Set<String> currentUserGroupIds = null;
+    try {
+      currentUserGroupIds = organization.getMembershipHandler()
+                                        .findMembershipsByUser(userId)
+                                        .stream()
+                                        .map(m -> m.getGroupId())
+                                        .collect(Collectors.toSet());
+    } catch (Exception e) {
+      LOG.error("Error getting current user (" + userId + ") group ids", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error getting current user (" + userId + ") group ids");
+    }
+
+    // Use Apache Tika to parse activity title w/o HTML
+    HtmlParser htmlParser = new HtmlParser();
+
+    Set<String> finalCurrentUserGroupIds = currentUserGroupIds;
+    List<ActivityInfo> activities = top100.stream().filter(a -> {
+      String streamId = a.getStreamOwner();
+      return streamId != null
+          && (userIdentity.getRemoteId().equals(streamId) || finalCurrentUserGroupIds.contains(findSpaceGroupId(streamId)));
+    }).map(a -> {
+      // We want activity title in text (not HTML)
+      ParseContext pcontext = new ParseContext();
+      ContentHandler contentHandler = new BodyContentHandler();
+      Metadata metadata = new Metadata();
+      InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs));
+      String titleText;
+      try {
+        htmlParser.parse(content, contentHandler, metadata, pcontext);
+        titleText = cutText(contentHandler.toString(), 100);
+      } catch (Exception e) {
+        String rawTitle = cutText(a.getTitle(), 100);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Cannot parse activity title: '{}...'", rawTitle, e);
+        }
+        titleText = rawTitle;
+      }
+      return new ActivityInfo(titleText, a.getType(), LinkProvider.getSingleActivityUrl(a.getId()), a.getPostedTime());
+    }).collect(Collectors.toList());
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId, null)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
+
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(activities.size(), 1, activities.size(), 1);
+
+    resource = new FileResource(metadata, activities, links);
 
     return resource;
   }
