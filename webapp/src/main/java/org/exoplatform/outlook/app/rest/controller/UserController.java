@@ -166,6 +166,23 @@ public class UserController {
   public AbstractFileResource getConnections(@PathVariable("UID") String userId) {
     AbstractFileResource resource = null;
 
+    List<IdentityInfo> userConnections = null;
+    try {
+      userConnections = getConnectionsList(userId);
+    } catch (Exception e) {
+      LOG.error("Cannot get user connections {}", userId, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot get user (" + userId + ") connections");
+    }
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
+
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(userConnections.size(), 1, userConnections.size(), 1);
+
+    resource = new FileResource(metadata, userConnections, links);
+
     return resource;
   }
 
