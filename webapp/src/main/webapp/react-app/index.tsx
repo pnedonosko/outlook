@@ -6,13 +6,6 @@ import OutlookApp from "./OutlookApp";
 initializeIcons();
 
 // let isOfficeInitialized = false;
-// const exoVariables = {
-//   context: window["eXo"].env.portal.context,
-//   rest: window["eXo"].env.portal.rest,
-//   language: window["eXo"].env.portal.language,
-//   outlook: window["eXo"].env.app.outlook,
-//   spring: window["eXo"].env.app.spring
-// };
 
 // variable that define what component should be loaded
 const command = "ConvertToForum";

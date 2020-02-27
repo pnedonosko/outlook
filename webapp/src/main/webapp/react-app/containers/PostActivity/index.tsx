@@ -5,10 +5,14 @@ import TextMessage from "../../components/TextMessage";
 import SpacesSelect from "../../components/SpacesSelect";
 import { DefaultButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
 
-interface IPostActivityState {}
+interface IPostActivityState {
+  message: string;
+  selectedSpace: any;
+  // any will be replaced by space interface
+}
 
-class PostActivity extends React.Component<IContainerProps> {
-  state: IPostActivityState = {};
+class PostActivity extends React.Component<IContainerProps, IPostActivityState> {
+  state: IPostActivityState = { message: "", selectedSpace: undefined };
 
   getMessage = (text: string) => {
     this.setState({ message: text });

@@ -12,13 +12,14 @@ import { IContainerProps } from "../../OutlookApp";
 
 interface ISaveAttachmentsState {
   attachmentSelection: string;
-  attachments?: Office.AttachmentDetails[];
+  // any should be replaced by Office.AttachmentDetails
+  attachments?: any[];
   message?: string;
   selectedSpace?: any;
   showFolderDialog?: boolean;
 }
 
-class SaveAttachments extends React.Component<IContainerProps> {
+class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsState> {
   state: ISaveAttachmentsState = { attachmentSelection: "No items selected" };
 
   componentDidMount() {

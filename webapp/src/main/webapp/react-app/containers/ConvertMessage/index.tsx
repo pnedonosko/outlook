@@ -36,12 +36,14 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
     let specialCharacters = new RegExp(/[%=:@\/\\\|\^#;\[\]{}<>\*'"\+\?&]/g);
     // Not allowed:
     // % = : @ / \ | ^ # ; [ ] { } < > * ' " + ? &
-    this.setState({ messageTitle: "Title of current message".replace(specialCharacters, " ") });
-    // get message content
-    this.setState({ messageContent: "Message body" });
+    this.setState({
+      messageTitle: "Title of current message".replace(specialCharacters, " "),
+      messageContent: "Message body"
+    });
   }
 
   getComponentConfig = async (configType: string): Promise<void> => {
+    // download component config in depending on type from props
     import(`./convert-message.config`)
       .then(configs =>
         this.setState({
@@ -103,7 +105,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
             multiline
             rows={3}
             disabled={!this.state.editMessage}
-            defaultValue={this.state.messageContent ? this.state.messageContent : "rgr"}
+            defaultValue={this.state.messageContent ? this.state.messageContent : ""}
           />
         ) : null}
         <SpacesSelect

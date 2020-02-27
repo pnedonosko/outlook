@@ -10,7 +10,7 @@ interface IDestinationFolderProps {
   space: any;
 }
 
-function DestinationFolder(props: IDestinationFolderProps): React.ReactElement {
+function DestinationFolder(props: IDestinationFolderProps): React.ReactElement<IDestinationFolderProps> {
   const [documents, setDocuments] = React.useState();
   const [showFolders, setShowFolders] = React.useState(false);
   let listColumns: IColumn[];

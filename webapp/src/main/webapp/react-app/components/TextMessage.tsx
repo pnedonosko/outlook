@@ -8,7 +8,7 @@ interface ITextFieldProps {
   placeholder?: string;
 }
 
-function TextMessage(props: ITextFieldProps): React.ReactElement {
+function TextMessage(props: ITextFieldProps): React.ReactElement<ITextFieldProps> {
   return (
     <>
       <TextField

@@ -11,7 +11,7 @@ interface IStartDiscussionState {
   selectedSpace?: any;
 }
 
-class StartDiscussion extends React.Component<IContainerProps> {
+class StartDiscussion extends React.Component<IContainerProps, IStartDiscussionState> {
   state: IStartDiscussionState = {};
 
   getMessage = (text: string) => {

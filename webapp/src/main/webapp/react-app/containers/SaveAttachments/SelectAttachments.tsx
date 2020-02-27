@@ -11,7 +11,7 @@ interface ISelectAttachmentProps {
   onSelectItem: Function;
 }
 
-function SelectAttachments(props: ISelectAttachmentProps): React.ReactElement {
+function SelectAttachments(props: ISelectAttachmentProps): React.ReactElement<ISelectAttachmentProps> {
   let selection: Selection = new Selection({
     onSelectionChanged: () => props.onSelectItem(getSelectionDetails())
   });

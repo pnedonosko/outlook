@@ -14,7 +14,7 @@ const dropdownStyles: Partial<IDropdownStyles> = {
   dropdown: { width: 300 }
 };
 
-const SpacesSelect: React.FC<ISpacesSelectProps> = (props: ISpacesSelectProps) => {
+function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSelectProps> {
   const [spaces, setSpaces] = React.useState<IDropdownOption[]>();
 
   React.useEffect(() => {
@@ -45,6 +45,6 @@ const SpacesSelect: React.FC<ISpacesSelectProps> = (props: ISpacesSelectProps) =
       <div>{props.description}</div>
     </>
   );
-};
+}
 
 export default SpacesSelect;

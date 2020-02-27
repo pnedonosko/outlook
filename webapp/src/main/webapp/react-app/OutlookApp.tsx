@@ -7,6 +7,7 @@ import { ConvertMessageTypes } from "./containers/ConvertMessage/convert-message
 import { IConvertMessageProps } from "./containers/ConvertMessage";
 
 export interface IContainerProps {
+  // user is root api for user services
   user: any;
 }
 
@@ -43,6 +44,7 @@ class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
           this.setState({ componentType: ConvertMessageTypes.Activity });
           break;
       }
+      // for all converting component 'ConvertMessage' with defferent types should be rendered
       componentName = "ConvertMessage";
     }
     await this.addComponent(componentName);
@@ -55,6 +57,7 @@ class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
   addComponent = async componentName => {
     console.log(`Loading ${componentName} component...`);
 
+    // download appropriate component selected by name
     import(`./containers/${componentName}`)
       .then(module =>
         this.setState({
