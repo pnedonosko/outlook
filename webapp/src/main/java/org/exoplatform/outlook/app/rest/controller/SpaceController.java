@@ -201,7 +201,7 @@ public class SpaceController {
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceMembers(spaceId)).withSelfRel());
-    links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID)).withRel("user"));
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
 
     PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(spaceMembers.length, 1, spaceMembers.length, 1);
 
