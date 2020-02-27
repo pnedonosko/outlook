@@ -9,9 +9,13 @@ import org.exoplatform.outlook.OutlookSpaceException;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
 import org.exoplatform.outlook.app.rest.dto.FileResource;
 import org.exoplatform.outlook.app.rest.dto.Space;
+import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+import org.exoplatform.social.core.manager.ActivityManager;
+import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
@@ -121,10 +125,25 @@ public class SpaceController {
    * @return the activity info
    */
   @RequestMapping(value = "/{SID}/activity/{AID}", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getActivityInfo(@PathVariable("SID") String spaceId, @PathVariable("AID") String activityId) {
-    AbstractFileResource resource = null;
+  public ResourceSupport getActivityInfo(@PathVariable("SID") String spaceId, @PathVariable("AID") String activityId) {
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    ActivityManager activityManager = (ActivityManager) currentContainer.getComponentInstance(ActivityManager.class);
 
-    return resource;
+    ExoSocialActivity activity = activityManager.getActivity(activityId);
+
+    ActivityInfo activityInfo = new ActivityInfo(activity.getTitle(),
+                                                 activity.getType(),
+                                                 LinkProvider.getSingleActivityUrl(activity.getId()),
+                                                 activity.getPostedTime());
+    org.exoplatform.outlook.app.rest.dto.ActivityInfo activityInfoDTO =
+                                                                      new org.exoplatform.outlook.app.rest.dto.ActivityInfo(activityInfo);
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(spaceId, activityId)).withSelfRel());
+    activityInfoDTO.add(links);
+
+    return activityInfoDTO;
   }
 
   /**
