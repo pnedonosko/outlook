@@ -76,8 +76,21 @@ public class UserController {
    * @return the root
    */
   @RequestMapping(value = "", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getRoot() {
-    AbstractFileResource resource = null;
+  public ResourceSupport getRoot() {
+    ResourceSupport resource = new ResourceSupport();
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookMailServices()).withRel("parent"));
+    links.add(linkTo(methodOn(UserController.class).getRoot()).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID)).withRel("spaces"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID)).withRel("documents"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID)).withRel("activities"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(OutlookConstant.USER_ID,
+                                                                OutlookConstant.ACTIVITY_ID)).withRel("activity"));
+
+    resource.add(links);
 
     return resource;
   }
