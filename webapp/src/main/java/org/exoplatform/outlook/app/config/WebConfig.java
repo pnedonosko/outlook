@@ -86,7 +86,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   // Services config
 
-  @Bean(name = "outlookServiceFactory")
+  /*@Bean(name = "outlookServiceFactory")
   public OutlookServiceFactory outlookServiceFactory() {
     OutlookServiceFactory factory = new OutlookServiceFactory();
     return factory;
@@ -95,5 +95,5 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
   @Bean
   public OutlookService outlookService() throws Exception {
     return outlookServiceFactory().getObject();
-  }
+  }*/
 }

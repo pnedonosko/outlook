@@ -41,24 +41,23 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class DocumentController {
 
   /** The Constant LOG. */
-  private static final Log     LOG          = ExoLogger.getLogger(DocumentController.class);
+  private static final Log    LOG          = ExoLogger.getLogger(DocumentController.class);
 
   /** The Constant HAL_AND_JSON. */
-  private static final String  HAL_AND_JSON = "application/hal+json";
+  private static final String HAL_AND_JSON = "application/hal+json";
 
   /** The Constant ATTACHMENT. */
-  private static final String  ATTACHMENT   = "attachment";
+  private static final String ATTACHMENT   = "attachment";
 
   /** The Constant FOLDER. */
-  private static final String  FOLDER       = "folder";
+  private static final String FOLDER       = "folder";
 
   /** The Outlook service. */
-  private final OutlookService outlookService;
-
-  @Autowired
-  public DocumentController(OutlookService outlookService) {
-    this.outlookService = outlookService;
-  }
+  /*
+   * private final OutlookService outlookService;
+   * @Autowired public DocumentController(OutlookService outlookService) {
+   * this.outlookService = outlookService; }
+   */
 
   /**
    * Post document parameters list.
@@ -252,7 +251,7 @@ public class DocumentController {
     String folderPath = null;
     try {
       folderPath = new StringBuilder(dParentPath).append("/").append(name).toString();
-      org.exoplatform.outlook.jcr.Folder folder = outlookService.getSpace(groupId).getFolder(folderPath);
+      org.exoplatform.outlook.jcr.Folder folder = outlook.getSpace(groupId).getFolder(folderPath);
 
       List<Link> links = new LinkedList<>();
       links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(name).withSelfRel());
