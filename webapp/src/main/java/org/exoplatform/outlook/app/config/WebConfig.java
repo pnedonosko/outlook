@@ -2,6 +2,8 @@ package org.exoplatform.outlook.app.config;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingRespectLayoutTitleStrategy;
+import org.exoplatform.outlook.OutlookService;
+import org.exoplatform.outlook.app.config.service.OutlookServiceFactory;
 import org.exoplatform.outlook.app.rest.interceptor.ExoContainerRequestLifeCycleInterceptor;
 import org.exoplatform.outlook.app.rest.localization.CustomMessageSource;
 import org.springframework.context.ApplicationContext;
@@ -80,5 +82,18 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
   public CustomMessageSource messageSource() {
     CustomMessageSource customMessageSource = new CustomMessageSource();
     return customMessageSource;
+  }
+
+  // Services config
+
+  @Bean(name = "outlookServiceFactory")
+  public OutlookServiceFactory outlookServiceFactory() {
+    OutlookServiceFactory factory = new OutlookServiceFactory();
+    return factory;
+  }
+
+  @Bean
+  public OutlookService outlookService() throws Exception {
+    return outlookServiceFactory().getObject();
   }
 }

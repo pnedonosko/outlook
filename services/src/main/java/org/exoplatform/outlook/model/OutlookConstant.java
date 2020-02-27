@@ -30,4 +30,9 @@ public class OutlookConstant {
    */
   public static final String DOCUMENT_PATH = "$DPATH";
 
+  /**
+   * The constant PORTAL.
+   */
+  public static final String PORTAL        = "portal";
+
 }
