@@ -7,11 +7,14 @@ import org.exoplatform.outlook.OutlookService;
 import org.exoplatform.outlook.OutlookSpace;
 import org.exoplatform.outlook.OutlookSpaceException;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
+import org.exoplatform.outlook.app.rest.dto.FileResource;
 import org.exoplatform.outlook.app.rest.dto.Space;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.jcr.RepositoryException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -184,6 +188,24 @@ public class SpaceController {
   @RequestMapping(value = "/{SID}/members", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public AbstractFileResource getSpaceMembers(@PathVariable("SID") String spaceId) {
     AbstractFileResource resource = null;
+
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    SpaceService spaceService = (SpaceService) currentContainer.getComponentInstance(SpaceService.class);
+
+    org.exoplatform.social.core.space.model.Space space = spaceService.getSpaceByPrettyName(spaceId);
+
+    String[] spaceMembers = space.getMembers();
+
+    List<String> membersList = Arrays.asList(spaceMembers);
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceMembers(spaceId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID)).withRel("user"));
+
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(spaceMembers.length, 1, spaceMembers.length, 1);
+
+    resource = new FileResource(metadata, membersList, links);
 
     return resource;
   }
