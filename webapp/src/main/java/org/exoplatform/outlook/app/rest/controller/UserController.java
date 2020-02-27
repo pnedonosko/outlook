@@ -387,10 +387,26 @@ public class UserController {
    * @return the activity
    */
   @RequestMapping(value = "/{UID}/activity/{AID}", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getActivity(@PathVariable("UID") String userId, @PathVariable("AID") String activityId) {
-    AbstractFileResource resource = null;
+  public ResourceSupport getActivity(@PathVariable("UID") String userId, @PathVariable("AID") String activityId) {
 
-    return resource;
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    ActivityManager activityManager = (ActivityManager) currentContainer.getComponentInstance(ActivityManager.class);
+
+    ExoSocialActivity activity = activityManager.getActivity(activityId);
+
+    ActivityInfo activityInfo = new ActivityInfo(activity.getTitle(),
+                                                 activity.getType(),
+                                                 LinkProvider.getSingleActivityUrl(activity.getId()),
+                                                 activity.getPostedTime());
+    org.exoplatform.outlook.app.rest.dto.ActivityInfo activityInfoDTO =
+                                                                      new org.exoplatform.outlook.app.rest.dto.ActivityInfo(activityInfo);
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, activityId)).withSelfRel());
+    activityInfoDTO.add(links);
+
+    return activityInfoDTO;
   }
 
   private String findSpaceGroupId(String prettyName) {
