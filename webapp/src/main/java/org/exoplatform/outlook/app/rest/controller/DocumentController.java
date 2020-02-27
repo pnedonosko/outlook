@@ -10,21 +10,16 @@ import org.exoplatform.outlook.app.rest.dto.Attachment;
 import org.exoplatform.outlook.jcr.File;
 import org.exoplatform.outlook.app.rest.dto.Folder;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
+import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.HandlerMapping;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -41,16 +36,13 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class DocumentController {
 
   /** The Constant LOG. */
-  private static final Log    LOG          = ExoLogger.getLogger(DocumentController.class);
-
-  /** The Constant HAL_AND_JSON. */
-  private static final String HAL_AND_JSON = "application/hal+json";
+  private static final Log    LOG        = ExoLogger.getLogger(DocumentController.class);
 
   /** The Constant ATTACHMENT. */
-  private static final String ATTACHMENT   = "attachment";
+  private static final String ATTACHMENT = "attachment";
 
   /** The Constant FOLDER. */
-  private static final String FOLDER       = "folder";
+  private static final String FOLDER     = "folder";
 
   /** The Outlook service. */
   /*
@@ -73,7 +65,7 @@ public class DocumentController {
    * @param request the request
    * @return the parameters list resource support wrapper
    */
-  @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.POST, produces = HAL_AND_JSON)
+  @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.POST, produces = OutlookConstant.HAL_AND_JSON)
   public AbstractFileResource postDocument(@PathVariable("DOC_NAME") String docName,
                                            @RequestParam(value = "comment", required = false) String comment,
                                            @RequestParam(value = "ewsUrl", required = false) String ewsUrl,
@@ -227,7 +219,7 @@ public class DocumentController {
    * @param request the request
    * @return the document
    */
-  @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.GET, produces = HAL_AND_JSON)
+  @RequestMapping(value = "/**/{DOC_NAME}", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public AbstractFileResource getDocument(@PathVariable("DOC_NAME") String docName, HttpServletRequest request) {
 
     String dParentPath = getDocumentParentPath(request, this);
