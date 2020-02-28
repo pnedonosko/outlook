@@ -2,7 +2,6 @@ package org.exoplatform.outlook.app.rest.controller;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
@@ -36,6 +35,25 @@ public class ActivityController {
   private static final Log LOG = ExoLogger.getLogger(ActivityController.class);
 
   /**
+   * Gets root.
+   *
+   * @return the root
+   */
+  @RequestMapping(value = "", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
+  public ResourceSupport getRoot() {
+    ResourceSupport resource = new ResourceSupport();
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("parent"));
+    links.add(linkTo(methodOn(ActivityController.class).getRoot()).withSelfRel());
+    links.add(linkTo(methodOn(ActivityController.class).getActivityInfo(OutlookConstant.ACTIVITY_ID)).withRel("activity"));
+
+    resource.add(links);
+
+    return resource;
+  }
+
+  /**
    * Gets activity info.
    *
    * @param activityId the activity id
@@ -56,7 +74,7 @@ public class ActivityController {
                                                                       new org.exoplatform.outlook.app.rest.dto.ActivityInfo(activityInfo);
 
     List<Link> links = new LinkedList<>();
-    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookMailServices()).withRel("parent"));
+    links.add(linkTo(methodOn(ActivityController.class).getRoot()).withRel("parent"));
     links.add(linkTo(methodOn(ActivityController.class).getActivityInfo(activityId)).withSelfRel());
     activityInfoDTO.add(links);
 
