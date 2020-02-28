@@ -60,6 +60,27 @@ public class SpaceController {
   @Autowired
   private MessageService                                        messageService;
 
+  @RequestMapping(value = "", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
+  public ResourceSupport getRoot() {
+    ResourceSupport resource = new ResourceSupport();
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).getRoot()).withSelfRel());
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(OutlookConstant.SPACE_ID)).withRel("space"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(OutlookConstant.SPACE_ID, null)).withRel("activities"));
+    links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(OutlookConstant.SPACE_ID, null)).withRel("activity"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(OutlookConstant.SPACE_ID)).withRel("documents"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(OutlookConstant.SPACE_ID)).withRel("wiki"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceForum(OutlookConstant.SPACE_ID)).withRel("forum"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceCalendar(OutlookConstant.SPACE_ID)).withRel("calendar"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceMembers(OutlookConstant.SPACE_ID)).withRel("members"));
+
+    resource.add(links);
+
+    return resource;
+  }
+
   /**
    * Gets space.
    *
