@@ -9,14 +9,21 @@ import org.exoplatform.outlook.OutlookSpaceException;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
 import org.exoplatform.outlook.app.rest.dto.FileResource;
 import org.exoplatform.outlook.app.rest.dto.Space;
+import org.exoplatform.outlook.app.rest.service.ActivityService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.manager.ActivityManager;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.core.storage.api.ActivityStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceSupport;
@@ -29,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.jcr.RepositoryException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +54,9 @@ public class SpaceController {
 
   /** The Constant LOG. */
   private static final Log LOG = ExoLogger.getLogger(SpaceController.class);
+
+  @Autowired
+  ActivityService          activityService;
 
   /**
    * Gets space.
@@ -78,7 +89,7 @@ public class SpaceController {
     List<Link> links = new LinkedList<>();
     links.add(linkTo(RootDiscoveryeXoServiceController.class).withRel("parent"));
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withSelfRel());
-    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId)).withRel("activities"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, null)).withRel("activities"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(spaceId)).withRel("documents"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(spaceId)).withRel("wiki"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceForum(spaceId)).withRel("forum"));
@@ -98,8 +109,58 @@ public class SpaceController {
    * @return the space activities
    */
   @RequestMapping(value = "/{SID}/activities", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getSpaceActivities(@PathVariable("SID") String spaceId) {
+  public AbstractFileResource getSpaceActivities(@PathVariable("SID") String spaceId, HttpServletRequest request) {
     AbstractFileResource resource = null;
+
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    IdentityManager identityManager = (IdentityManager) currentContainer.getComponentInstance(IdentityManager.class);
+    ActivityStorage activityStorage = (ActivityStorage) currentContainer.getComponentInstance(ActivityStorage.class);
+    SpaceService spaceService = (SpaceService) currentContainer.getComponentInstance(SpaceService.class);
+
+    String spaceGroupId = new StringBuilder("/spaces/").append(spaceId).toString();
+
+    org.exoplatform.social.core.space.model.Space space = null;
+    try {
+      space = spaceService.getSpaceByGroupId(spaceGroupId);
+    } catch (Exception e) {
+      LOG.error("Error getting space (" + spaceGroupId + ")", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
+    }
+
+    Identity spaceIdentity = null;
+    try {
+      spaceIdentity = identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, space.getPrettyName());
+    } catch (Exception e) {
+      LOG.error("Error getting space (" + spaceGroupId + ") identity", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ") identity");
+    }
+
+    // the limit is 100
+    List<ExoSocialActivity> spaceActivities = null;
+    try {
+      spaceActivities = activityStorage.getSpaceActivities(spaceIdentity, 0, 100);
+    } catch (Exception e) {
+      LOG.error("Error getting space (" + spaceGroupId + ") activities", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error getting space (" + spaceGroupId + ") activities");
+    }
+
+    ConversationState convo = ConversationState.getCurrent();
+    String currentUserId = null;
+    if (convo != null) {
+      currentUserId = convo.getIdentity().getUserId();
+    }
+
+    List<ActivityInfo> activityInfos = activityService.convertToActivityInfos(spaceActivities, currentUserId, request);
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, request)).withSelfRel());
+    links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(spaceId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
+
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(activityInfos.size(), 1, activityInfos.size(), 1);
+
+    resource = new FileResource(metadata, activityInfos, links);
 
     return resource;
   }
