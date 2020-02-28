@@ -2,15 +2,10 @@ package org.exoplatform.outlook.app.rest.controller;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.outlook.OutlookException;
-import org.exoplatform.outlook.OutlookService;
-import org.exoplatform.outlook.OutlookSpace;
-import org.exoplatform.outlook.OutlookSpaceException;
-import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
-import org.exoplatform.outlook.app.rest.dto.FileResource;
-import org.exoplatform.outlook.app.rest.dto.Folder;
-import org.exoplatform.outlook.app.rest.dto.Space;
+import org.exoplatform.outlook.*;
+import org.exoplatform.outlook.app.rest.dto.*;
 import org.exoplatform.outlook.app.rest.service.ActivityService;
+import org.exoplatform.outlook.app.rest.service.MessageService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.IdentityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
@@ -25,24 +20,17 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.manager.RelationshipManager;
 import org.exoplatform.social.core.relationship.model.Relationship;
 import org.exoplatform.social.core.service.LinkProvider;
-import org.exoplatform.social.core.space.spi.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +53,10 @@ public class UserController {
   /** The Activity service. */
   @Autowired
   private ActivityService  activityService;
+
+  /** The Message service. */
+  @Autowired
+  private MessageService   messageService;
 
   /**
    * Gets root.
@@ -287,16 +279,76 @@ public class UserController {
   }
 
   /**
-   * Post activity abstract file resource.
+   * Post activity.
    *
    * @param userId the user id
-   * @return the abstract file resource
+   * @param messageId the message id
+   * @param title the title
+   * @param subject the subject
+   * @param body the body
+   * @param created the created
+   * @param modified the modified
+   * @param userName the user name
+   * @param userEmail the user email
+   * @param fromName the from name
+   * @param fromEmail the from email
+   * @return the activity status
    */
   @RequestMapping(value = "/{UID}/activity", method = RequestMethod.POST, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource postActivity(@PathVariable("UID") String userId) {
-    AbstractFileResource resource = null;
+  public ResourceSupport postActivity(@PathVariable("UID") String userId,
+                                      @RequestParam String messageId,
+                                      @RequestParam String title,
+                                      @RequestParam String subject,
+                                      @RequestParam String body,
+                                      @RequestParam String created,
+                                      @RequestParam String modified,
+                                      @RequestParam String userName,
+                                      @RequestParam String userEmail,
+                                      @RequestParam String fromName,
+                                      @RequestParam String fromEmail) {
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
 
-    return resource;
+    OutlookUser user = null;
+    ExoSocialActivity activity = null;
+
+    try {
+      user = outlook.getUser(userEmail, userName, null);
+      OutlookMessage message = messageService.buildMessage(user,
+                                                           messageId,
+                                                           fromEmail,
+                                                           fromName,
+                                                           created,
+                                                           modified,
+                                                           title,
+                                                           subject,
+                                                           body);
+      activity = user.postActivity(message);
+    } catch (Throwable e) {
+      LOG.error("Error converting message to activity status for " + userEmail, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error converting message to activity status for " + userEmail);
+    }
+
+    ActivityStatus activityStatus = new ActivityStatus(user.getLocalUser(), null, activity.getPermaLink());
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
+    links.add(linkTo(methodOn(UserController.class).postActivity(userId,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 null)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getActivity(userId, activity.getId())).withRel("activity"));
+    activityStatus.add(links);
+
+    return activityStatus;
   }
 
   /**
@@ -329,25 +381,6 @@ public class UserController {
     return activityInfoDTO;
   }
 
-  private String findSpaceGroupId(String prettyName) {
-    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
-    SpaceService spaceService = (SpaceService) currentContainer.getComponentInstance(SpaceService.class);
-    org.exoplatform.social.core.space.model.Space space = spaceService.getSpaceByPrettyName(prettyName);
-    return space != null ? space.getGroupId() : "".intern();
-  }
-
-  private Charset loadEncoding(String name) {
-    if (name == null || name.length() == 0) {
-      name = "UTF8";
-    }
-    try {
-      return Charset.forName(name);
-    } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
-      LOG.warn("Error loading client encoding charset {}: {}", name, e.toString());
-      return Charset.defaultCharset();
-    }
-  }
-
   private List<IdentityInfo> getConnectionsList(String name) throws Exception {
     List<IdentityInfo> connectionList = new ArrayList<>();
     // TODO get rid of deprecated
@@ -371,9 +404,5 @@ public class UserController {
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, name, true);
     List<Relationship> relationships = relationshipManager.getRelationshipsByStatus(userIdentity, CONFIRMED, 0, 0);
     return relationships;
-  }
-
-  private String cutText(String text, int limit) {
-    return text.length() > limit ? text.substring(0, limit) : text;
   }
 }
