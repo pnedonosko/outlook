@@ -2,12 +2,10 @@ package org.exoplatform.outlook.app.rest.controller;
 
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.outlook.OutlookException;
-import org.exoplatform.outlook.OutlookService;
-import org.exoplatform.outlook.OutlookSpace;
-import org.exoplatform.outlook.OutlookSpaceException;
+import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
 import org.exoplatform.outlook.app.rest.dto.FileResource;
+import org.exoplatform.outlook.app.rest.dto.Folder;
 import org.exoplatform.outlook.app.rest.dto.Space;
 import org.exoplatform.outlook.app.rest.service.ActivityService;
 import org.exoplatform.outlook.model.ActivityInfo;
@@ -53,10 +51,15 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class SpaceController {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(SpaceController.class);
+  private static final Log                              LOG = ExoLogger.getLogger(SpaceController.class);
 
+  /** The Activity service. */
   @Autowired
-  ActivityService          activityService;
+  private ActivityService                               activityService;
+
+  /** The Space service. */
+  @Autowired
+  org.exoplatform.outlook.app.rest.service.SpaceService spaceService;
 
   /**
    * Gets space.
@@ -67,24 +70,7 @@ public class SpaceController {
   @RequestMapping(value = "/{SID}", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public ResourceSupport getSpace(@PathVariable("SID") String spaceId) {
 
-    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
-    OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
-
-    String spaceGroupId = new StringBuilder("/spaces/").append(spaceId).toString();
-
-    OutlookSpace outlookSpace = null;
-    try {
-      outlookSpace = outlook.getSpace(spaceGroupId);
-    } catch (OutlookSpaceException e) {
-      LOG.error("Error getting space (" + spaceGroupId + ")", e);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
-    } catch (RepositoryException e) {
-      LOG.error("Error getting space (" + spaceGroupId + ")", e);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
-    } catch (OutlookException e) {
-      LOG.error("Error getting space (" + spaceGroupId + ")", e);
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
-    }
+    OutlookSpace outlookSpace = spaceService.getOutlookSpace(spaceId);
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(RootDiscoveryeXoServiceController.class).withRel("parent"));
@@ -215,9 +201,47 @@ public class SpaceController {
    */
   @RequestMapping(value = "/{SID}/documents", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public AbstractFileResource getSpaceDocuments(@PathVariable("SID") String spaceId) {
-    AbstractFileResource resource = null;
+    OutlookSpace outlookSpace = spaceService.getOutlookSpace(spaceId);
 
-    return resource;
+    // path to documents
+    String pathToRootFolder = "";
+    try {
+      pathToRootFolder = outlookSpace.getRootFolder().getPath();
+    } catch (OutlookException e) {
+      LOG.error("Error getting a space root folder in order to get the root path (rootPath)", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error getting a space root folder in order to get the root path (rootPath)");
+    } catch (RepositoryException e) {
+      LOG.error("Error getting a space root folder in order to get the root path (rootPath)", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error getting a space root folder in order to get the root path (rootPath)");
+    }
+
+    org.exoplatform.outlook.jcr.Folder folder = null;
+    int numberOfFolderFilesAndSubfolders = 0;
+    try {
+      folder = outlookSpace.getFolder(pathToRootFolder);
+      numberOfFolderFilesAndSubfolders = folder.getSubfolders().size() + folder.getFiles().size();
+    } catch (BadParameterException e) {
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Error reading folder " + pathToRootFolder + ". " + e.getMessage());
+      }
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error reading folder " + pathToRootFolder);
+    } catch (Throwable e) {
+      LOG.error("Error reading folder " + pathToRootFolder, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading folder " + pathToRootFolder);
+    }
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
+    links.add(linkTo(DocumentController.class).slash(pathToRootFolder.substring(1)).withSelfRel());
+
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(numberOfFolderFilesAndSubfolders,
+                                                                           1,
+                                                                           numberOfFolderFilesAndSubfolders,
+                                                                           1);
+
+    return new Folder(folder, metadata, links);
   }
 
   /**
