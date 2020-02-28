@@ -60,6 +60,11 @@ public class SpaceController {
   @Autowired
   private MessageService                                        messageService;
 
+  /**
+   * Gets root.
+   *
+   * @return the root
+   */
   @RequestMapping(value = "", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public ResourceSupport getRoot() {
     ResourceSupport resource = new ResourceSupport();
@@ -93,7 +98,7 @@ public class SpaceController {
     OutlookSpace outlookSpace = spaceService.getOutlookSpace(spaceId);
 
     List<Link> links = new LinkedList<>();
-    links.add(linkTo(RootDiscoveryeXoServiceController.class).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).getRoot()).withRel("parent"));
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withSelfRel());
     links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, null)).withRel("activities"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(spaceId)).withRel("documents"));

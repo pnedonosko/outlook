@@ -68,7 +68,7 @@ public class UserController {
     ResourceSupport resource = new ResourceSupport();
 
     List<Link> links = new LinkedList<>();
-    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookMailServices()).withRel("parent"));
+    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("parent"));
     links.add(linkTo(methodOn(UserController.class).getRoot()).withSelfRel());
     links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
     links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
