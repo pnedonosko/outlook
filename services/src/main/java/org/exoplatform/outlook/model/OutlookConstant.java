@@ -31,6 +31,11 @@ public class OutlookConstant {
   public static final String DOCUMENT_PATH = "$DPATH";
 
   /**
+   * The constant MESSAGE_ID.
+   */
+  public static final String MESSAGE_ID    = "$MID";
+
+  /**
    * The constant PORTAL.
    */
   public static final String PORTAL        = "portal";
