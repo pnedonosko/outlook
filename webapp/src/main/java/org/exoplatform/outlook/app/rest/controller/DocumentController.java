@@ -15,6 +15,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
@@ -43,6 +45,24 @@ public class DocumentController {
 
   /** The Constant FOLDER. */
   private static final String FOLDER     = "folder";
+
+  /**
+   * Gets root.
+   *
+   * @return the root
+   */
+  @RequestMapping(value = "", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
+  public ResourceSupport getRoot() {
+    ResourceSupport resource = new ResourceSupport();
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("parent"));
+    links.add(linkTo(methodOn(DocumentController.class).getRoot()).withSelfRel());
+    links.add(linkTo(DocumentController.class).slash(OutlookConstant.DOCUMENT_PATH).withRel("document"));
+    resource.add(links);
+
+    return resource;
+  }
 
   /** The Outlook service. */
   /*
