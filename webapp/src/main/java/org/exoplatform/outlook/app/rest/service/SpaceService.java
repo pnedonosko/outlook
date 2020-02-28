@@ -33,7 +33,7 @@ public class SpaceService {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
 
-    String spaceGroupId = new StringBuilder("/spaces/").append(spaceId).toString();
+    String spaceGroupId = getGroupId(spaceId);
 
     OutlookSpace outlookSpace = null;
     try {
@@ -49,5 +49,9 @@ public class SpaceService {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ")");
     }
     return outlookSpace;
+  }
+
+  public String getGroupId(String spaceId) {
+    return new StringBuilder("/spaces/").append(spaceId).toString();
   }
 }

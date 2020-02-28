@@ -3,11 +3,9 @@ package org.exoplatform.outlook.app.rest.controller;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.outlook.*;
-import org.exoplatform.outlook.app.rest.dto.AbstractFileResource;
-import org.exoplatform.outlook.app.rest.dto.FileResource;
-import org.exoplatform.outlook.app.rest.dto.Folder;
-import org.exoplatform.outlook.app.rest.dto.Space;
+import org.exoplatform.outlook.app.rest.dto.*;
 import org.exoplatform.outlook.app.rest.service.ActivityService;
+import org.exoplatform.outlook.app.rest.service.MessageService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
@@ -27,10 +25,7 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.jcr.RepositoryException;
@@ -51,15 +46,19 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class SpaceController {
 
   /** The Constant LOG. */
-  private static final Log                              LOG = ExoLogger.getLogger(SpaceController.class);
+  private static final Log                                      LOG = ExoLogger.getLogger(SpaceController.class);
 
   /** The Activity service. */
   @Autowired
-  private ActivityService                               activityService;
+  private ActivityService                                       activityService;
 
   /** The Space service. */
   @Autowired
-  org.exoplatform.outlook.app.rest.service.SpaceService spaceService;
+  private org.exoplatform.outlook.app.rest.service.SpaceService spaceService;
+
+  /** The Message service. */
+  @Autowired
+  private MessageService                                        messageService;
 
   /**
    * Gets space.
@@ -152,16 +151,88 @@ public class SpaceController {
   }
 
   /**
-   * Post space activity abstract file resource.
+   * Post space activity.
    *
    * @param spaceId the space id
-   * @return the abstract file resource
+   * @param messageId the message id
+   * @param title the title
+   * @param subject the subject
+   * @param body the body
+   * @param created the created
+   * @param modified the modified
+   * @param userName the user name
+   * @param userEmail the user email
+   * @param fromName the from name
+   * @param fromEmail the from email
+   * @return the activity status
    */
   @RequestMapping(value = "/{SID}/activity", method = RequestMethod.POST, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource postSpaceActivity(@PathVariable("SID") String spaceId) {
-    AbstractFileResource resource = null;
+  public ResourceSupport postSpaceActivity(@PathVariable("SID") String spaceId,
+                                           @RequestParam String messageId,
+                                           @RequestParam String title,
+                                           @RequestParam String subject,
+                                           @RequestParam String body,
+                                           @RequestParam String created,
+                                           @RequestParam String modified,
+                                           @RequestParam String userName,
+                                           @RequestParam String userEmail,
+                                           @RequestParam String fromName,
+                                           @RequestParam String fromEmail) {
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
 
-    return resource;
+    String groupId = spaceService.getGroupId(spaceId);
+
+    OutlookSpace space = null;
+    ExoSocialActivity activity = null;
+
+    try {
+      OutlookUser user = outlook.getUser(userEmail, userName, null);
+      OutlookMessage message = messageService.buildMessage(user,
+                                                           messageId,
+                                                           fromEmail,
+                                                           fromName,
+                                                           created,
+                                                           modified,
+                                                           title,
+                                                           subject,
+                                                           body);
+      space = outlook.getSpace(groupId);
+
+      if (space != null) {
+        activity = space.postActivity(message);
+      } else {
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Error converting message to activity status : space not found " + groupId + ". OutlookUser " + userEmail);
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                          "Error converting message to activity status : space not found " + groupId);
+      }
+    } catch (Throwable e) {
+      LOG.error("Error converting message to activity status for " + userEmail, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Error converting message to activity status for " + userEmail);
+    }
+
+    ActivityStatus activityStatus = new ActivityStatus(null, space.getTitle(), activity.getPermaLink());
+
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
+    links.add(linkTo(methodOn(SpaceController.class).postSpaceActivity(spaceId,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null)).withSelfRel());
+    links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(spaceId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
+    activityStatus.add(links);
+
+    return activityStatus;
   }
 
   /**
