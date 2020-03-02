@@ -74,7 +74,10 @@ public class UserController {
     links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
     links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID)).withRel("spaces"));
     links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID)).withRel("documents"));
-    links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID, null)).withRel("activities"));
+    links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID,
+                                                                  null,
+                                                                  null,
+                                                                  null)).withRel("activities"));
     links.add(linkTo(methodOn(UserController.class).getActivity(OutlookConstant.USER_ID,
                                                                 OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
@@ -113,7 +116,7 @@ public class UserController {
       links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("connections"));
       links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("spaces"));
       links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("documents"));
-      links.add(linkTo(methodOn(UserController.class).getActivities(userId, null)).withRel("activities"));
+      links.add(linkTo(methodOn(UserController.class).getActivities(userId, null, null, null)).withRel("activities"));
       userInfoDTO.add(links);
 
       return userInfoDTO;
@@ -254,7 +257,10 @@ public class UserController {
    * @return the activities
    */
   @RequestMapping(value = "/{UID}/activities", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getActivities(@PathVariable("UID") String userId, HttpServletRequest request) {
+  public AbstractFileResource getActivities(@PathVariable("UID") String userId,
+                                            @RequestParam Integer offset,
+                                            @RequestParam Integer limit,
+                                            HttpServletRequest request) {
     AbstractFileResource resource = null;
 
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
@@ -262,16 +268,27 @@ public class UserController {
     IdentityManager identityManager = (IdentityManager) currentContainer.getComponentInstance(IdentityManager.class);
 
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
-    List<ExoSocialActivity> top100 = activityManager.getActivitiesByPoster(userIdentity).loadAsList(0, 100);
+    List<ExoSocialActivity> userActivities = activityManager.getActivitiesByPoster(userIdentity).loadAsList(offset, limit);
+    int requestedDataSize = limit - offset;
+    if (requestedDataSize <= 0) {
+      LOG.error("Pagination error: offset - limit <= 0");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pagination error: offset - limit <= 0");
+    }
+    int activitiesNumber = activityManager.getActivitiesByPoster(userIdentity).getSize();
 
-    List<ActivityInfo> activities = activityService.convertToActivityInfos(top100, userId, request);
+    List<ActivityInfo> activities = activityService.convertToActivityInfos(userActivities, userId, request);
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
-    links.add(linkTo(methodOn(UserController.class).getActivities(userId, null)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getActivities(userId, null, null, null)).withSelfRel());
     links.add(linkTo(methodOn(UserController.class).getActivity(userId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(activities.size(), 1, activities.size(), 1);
+    long pages = (long) Math.ceil((double) activitiesNumber / requestedDataSize);
+    int currentPostition = offset + 1;
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(requestedDataSize,
+                                                                           currentPostition,
+                                                                           activitiesNumber,
+                                                                           pages);
 
     resource = new FileResource(metadata, activities, links);
 
