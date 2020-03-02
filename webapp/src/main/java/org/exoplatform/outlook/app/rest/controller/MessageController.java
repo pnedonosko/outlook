@@ -1,6 +1,5 @@
 package org.exoplatform.outlook.app.rest.controller;
 
-import juzu.Response;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.outlook.BadParameterException;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 

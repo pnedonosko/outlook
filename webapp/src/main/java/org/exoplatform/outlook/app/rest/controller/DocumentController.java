@@ -150,8 +150,7 @@ public class DocumentController {
                                                       attachmentToken,
                                                       attachments.toArray(new String[attachments.size()]));
 
-            List<Link> links = new LinkedList<>();
-            links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(attachmentIds).withSelfRel());
+            List<Link> links = getLinks(dParentPath, attachmentIds);
 
             PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(files.size(), 1, files.size(), 1);
 
@@ -205,8 +204,7 @@ public class DocumentController {
           }
         }
 
-        List<Link> links = new LinkedList<>();
-        links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(name).withSelfRel());
+        List<Link> links = getLinks(dParentPath, name);
 
         PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(addedFolder.getSubfolders().size(),
                                                                                1,
@@ -265,8 +263,7 @@ public class DocumentController {
       folderPath = new StringBuilder(dParentPath).append("/").append(name).toString();
       org.exoplatform.outlook.jcr.Folder folder = outlook.getSpace(groupId).getFolder(folderPath);
 
-      List<Link> links = new LinkedList<>();
-      links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(name).withSelfRel());
+      List<Link> links = getLinks(dParentPath, name);
 
       int folderFilesAndSubfolders = folder.getSubfolders().size() + folder.getFiles().size();
       PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(folderFilesAndSubfolders,
@@ -283,6 +280,13 @@ public class DocumentController {
       LOG.error("Error reading folder " + folderPath, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading folder " + folderPath);
     }
+  }
+
+  private List<Link> getLinks(String dParentPath, String name) {
+    List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(DocumentController.class).getRoot()).withRel("parent"));
+    links.add(linkTo(DocumentController.class).slash(dParentPath.substring(1)).slash(name).withSelfRel());
+    return links;
   }
 
   private String getDocumentParentPath(HttpServletRequest request, Object currentController) {
