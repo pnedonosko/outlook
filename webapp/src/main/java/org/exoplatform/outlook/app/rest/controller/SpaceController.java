@@ -6,6 +6,7 @@ import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.app.rest.dto.*;
 import org.exoplatform.outlook.app.rest.service.ActivityService;
 import org.exoplatform.outlook.app.rest.service.MessageService;
+import org.exoplatform.outlook.app.rest.service.PaginationService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
@@ -60,6 +61,9 @@ public class SpaceController {
   @Autowired
   private MessageService                                        messageService;
 
+  @Autowired
+  private PaginationService                                     paginationService;
+
   /**
    * Gets root.
    *
@@ -73,7 +77,10 @@ public class SpaceController {
     links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("parent"));
     links.add(linkTo(methodOn(SpaceController.class).getRoot()).withSelfRel());
     links.add(linkTo(methodOn(SpaceController.class).getSpace(OutlookConstant.SPACE_ID)).withRel("space"));
-    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(OutlookConstant.SPACE_ID, null)).withRel("activities"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(OutlookConstant.SPACE_ID,
+                                                                        null,
+                                                                        null,
+                                                                        null)).withRel("activities"));
     links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(OutlookConstant.SPACE_ID, null)).withRel("activity"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(OutlookConstant.SPACE_ID)).withRel("documents"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(OutlookConstant.SPACE_ID)).withRel("wiki"));
@@ -100,7 +107,7 @@ public class SpaceController {
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(SpaceController.class).getRoot()).withRel("parent"));
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withSelfRel());
-    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, null)).withRel("activities"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, null, null, null)).withRel("activities"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(spaceId)).withRel("documents"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(spaceId)).withRel("wiki"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceForum(spaceId)).withRel("forum"));
@@ -120,7 +127,10 @@ public class SpaceController {
    * @return the space activities
    */
   @RequestMapping(value = "/{SID}/activities", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getSpaceActivities(@PathVariable("SID") String spaceId, HttpServletRequest request) {
+  public AbstractFileResource getSpaceActivities(@PathVariable("SID") String spaceId,
+                                                 @RequestParam Integer offset,
+                                                 @RequestParam Integer limit,
+                                                 HttpServletRequest request) {
     AbstractFileResource resource = null;
 
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
@@ -146,10 +156,9 @@ public class SpaceController {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting space (" + spaceGroupId + ") identity");
     }
 
-    // the limit is 100
     List<ExoSocialActivity> spaceActivities = null;
     try {
-      spaceActivities = activityStorage.getSpaceActivities(spaceIdentity, 0, 100);
+      spaceActivities = activityStorage.getSpaceActivities(spaceIdentity, offset, limit);
     } catch (Exception e) {
       LOG.error("Error getting space (" + spaceGroupId + ") activities", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -166,10 +175,11 @@ public class SpaceController {
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
-    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, request)).withSelfRel());
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, offset, limit, request)).withSelfRel());
     links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(spaceId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(activityInfos.size(), 1, activityInfos.size(), 1);
+    int activitiesNumber = activityStorage.getNumberOfSpaceActivities(spaceIdentity);
+    PagedResources.PageMetadata metadata = paginationService.getPaginationMetadata(offset, limit, activitiesNumber);
 
     resource = new FileResource(metadata, activityInfos, links);
 
