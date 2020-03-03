@@ -4,9 +4,6 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.app.rest.dto.*;
-import org.exoplatform.outlook.app.rest.service.ActivityService;
-import org.exoplatform.outlook.app.rest.service.MessageService;
-import org.exoplatform.outlook.app.rest.service.PaginationService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
 import org.exoplatform.services.log.ExoLogger;
@@ -44,25 +41,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/v2/exo/space")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class SpaceController {
+public class SpaceController extends AbstractController {
 
   /** The Constant LOG. */
-  private static final Log                                      LOG = ExoLogger.getLogger(SpaceController.class);
-
-  /** The Activity service. */
-  @Autowired
-  private ActivityService                                       activityService;
-
-  /** The Space service. */
-  @Autowired
-  private org.exoplatform.outlook.app.rest.service.SpaceService spaceService;
-
-  /** The Message service. */
-  @Autowired
-  private MessageService                                        messageService;
-
-  @Autowired
-  private PaginationService                                     paginationService;
+  private static final Log LOG = ExoLogger.getLogger(SpaceController.class);
 
   /**
    * Gets root.
@@ -102,7 +84,7 @@ public class SpaceController {
   @RequestMapping(value = "/{SID}", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public ResourceSupport getSpace(@PathVariable("SID") String spaceId) {
 
-    OutlookSpace outlookSpace = spaceService.getOutlookSpace(spaceId);
+    OutlookSpace outlookSpace = getOutlookSpace(spaceId);
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(SpaceController.class).getRoot()).withRel("parent"));
@@ -171,7 +153,7 @@ public class SpaceController {
       currentUserId = convo.getIdentity().getUserId();
     }
 
-    List<ActivityInfo> activityInfos = activityService.convertToActivityInfos(spaceActivities, currentUserId, request);
+    List<ActivityInfo> activityInfos = convertToActivityInfos(spaceActivities, currentUserId, request);
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withRel("parent"));
@@ -179,7 +161,7 @@ public class SpaceController {
     links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(spaceId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
     int activitiesNumber = activityStorage.getNumberOfSpaceActivities(spaceIdentity);
-    PagedResources.PageMetadata metadata = paginationService.getPaginationMetadata(offset, limit, activitiesNumber);
+    PagedResources.PageMetadata metadata = getPaginationMetadata(offset, limit, activitiesNumber);
 
     resource = new FileResource(metadata, activityInfos, links);
 
@@ -217,22 +199,14 @@ public class SpaceController {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
 
-    String groupId = spaceService.getGroupId(spaceId);
+    String groupId = getGroupId(spaceId);
 
     OutlookSpace space = null;
     ExoSocialActivity activity = null;
 
     try {
       OutlookUser user = outlook.getUser(userEmail, userName, null);
-      OutlookMessage message = messageService.buildMessage(user,
-                                                           messageId,
-                                                           fromEmail,
-                                                           fromName,
-                                                           created,
-                                                           modified,
-                                                           title,
-                                                           subject,
-                                                           body);
+      OutlookMessage message = buildMessage(user, messageId, fromEmail, fromName, created, modified, title, subject, body);
       space = outlook.getSpace(groupId);
 
       if (space != null) {
@@ -308,7 +282,7 @@ public class SpaceController {
    */
   @RequestMapping(value = "/{SID}/documents", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
   public AbstractFileResource getSpaceDocuments(@PathVariable("SID") String spaceId) {
-    OutlookSpace outlookSpace = spaceService.getOutlookSpace(spaceId);
+    OutlookSpace outlookSpace = getOutlookSpace(spaceId);
 
     // path to documents
     String pathToRootFolder = "";

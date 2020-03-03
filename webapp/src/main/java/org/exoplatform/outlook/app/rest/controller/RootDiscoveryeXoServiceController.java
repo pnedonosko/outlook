@@ -20,7 +20,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/v2/exo")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class RootDiscoveryeXoServiceController {
+public class RootDiscoveryeXoServiceController extends AbstractController {
 
   /**
    * Gets root discovery of outlook mail services.

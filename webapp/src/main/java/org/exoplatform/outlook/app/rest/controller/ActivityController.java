@@ -29,7 +29,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/v2/exo/activity")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class ActivityController {
+public class ActivityController extends AbstractController {
 
   /** The Constant LOG. */
   private static final Log LOG = ExoLogger.getLogger(ActivityController.class);

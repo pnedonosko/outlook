@@ -30,7 +30,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/v2/mail/message")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class MessageController {
+public class MessageController extends AbstractController {
 
   /** The Constant LOG. */
   private static final Log LOG = ExoLogger.getLogger(MessageController.class);

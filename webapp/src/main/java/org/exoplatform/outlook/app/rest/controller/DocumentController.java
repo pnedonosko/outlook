@@ -35,7 +35,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/v2/exo/document")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class DocumentController {
+public class DocumentController extends AbstractController {
 
   /** The Constant LOG. */
   private static final Log    LOG        = ExoLogger.getLogger(DocumentController.class);
@@ -98,7 +98,7 @@ public class DocumentController {
 
     String dParentPath = getDocumentParentPath(request, this);
 
-    String groupId = getGroupId(dParentPath);
+    String groupId = getDocumentGroupId(dParentPath);
 
     AbstractFileResource resource = null;
 
@@ -242,7 +242,7 @@ public class DocumentController {
 
     String dParentPath = getDocumentParentPath(request, this);
 
-    String groupId = getGroupId(dParentPath);
+    String groupId = getDocumentGroupId(dParentPath);
 
     AbstractFileResource resource = null;
 
@@ -298,7 +298,7 @@ public class DocumentController {
     return requestURL.substring(parentPathStartPint, parentPathFinishPoint);
   }
 
-  private String getGroupId(String dParentPath) {
+  private String getDocumentGroupId(String dParentPath) {
     String groupId = "";
 
     Pattern pattern = Pattern.compile("(?:.)[/]{1}[\\w]*[/]{1}[\\w]*");

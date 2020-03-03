@@ -4,9 +4,6 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.app.rest.dto.*;
-import org.exoplatform.outlook.app.rest.service.ActivityService;
-import org.exoplatform.outlook.app.rest.service.MessageService;
-import org.exoplatform.outlook.app.rest.service.PaginationService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.IdentityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
@@ -46,22 +43,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 @RequestMapping(value = "/v2/exo/user")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class UserController {
+public class UserController extends AbstractController {
 
   /** The Constant LOG. */
-  private static final Log  LOG = ExoLogger.getLogger(UserController.class);
-
-  /** The Activity service. */
-  @Autowired
-  private ActivityService   activityService;
-
-  /** The Message service. */
-  @Autowired
-  private MessageService    messageService;
-
-  /** The Pagination service. */
-  @Autowired
-  private PaginationService paginationService;
+  private static final Log LOG = ExoLogger.getLogger(UserController.class);
 
   /**
    * Gets root.
@@ -110,7 +95,7 @@ public class UserController {
 
       List<ExoSocialActivity> top20 = activityManager.getActivitiesByPoster(userIdentity).loadAsList(0, 20);
 
-      List<ActivityInfo> activities = activityService.convertToActivityInfos(top20, userId, request);
+      List<ActivityInfo> activities = convertToActivityInfos(top20, userId, request);
       UserInfo userInfo = new UserInfo(userIdentity, activities, connectionList);
 
       org.exoplatform.outlook.app.rest.dto.UserInfo userInfoDTO = new org.exoplatform.outlook.app.rest.dto.UserInfo(userInfo);
@@ -275,7 +260,7 @@ public class UserController {
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
     List<ExoSocialActivity> userActivities = activityManager.getActivitiesByPoster(userIdentity).loadAsList(offset, limit);
 
-    List<ActivityInfo> activities = activityService.convertToActivityInfos(userActivities, userId, request);
+    List<ActivityInfo> activities = convertToActivityInfos(userActivities, userId, request);
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
@@ -283,7 +268,7 @@ public class UserController {
     links.add(linkTo(methodOn(UserController.class).getActivity(userId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
     int activitiesNumber = activityManager.getActivitiesByPoster(userIdentity).getSize();
-    PagedResources.PageMetadata metadata = paginationService.getPaginationMetadata(offset, limit, activitiesNumber);
+    PagedResources.PageMetadata metadata = getPaginationMetadata(offset, limit, activitiesNumber);
 
     resource = new FileResource(metadata, activities, links);
 
@@ -326,15 +311,7 @@ public class UserController {
 
     try {
       user = outlook.getUser(userEmail, userName, null);
-      OutlookMessage message = messageService.buildMessage(user,
-                                                           messageId,
-                                                           fromEmail,
-                                                           fromName,
-                                                           created,
-                                                           modified,
-                                                           title,
-                                                           subject,
-                                                           body);
+      OutlookMessage message = buildMessage(user, messageId, fromEmail, fromName, created, modified, title, subject, body);
       activity = user.postActivity(message);
     } catch (Throwable e) {
       LOG.error("Error converting message to activity status for " + userEmail, e);
