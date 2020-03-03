@@ -6,6 +6,7 @@ import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.app.rest.dto.*;
 import org.exoplatform.outlook.app.rest.service.ActivityService;
 import org.exoplatform.outlook.app.rest.service.MessageService;
+import org.exoplatform.outlook.app.rest.service.PaginationService;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.outlook.model.IdentityInfo;
 import org.exoplatform.outlook.model.OutlookConstant;
@@ -48,15 +49,19 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class UserController {
 
   /** The Constant LOG. */
-  private static final Log LOG = ExoLogger.getLogger(UserController.class);
+  private static final Log  LOG = ExoLogger.getLogger(UserController.class);
 
   /** The Activity service. */
   @Autowired
-  private ActivityService  activityService;
+  private ActivityService   activityService;
 
   /** The Message service. */
   @Autowired
-  private MessageService   messageService;
+  private MessageService    messageService;
+
+  /** The Pagination service. */
+  @Autowired
+  private PaginationService paginationService;
 
   /**
    * Gets root.
@@ -269,12 +274,6 @@ public class UserController {
 
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
     List<ExoSocialActivity> userActivities = activityManager.getActivitiesByPoster(userIdentity).loadAsList(offset, limit);
-    int requestedDataSize = limit - offset;
-    if (requestedDataSize <= 0) {
-      LOG.error("Pagination error: offset - limit <= 0");
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pagination error: offset - limit <= 0");
-    }
-    int activitiesNumber = activityManager.getActivitiesByPoster(userIdentity).getSize();
 
     List<ActivityInfo> activities = activityService.convertToActivityInfos(userActivities, userId, request);
 
@@ -283,12 +282,8 @@ public class UserController {
     links.add(linkTo(methodOn(UserController.class).getActivities(userId, null, null, null)).withSelfRel());
     links.add(linkTo(methodOn(UserController.class).getActivity(userId, OutlookConstant.ACTIVITY_ID)).withRel("activity"));
 
-    long pages = (long) Math.ceil((double) activitiesNumber / requestedDataSize);
-    int currentPostition = offset + 1;
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(requestedDataSize,
-                                                                           currentPostition,
-                                                                           activitiesNumber,
-                                                                           pages);
+    int activitiesNumber = activityManager.getActivitiesByPoster(userIdentity).getSize();
+    PagedResources.PageMetadata metadata = paginationService.getPaginationMetadata(offset, limit, activitiesNumber);
 
     resource = new FileResource(metadata, activities, links);
 
