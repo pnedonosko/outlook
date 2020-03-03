@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AbstractController {
+public abstract class AbstractController {
 
   /** The Constant LOG. */
   private static final Log LOG = ExoLogger.getLogger(AbstractController.class);
