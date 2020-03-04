@@ -1162,6 +1162,15 @@ public class OutlookServiceImpl implements OutlookService, Startable {
   protected final ConcurrentHashMap<String, OutlookSpaceImpl> spaces            =
                                                                      new ConcurrentHashMap<String, OutlookSpaceImpl>();
 
+  /** The Url factory service. */
+  protected final URLFactoryService                           urlFactoryService;
+
+  /** The Portal container. */
+  protected final PortalContainer                             portalContainer;
+
+  /** The Web app controller. */
+  protected final WebAppController                            webAppController;
+
   /** The mailserver api. */
   protected MailAPI                                           mailserverApi;
 
@@ -1200,7 +1209,10 @@ public class OutlookServiceImpl implements OutlookService, Startable {
                             RenderingService wikiRenderingService,
                             ResourceBundleService resourceBundleService,
                             InitParams params,
-                            DocumentService documentService)
+                            DocumentService documentService,
+                            URLFactoryService urlFactoryService,
+                            PortalContainer portalContainer,
+                            WebAppController webAppController)
       throws ConfigurationException,
       MailServerException {
 
@@ -1217,6 +1229,9 @@ public class OutlookServiceImpl implements OutlookService, Startable {
     this.wikiRenderingService = wikiRenderingService;
     this.resourceBundleService = resourceBundleService;
     this.documentService = documentService;
+    this.urlFactoryService = urlFactoryService;
+    this.portalContainer = portalContainer;
+    this.webAppController = webAppController;
 
     // API for user requests (uses credentials from eXo user profile)
     MailAPI api = new MailAPI();
@@ -2090,12 +2105,7 @@ public class OutlookServiceImpl implements OutlookService, Startable {
         throw new OutlookException("Error creating server URL " + request.getRequestURI().toString(), e);
       }
     } else {
-      URLFactoryService urlFactoryService = (URLFactoryService) PortalContainer.getComponent(URLFactoryService.class);
-
-      final PortalContainer container = PortalContainer.getInstance();
-      final WebAppController controller = (WebAppController) container.getComponentInstanceOfType(WebAppController.class);
-
-      URLContext urlContext = new SimpleURLContext(container, controller);
+      URLContext urlContext = new SimpleURLContext(portalContainer, webAppController);
 
       NodeURL nodeURL = urlFactoryService.newURL(NodeURL.TYPE, urlContext);
 
