@@ -64,7 +64,7 @@ public class UserController extends AbstractController {
     links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
     links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
     links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID, null, null)).withRel("spaces"));
-    links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID)).withRel("documents"));
+    links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID, null)).withRel("documents"));
     links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID,
                                                                   null,
                                                                   null,
@@ -106,7 +106,7 @@ public class UserController extends AbstractController {
       links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, request)).withSelfRel());
       links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("connections"));
       links.add(linkTo(methodOn(UserController.class).getSpaces(userId, null, null)).withRel("spaces"));
-      links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("documents"));
+      links.add(linkTo(methodOn(UserController.class).getDocuments(userId, null)).withRel("documents"));
       links.add(linkTo(methodOn(UserController.class).getActivities(userId, null, null, null)).withRel("activities"));
       userInfoDTO.add(links);
 
@@ -207,7 +207,7 @@ public class UserController extends AbstractController {
    * @return the documents
    */
   @RequestMapping(value = "/{UID}/documents", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getDocuments(@PathVariable("UID") String userId) {
+  public AbstractFileResource getDocuments(@PathVariable("UID") String userId, HttpServletRequest request) {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
 
@@ -225,7 +225,7 @@ public class UserController extends AbstractController {
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
-    links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getDocuments(userId, null)).withSelfRel());
     links.add(linkTo(DocumentController.class).slash(OutlookConstant.DOCUMENT_PATH).withRel("document"));
 
     int folderFilesAndSubfolders = 0;
@@ -245,7 +245,8 @@ public class UserController extends AbstractController {
                                                                            folderFilesAndSubfolders,
                                                                            1);
 
-    Folder rootFolder = new Folder(rootUserFolder, metadata, links);
+    String baseURL = getRequestBaseURL(request);
+    Folder rootFolder = new Folder(rootUserFolder, metadata, links, baseURL);
 
     return rootFolder;
   }

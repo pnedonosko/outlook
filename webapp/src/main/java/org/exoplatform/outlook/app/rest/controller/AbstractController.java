@@ -26,6 +26,8 @@ import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
@@ -234,5 +236,22 @@ public abstract class AbstractController {
    */
   public String getGroupId(String spaceId) {
     return new StringBuilder("/spaces/").append(spaceId).toString();
+  }
+
+  /**
+   * Gets the request base uri.
+   *
+   * @param request the request
+   * @return the request base uri
+   */
+  public String getRequestBaseURL(HttpServletRequest request) {
+    URI requestUri = null;
+    try {
+      requestUri = new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(), null, null, null);
+    } catch (URISyntaxException e) {
+      LOG.error("Error getting requestUri", e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting requestUri");
+    }
+    return requestUri.toASCIIString();
   }
 }

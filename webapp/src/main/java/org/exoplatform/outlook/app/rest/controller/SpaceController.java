@@ -64,7 +64,7 @@ public class SpaceController extends AbstractController {
                                                                         null,
                                                                         null)).withRel("activities"));
     links.add(linkTo(methodOn(SpaceController.class).getActivityInfo(OutlookConstant.SPACE_ID, null)).withRel("activity"));
-    links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(OutlookConstant.SPACE_ID)).withRel("documents"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(OutlookConstant.SPACE_ID, null)).withRel("documents"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(OutlookConstant.SPACE_ID)).withRel("wiki"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceForum(OutlookConstant.SPACE_ID)).withRel("forum"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceCalendar(OutlookConstant.SPACE_ID)).withRel("calendar"));
@@ -90,7 +90,7 @@ public class SpaceController extends AbstractController {
     links.add(linkTo(methodOn(SpaceController.class).getRoot()).withRel("parent"));
     links.add(linkTo(methodOn(SpaceController.class).getSpace(spaceId)).withSelfRel());
     links.add(linkTo(methodOn(SpaceController.class).getSpaceActivities(spaceId, null, null, null)).withRel("activities"));
-    links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(spaceId)).withRel("documents"));
+    links.add(linkTo(methodOn(SpaceController.class).getSpaceDocuments(spaceId, null)).withRel("documents"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceWiki(spaceId)).withRel("wiki"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceForum(spaceId)).withRel("forum"));
     links.add(linkTo(methodOn(SpaceController.class).getSpaceCalendar(spaceId)).withRel("calendar"));
@@ -281,7 +281,7 @@ public class SpaceController extends AbstractController {
    * @return the space documents
    */
   @RequestMapping(value = "/{SID}/documents", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getSpaceDocuments(@PathVariable("SID") String spaceId) {
+  public AbstractFileResource getSpaceDocuments(@PathVariable("SID") String spaceId, HttpServletRequest request) {
     OutlookSpace outlookSpace = getOutlookSpace(spaceId);
 
     // path to documents
@@ -322,7 +322,8 @@ public class SpaceController extends AbstractController {
                                                                            numberOfFolderFilesAndSubfolders,
                                                                            1);
 
-    return new Folder(folder, metadata, links);
+    String baseURL = getRequestBaseURL(request);
+    return new Folder(folder, metadata, links, baseURL);
   }
 
   /**

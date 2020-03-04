@@ -68,6 +68,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.entity.ContentType;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.web.WebAppController;
+import org.exoplatform.web.url.URLContext;
+import org.exoplatform.web.url.URLFactoryService;
+import org.exoplatform.web.url.simple.SimpleURLContext;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -2069,10 +2074,22 @@ public class OutlookServiceImpl implements OutlookService, Startable {
         throw new OutlookException("Error creating server URL " + request.getRequestURI().toString(), e);
       }
     } else {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Portal request not found. Node URL will be its WebDAV link. Node: " + node.getPath());
-      }
-      node.setUrl(node.getWebdavUrl());
+      URLFactoryService urlFactoryService = (URLFactoryService) PortalContainer.getComponent(URLFactoryService.class);
+
+      final PortalContainer container = PortalContainer.getInstance();
+      final WebAppController controller = (WebAppController) container.getComponentInstanceOfType(WebAppController.class);
+
+      URLContext urlContext = new SimpleURLContext(container, controller);
+
+      NodeURL nodeURL = urlFactoryService.newURL(NodeURL.TYPE, urlContext);
+
+      NavigationResource resource = new NavigationResource(siteType, portalName, nodeURI);
+      nodeURL.setResource(resource);
+      nodeURL.setQueryParameterValue("path", path);
+
+      StringBuilder url = new StringBuilder();
+      url.append(nodeURL.toString());
+      node.setUrl(url.toString());
     }
   }
 

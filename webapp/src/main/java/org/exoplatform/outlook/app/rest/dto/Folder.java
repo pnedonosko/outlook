@@ -33,18 +33,27 @@ public class Folder extends AbstractFileResource {
   protected final org.exoplatform.outlook.jcr.Folder folder;
 
   /**
+   * The Base url.
+   */
+  protected final String                             baseURL;
+
+  /**
    * Instantiates a new Folder.
    *
    * @param folder the folder
    * @param metadata the metadata
    * @param links the links
    */
-  public Folder(org.exoplatform.outlook.jcr.Folder folder, PagedResources.PageMetadata metadata, List<Link> links) {
+  public Folder(org.exoplatform.outlook.jcr.Folder folder,
+                PagedResources.PageMetadata metadata,
+                List<Link> links,
+                String baseURL) {
 
     setMetadata(new Metadata(metadata));
     add(links);
 
     this.folder = folder;
+    this.baseURL = baseURL;
 
     Set<org.exoplatform.outlook.jcr.Folder> fullSubfolders = null;
 
@@ -87,7 +96,7 @@ public class Folder extends AbstractFileResource {
       subfiles = new HashSet<>(fullFiles.size());
 
       for (org.exoplatform.outlook.jcr.File f : fullFiles) {
-        subfiles.add(new File(f));
+        subfiles.add(new File(f,baseURL));
       }
     }
 
@@ -135,7 +144,7 @@ public class Folder extends AbstractFileResource {
    */
   @JsonProperty("explorerLink")
   public String getExplorerLink() {
-    return folder.getUrl();
+    return new StringBuilder(baseURL).append(folder.getUrl()).toString();
   }
 
   /**
