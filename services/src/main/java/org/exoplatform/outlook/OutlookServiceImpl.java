@@ -1496,7 +1496,16 @@ public class OutlookServiceImpl implements OutlookService, Startable {
    * {@inheritDoc}
    */
   @Override
-  public List<OutlookSpace> getUserSpaces(Integer offset, Integer limit) throws OutlookSpaceException {
+  public List<OutlookSpace> getUserSpaces() throws OutlookSpaceException, RepositoryException, OutlookException {
+    return getUserSpaces(null, null);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<OutlookSpace> getUserSpaces(Integer offset,
+                                          Integer limit) throws OutlookSpaceException, RepositoryException, OutlookException {
     return userSpaces(currentUserId(), offset, limit);
   }
 
@@ -1969,9 +1978,16 @@ public class OutlookServiceImpl implements OutlookService, Startable {
     List<OutlookSpace> spaces = new ArrayList<OutlookSpace>();
     ListAccess<Space> list = spaceService().getMemberSpaces(userId);
     try {
-      for (Space socialSpace : list.load(offset, limit)) {
-        spaces.add(new OutlookSpaceImpl(socialSpace));
+      if (offset != null && limit != null) {
+        for (Space socialSpace : list.load(offset, limit)) {
+          spaces.add(new OutlookSpaceImpl(socialSpace));
+        }
+      } else {
+        for (Space socialSpace : list.load(0, list.getSize())) {
+          spaces.add(new OutlookSpaceImpl(socialSpace));
+        }
       }
+
       return spaces;
     } catch (Throwable e) {
       if (LOG.isDebugEnabled()) {

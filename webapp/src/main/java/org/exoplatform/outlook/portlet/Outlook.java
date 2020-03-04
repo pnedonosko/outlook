@@ -631,7 +631,7 @@ public class Outlook {
   @Resource
   public Response saveAttachmentForm() {
     try {
-      return saveAttachment.with().spaces(outlook.getUserSpaces(0,100)).ok();
+      return saveAttachment.with().spaces(outlook.getUserSpaces()).ok();
     } catch (AccessException e) {
       return errorMessage(e.getMessage(), 403);
     } catch (TemplateExecutionException e) {
@@ -812,7 +812,7 @@ public class Outlook {
                                        i18n.getString("Outlook.personalDocuments"),
                                        userFolder.getFullPath(),
                                        userFolder.getPathLabel()));
-      for (OutlookSpace space : outlook.getUserSpaces(0,100)) {
+      for (OutlookSpace space : outlook.getUserSpaces()) {
         Folder spaceFolder = space.getRootFolder();
         sources.add(new AttachmentSource(space.getGroupId(),
                                          space.getTitle(),
@@ -968,7 +968,7 @@ public class Outlook {
   @Resource
   public Response postStatusForm() {
     try {
-      return postStatus.with().spaces(outlook.getUserSpaces(0,100)).ok();
+      return postStatus.with().spaces(outlook.getUserSpaces()).ok();
     } catch (Throwable e) {
       LOG.error("Error showing status post form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1028,7 +1028,7 @@ public class Outlook {
   @Resource
   public Response startDiscussionForm() {
     try {
-      return startDiscussion.with().spaces(outlook.getUserSpaces(0,100)).ok();
+      return startDiscussion.with().spaces(outlook.getUserSpaces()).ok();
     } catch (Throwable e) {
       LOG.error("Error showing discussion start form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1172,7 +1172,7 @@ public class Outlook {
   @Resource
   public Response convertToStatusForm() {
     try {
-      return convertToStatus.with().spaces(outlook.getUserSpaces(0,100)).ok();
+      return convertToStatus.with().spaces(outlook.getUserSpaces()).ok();
     } catch (Throwable e) {
       LOG.error("Error showing conversion to status form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1418,7 +1418,7 @@ public class Outlook {
   @Resource
   public Response convertToWikiForm() {
     try {
-      return convertToWiki.with().spaces(outlook.getUserSpaces(0,100)).ok();
+      return convertToWiki.with().spaces(outlook.getUserSpaces()).ok();
     } catch (Throwable e) {
       LOG.error("Error showing conversion to wiki form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1492,7 +1492,7 @@ public class Outlook {
   @Resource
   public Response convertToForumForm() {
     try {
-      return convertToForum.with().spaces(outlook.getUserSpaces(0,100)).ok();
+      return convertToForum.with().spaces(outlook.getUserSpaces()).ok();
     } catch (Throwable e) {
       LOG.error("Error showing conversion to forum form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1641,7 +1641,7 @@ public class Outlook {
   @Resource
   public Response userSpaces() {
     try {
-      return spaces.with().set("spaces", outlook.getUserSpaces(0,100)).ok();
+      return spaces.with().set("spaces", outlook.getUserSpaces()).ok();
     } catch (Throwable e) {
       LOG.error("Error getting user spaces", e);
       return errorMessage(e.getMessage(), 500);
