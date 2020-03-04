@@ -41,12 +41,18 @@ public class File extends ResourceSupport {
   protected final org.exoplatform.outlook.jcr.File file;
 
   /**
+   * The Base url.
+   */
+  protected final String                           baseURL;
+
+  /**
    * Instantiates a new File.
    *
    * @param file the file
    */
-  public File(org.exoplatform.outlook.jcr.File file) {
+  public File(org.exoplatform.outlook.jcr.File file, String baseURL) {
     this.file = file;
+    this.baseURL = baseURL;
   }
 
   /**
@@ -66,7 +72,7 @@ public class File extends ResourceSupport {
    */
   @JsonProperty("url")
   public String getUrl() {
-    return file.getUrl();
+    return new StringBuilder(baseURL).append(file.getUrl()).toString();
   }
 
   /**

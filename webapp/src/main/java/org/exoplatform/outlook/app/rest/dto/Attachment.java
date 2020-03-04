@@ -44,7 +44,8 @@ public class Attachment extends AbstractFileResource {
                     String userName,
                     String messageId,
                     String attachmentToken,
-                    List<org.exoplatform.outlook.jcr.File> files) {
+                    List<org.exoplatform.outlook.jcr.File> files,
+                    String baseURL) {
 
     setMetadata(new Metadata(metadata));
     add(links);
@@ -58,7 +59,7 @@ public class Attachment extends AbstractFileResource {
 
     List<File> fileDTOS = new LinkedList<>();
     files.forEach((f) -> {
-      fileDTOS.add(new File(f));
+      fileDTOS.add(new File(f, baseURL));
     });
 
     Collection<Children> contextParams = new ArrayList<>();

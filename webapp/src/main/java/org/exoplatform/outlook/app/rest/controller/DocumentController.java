@@ -102,12 +102,14 @@ public class DocumentController extends AbstractController {
 
     AbstractFileResource resource = null;
 
+    String baseURL = getRequestBaseURL(request);
+
     switch (resourceType) {
     case FOLDER:
-      resource = addFolder(dParentPath, docName, groupId);
+      resource = addFolder(dParentPath, docName, groupId, baseURL);
       break;
     case ATTACHMENT:
-      resource = saveAttachment(dParentPath, docName, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken);
+      resource = saveAttachment(dParentPath, docName, groupId, comment, ewsUrl, userEmail, userName, messageId, attachmentToken, baseURL);
       break;
     }
 
@@ -122,7 +124,8 @@ public class DocumentController extends AbstractController {
                                     String userEmail,
                                     String userName,
                                     String messageId,
-                                    String attachmentToken) {
+                                    String attachmentToken,
+                                    String baseURL) {
     if (groupId != null && dParentPath != null && ewsUrl != null && userEmail != null && messageId != null
         && attachmentToken != null && attachmentIds != null) {
       try {
@@ -162,7 +165,8 @@ public class DocumentController extends AbstractController {
                                                    userName,
                                                    messageId,
                                                    attachmentToken,
-                                                   files);
+                                                   files,
+                                                   baseURL);
             return attachment;
           } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment IDs (attachmentIds) are empty");
@@ -188,7 +192,7 @@ public class DocumentController extends AbstractController {
     }
   }
 
-  private Folder addFolder(String dParentPath, String name, String groupId) {
+  private Folder addFolder(String dParentPath, String name, String groupId, String baseURL) {
     if (name != null && name.length() > 0) {
       ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
       OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
@@ -211,7 +215,7 @@ public class DocumentController extends AbstractController {
                                                                                addedFolder.getSubfolders().size(),
                                                                                1);
 
-        return new Folder(addedFolder, metadata, links);
+        return new Folder(addedFolder, metadata, links,baseURL);
       } catch (BadParameterException e) {
         if (LOG.isDebugEnabled()) {
           LOG.debug("Error adding folder " + dParentPath + "/" + name + ". " + e.getMessage());
@@ -246,8 +250,10 @@ public class DocumentController extends AbstractController {
 
     AbstractFileResource resource = null;
 
+    String baseURL = getRequestBaseURL(request);
+
     if (!docName.contains(".")) {
-      resource = getFolder(dParentPath, docName, groupId);
+      resource = getFolder(dParentPath, docName, groupId, baseURL);
     } else {
       // get file
     }
@@ -255,7 +261,7 @@ public class DocumentController extends AbstractController {
     return resource;
   }
 
-  private Folder getFolder(String dParentPath, String name, String groupId) {
+  private Folder getFolder(String dParentPath, String name, String groupId, String baseURL) {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
     String folderPath = null;
@@ -270,7 +276,7 @@ public class DocumentController extends AbstractController {
                                                                              1,
                                                                              folderFilesAndSubfolders,
                                                                              1);
-      return new Folder(folder, metadata, links);
+      return new Folder(folder, metadata, links, baseURL);
     } catch (BadParameterException e) {
       if (LOG.isDebugEnabled()) {
         LOG.debug("Error reading folder " + folderPath + ". " + e.getMessage());

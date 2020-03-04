@@ -31,23 +31,29 @@ import org.exoplatform.outlook.jcr.UserDocuments;
  * Created by The eXo Platform SAS.
  *
  * @author <a href="mailto:pnedonosko@exoplatform.com">Peter Nedonosko</a>
- * @version $Id: OutlookService.java 00000 Mar 4, 2016 pnedonosko $
+ * @version $Id : OutlookService.java 00000 Mar 4, 2016 pnedonosko $
  */
 public interface OutlookService {
 
-  /** The personal drive parrten. */
+  /**
+   * The personal drive parrten.
+   */
   final String PERSONAL_DRIVE_PARRTEN = "/Users/${userId}/Private";
 
-  /** The group drive parrten. */
+  /**
+   * The group drive parrten.
+   */
   final String GROUP_DRIVE_PARRTEN    = "/Groups${groupId}/Documents";
 
-  /** The message nodetype. */
+  /**
+   * The message nodetype.
+   */
   final String MESSAGE_NODETYPE       = "mso:message";
 
   /**
    * Build Outlook user object and associate it with current user in eXo
    * organization.
-   * 
+   *
    * @param email the email
    * @param userName the user name
    * @param ewsUrl the Exchange server web-service URL
@@ -59,10 +65,10 @@ public interface OutlookService {
 
   /**
    * Build Outlook Email address object.
-   * 
+   *
    * @param email email
    * @param displayName user display name
-   * @return OutlookEmail
+   * @return OutlookEmail address
    * @throws OutlookException when error
    */
   OutlookEmail getAddress(String email, String displayName) throws OutlookException;
@@ -161,6 +167,18 @@ public interface OutlookService {
   /**
    * Gets the user spaces.
    *
+   * @return the user spaces
+   * @throws OutlookSpaceException the outlook space exception
+   * @throws RepositoryException the repository exception
+   * @throws OutlookException the outlook exception
+   */
+  List<OutlookSpace> getUserSpaces() throws OutlookSpaceException, RepositoryException, OutlookException;
+
+  /**
+   * Gets the user spaces.
+   *
+   * @param offset the offset
+   * @param limit the limit
    * @return the user spaces
    * @throws OutlookSpaceException the outlook space exception
    * @throws RepositoryException the repository exception
