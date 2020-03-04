@@ -349,7 +349,7 @@ public class Outlook {
   @Inject
   @Path("userInfoRead.gtmpl")
   org.exoplatform.outlook.portlet.templates.userInfoRead            userInfoRead;
-  
+
   /**
    * The user info for Compose mode.
    */
@@ -428,7 +428,7 @@ public class Outlook {
    */
   @Inject
   ResourceBundleSerializer                                      i18nJSON;
-  
+
   /**
    * Instantiates a new outlook.
    */
@@ -538,7 +538,6 @@ public class Outlook {
    * @return the response
    */
   @View
-  @Route("/")
   public Response index(String command, RequestContext resourceContext) {
     Collection<MenuItem> menu = new ArrayList<MenuItem>();
     if (command == null) {
@@ -580,6 +579,7 @@ public class Outlook {
    * @param message the message
    * @return the response
    */
+  @View
   public Response error(String message) {
     return error.with().message(message).ok();
   }
@@ -631,7 +631,7 @@ public class Outlook {
   @Resource
   public Response saveAttachmentForm() {
     try {
-      return saveAttachment.with().spaces(outlook.getUserSpaces()).ok();
+      return saveAttachment.with().spaces(outlook.getUserSpaces(0,100)).ok();
     } catch (AccessException e) {
       return errorMessage(e.getMessage(), 403);
     } catch (TemplateExecutionException e) {
@@ -812,7 +812,7 @@ public class Outlook {
                                        i18n.getString("Outlook.personalDocuments"),
                                        userFolder.getFullPath(),
                                        userFolder.getPathLabel()));
-      for (OutlookSpace space : outlook.getUserSpaces()) {
+      for (OutlookSpace space : outlook.getUserSpaces(0,100)) {
         Folder spaceFolder = space.getRootFolder();
         sources.add(new AttachmentSource(space.getGroupId(),
                                          space.getTitle(),
@@ -940,6 +940,8 @@ public class Outlook {
 
         String userId = context.getSecurityContext().getRemoteUser();
 
+        // TODO ensure it's safe link to access user content w/o auth (from MS side)
+        // what variants possible: MS Auth, SSO, JSON Web Token, others?
         LinkResource res = contentLink.createUrl(userId, nodePath, prefix.toString());
 
         return Response.ok()
@@ -966,7 +968,7 @@ public class Outlook {
   @Resource
   public Response postStatusForm() {
     try {
-      return postStatus.with().spaces(outlook.getUserSpaces()).ok();
+      return postStatus.with().spaces(outlook.getUserSpaces(0,100)).ok();
     } catch (Throwable e) {
       LOG.error("Error showing status post form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1026,7 +1028,7 @@ public class Outlook {
   @Resource
   public Response startDiscussionForm() {
     try {
-      return startDiscussion.with().spaces(outlook.getUserSpaces()).ok();
+      return startDiscussion.with().spaces(outlook.getUserSpaces(0,100)).ok();
     } catch (Throwable e) {
       LOG.error("Error showing discussion start form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1170,7 +1172,7 @@ public class Outlook {
   @Resource
   public Response convertToStatusForm() {
     try {
-      return convertToStatus.with().spaces(outlook.getUserSpaces()).ok();
+      return convertToStatus.with().spaces(outlook.getUserSpaces(0,100)).ok();
     } catch (Throwable e) {
       LOG.error("Error showing conversion to status form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1248,7 +1250,7 @@ public class Outlook {
     try {
       String clientEnc = context.getClientContext().getCharacterEncoding();
       final Charset clientCs = loadEncoding(clientEnc);
-      
+
       String currentUsername = context.getSecurityContext().getRemoteUser();
       Set<String> currentUserGroupIds = organization.getMembershipHandler()
                                                     .findMembershipsByUser(currentUsername)
@@ -1268,18 +1270,18 @@ public class Outlook {
                                                           }
                                                         })
                                                         .collect(Collectors.toSet());*/
-      
+
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, user, true);
       List<IdentityInfo> connectionList = getConnectionsList(user);
-      
+
       // TODO cleanup
       //List<ExoSocialActivity> top20visible = activityManager.getActivitiesWithListAccess(userIdentity, currentUserIdentity)
       //                                                      .loadAsList(0, 20);
       List<ExoSocialActivity> top20 = activityManager.getActivitiesByPoster(userIdentity).loadAsList(0, 20);
-      
+
       // Use Apache Tika to parse activity title w/o HTML
       HtmlParser htmlParser = new HtmlParser();
-      
+
       List<ActivityInfo> activities = top20.stream().filter(a -> {
         String streamId = a.getStreamOwner();
         return streamId != null
@@ -1416,7 +1418,7 @@ public class Outlook {
   @Resource
   public Response convertToWikiForm() {
     try {
-      return convertToWiki.with().spaces(outlook.getUserSpaces()).ok();
+      return convertToWiki.with().spaces(outlook.getUserSpaces(0,100)).ok();
     } catch (Throwable e) {
       LOG.error("Error showing conversion to wiki form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1490,7 +1492,7 @@ public class Outlook {
   @Resource
   public Response convertToForumForm() {
     try {
-      return convertToForum.with().spaces(outlook.getUserSpaces()).ok();
+      return convertToForum.with().spaces(outlook.getUserSpaces(0,100)).ok();
     } catch (Throwable e) {
       LOG.error("Error showing conversion to forum form", e);
       return errorMessage(e.getMessage(), 500);
@@ -1639,7 +1641,7 @@ public class Outlook {
   @Resource
   public Response userSpaces() {
     try {
-      return spaces.with().set("spaces", outlook.getUserSpaces()).ok();
+      return spaces.with().set("spaces", outlook.getUserSpaces(0,100)).ok();
     } catch (Throwable e) {
       LOG.error("Error getting user spaces", e);
       return errorMessage(e.getMessage(), 500);
@@ -1976,7 +1978,7 @@ public class Outlook {
     }
     return list;
   }
-  
+
   private Charset loadEncoding(String name) {
     if (name == null || name.length() == 0) {
       name = "UTF8";
@@ -1988,8 +1990,8 @@ public class Outlook {
       return Charset.defaultCharset();
     }
   }
-  
+
   private String cutText(String text, int limit) {
-    return text.length() > limit ? text.substring(0,  limit) : text; 
+    return text.length() > limit ? text.substring(0,  limit) : text;
   }
 }

@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.controller;
+package org.exoplatform.outlook.app.view.controller;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.outlook.utils.PortalLocaleUtils;
@@ -16,7 +16,7 @@ import java.util.Locale;
  * The Outlook app controller.
  */
 @Controller
-@RequestMapping(value = "/app")
+@RequestMapping(value = "/view")
 public class OutlookAppController {
 
   /** The Constant LOG. */
@@ -41,9 +41,7 @@ public class OutlookAppController {
    * @return the react base page
    */
   @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-  public String getManifestURLsResponse(Model model,
-                                        @RequestParam(value = "command") String command,
-                                        HttpServletRequest request) {
+  public String getIndex(Model model, @RequestParam(value = "command") String command, HttpServletRequest request) {
 
     /*
      * "$BASE_URL/outlook/app" "$BASE_URL/outlook/app?command=search"

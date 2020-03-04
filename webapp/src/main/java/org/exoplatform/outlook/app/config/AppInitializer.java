@@ -1,4 +1,4 @@
-package org.exoplatform.outlook.mvc.config;
+package org.exoplatform.outlook.app.config;
 
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
@@ -18,14 +18,13 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
   @Override
   protected String[] getServletMappings() {
-    return new String[] { "/" };
+    return new String[] { "/app/*" };
   }
 
   @Override
   protected Filter[] getServletFilters() {
     CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
     characterEncodingFilter.setEncoding("UTF-8");
-    characterEncodingFilter.setForceEncoding(true);
     return new Filter[] { characterEncodingFilter };
   }
 }

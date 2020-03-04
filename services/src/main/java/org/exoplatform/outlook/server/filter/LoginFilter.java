@@ -21,10 +21,10 @@ public class LoginFilter extends AbstractFilter implements Filter {
   protected static final Logger LOG                    = LoggerFactory.getLogger(LoginFilter.class);
 
   /** The Constant OUTLOOK_LOGIN. */
-  public static final String    OUTLOOK_LOGIN          = "/outlook/login";
+  public static final String    OUTLOOK_LOGIN          = "/outlook/app/login";
 
   /** The Constant OUTLOOK_LOGIN_TEMPLATE. */
-  public static final String    OUTLOOK_LOGIN_TEMPLATE = "/outlook/login?target=_url_";
+  public static final String    OUTLOOK_LOGIN_TEMPLATE = "/outlook/app/login?target=_url_";
 
   /**
    * {@inheritDoc}

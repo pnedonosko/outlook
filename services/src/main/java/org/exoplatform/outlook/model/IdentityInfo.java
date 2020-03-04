@@ -122,17 +122,19 @@ public class IdentityInfo {
     List<String> work = new ArrayList<>(2);
     List<String> home = new ArrayList<>(2);
     List<String> other = new ArrayList<>(2);
-    for (Map<String, String> map : ph) {
-      switch (map.get("key")) {
-      case "work":
-        work.add(map.get("value"));
-        break;
-      case "home":
-        home.add(map.get("value"));
-        break;
-      default:
-        other.add(map.get("value"));
-        break;
+    if (ph != null) {
+      for (Map<String, String> map : ph) {
+        switch (map.get("key")) {
+        case "work":
+          work.add(map.get("value"));
+          break;
+        case "home":
+          home.add(map.get("value"));
+          break;
+        default:
+          other.add(map.get("value"));
+          break;
+        }
       }
     }
     Map<String, List<String>> phones = new HashMap<>();

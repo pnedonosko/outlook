@@ -16,7 +16,8 @@
 /**
  * OutlookPortlet.
  */
-@Application(defaultController = Outlook.class)
+@Application
+@Portlet(name = "OutlookPortlet")
 @Bindings({ @Binding(value = OutlookService.class), @Binding(value = OutlookTokenService.class),
     @Binding(value = CookieTokenService.class), @Binding(value = ContentLink.class), @Binding(value = IdentityManager.class),
     @Binding(value = ActivityManager.class), @Binding(value = RelationshipManager.class), @Binding(value = SpaceService.class),
@@ -55,3 +56,4 @@ import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
+import juzu.plugin.portlet.Portlet;

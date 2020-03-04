@@ -97,8 +97,8 @@ public interface OutlookService {
    *
    * @param user {@link OutlookUser}
    * @param messageId {@link String} email message ID
-   * @param messageToken {@link String} secure token to access message on
-   *          Exchange server
+   * @param messageToken {@link String} secure token to access message on Exchange
+   *          server
    * @return {@link OutlookMessage}
    * @throws OutlookException when error
    */
@@ -166,7 +166,8 @@ public interface OutlookService {
    * @throws RepositoryException the repository exception
    * @throws OutlookException the outlook exception
    */
-  List<OutlookSpace> getUserSpaces() throws OutlookSpaceException, RepositoryException, OutlookException;
+  List<OutlookSpace> getUserSpaces(Integer offset,
+                                   Integer limit) throws OutlookSpaceException, RepositoryException, OutlookException;
 
   /**
    * Gets the user documents.
