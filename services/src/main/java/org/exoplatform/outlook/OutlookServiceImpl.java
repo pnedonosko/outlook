@@ -1491,8 +1491,8 @@ public class OutlookServiceImpl implements OutlookService, Startable {
    * {@inheritDoc}
    */
   @Override
-  public List<OutlookSpace> getUserSpaces() throws OutlookSpaceException {
-    return userSpaces(currentUserId());
+  public List<OutlookSpace> getUserSpaces(Integer offset, Integer limit) throws OutlookSpaceException {
+    return userSpaces(currentUserId(), offset, limit);
   }
 
   /**
@@ -1960,11 +1960,11 @@ public class OutlookServiceImpl implements OutlookService, Startable {
    * @return the list
    * @throws OutlookSpaceException the outlook space exception
    */
-  protected List<OutlookSpace> userSpaces(String userId) throws OutlookSpaceException {
+  protected List<OutlookSpace> userSpaces(String userId, Integer offset, Integer limit) throws OutlookSpaceException {
     List<OutlookSpace> spaces = new ArrayList<OutlookSpace>();
     ListAccess<Space> list = spaceService().getMemberSpaces(userId);
     try {
-      for (Space socialSpace : list.load(0, list.getSize())) {
+      for (Space socialSpace : list.load(offset, limit)) {
         spaces.add(new OutlookSpaceImpl(socialSpace));
       }
       return spaces;

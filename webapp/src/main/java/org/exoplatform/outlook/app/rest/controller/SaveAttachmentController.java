@@ -162,7 +162,7 @@ public class SaveAttachmentController {
       parametersListResourceSupportWrapper.setName("getSaveAttachmentFormUserSpaces");
 
       List<Space> spaces = new LinkedList<>();
-      outlook.getUserSpaces().forEach(space -> spaces.add(new Space(space)));
+      outlook.getUserSpaces(0, 100).forEach(space -> spaces.add(new Space(space)));
       parametersListResourceSupportWrapper.addParameter("spaces", spaces);
 
       parametersListResourceSupportWrapper.add(generateLinks("getSaveAttachmentFormUserSpaces",

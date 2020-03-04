@@ -18,6 +18,7 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.manager.RelationshipManager;
 import org.exoplatform.social.core.relationship.model.Relationship;
 import org.exoplatform.social.core.service.LinkProvider;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
@@ -62,7 +63,7 @@ public class UserController extends AbstractController {
     links.add(linkTo(methodOn(UserController.class).getRoot()).withSelfRel());
     links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
     links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
-    links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID)).withRel("spaces"));
+    links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID, null, null)).withRel("spaces"));
     links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID)).withRel("documents"));
     links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID,
                                                                   null,
@@ -104,7 +105,7 @@ public class UserController extends AbstractController {
       links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("parent"));
       links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, request)).withSelfRel());
       links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("connections"));
-      links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withRel("spaces"));
+      links.add(linkTo(methodOn(UserController.class).getSpaces(userId, null, null)).withRel("spaces"));
       links.add(linkTo(methodOn(UserController.class).getDocuments(userId)).withRel("documents"));
       links.add(linkTo(methodOn(UserController.class).getActivities(userId, null, null, null)).withRel("activities"));
       userInfoDTO.add(links);
@@ -153,15 +154,18 @@ public class UserController extends AbstractController {
    * @return the spaces
    */
   @RequestMapping(value = "/{UID}/spaces", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getSpaces(@PathVariable("UID") String userId) {
+  public AbstractFileResource getSpaces(@PathVariable("UID") String userId,
+                                        @RequestParam Integer offset,
+                                        @RequestParam Integer limit) {
     AbstractFileResource resource = null;
 
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     OutlookService outlook = (OutlookService) currentContainer.getComponentInstance(OutlookService.class);
+    SpaceService spaceService = (SpaceService) currentContainer.getComponentInstance(SpaceService.class);
 
     List<OutlookSpace> userSpaces = null;
     try {
-      userSpaces = outlook.getUserSpaces();
+      userSpaces = outlook.getUserSpaces(offset, limit);
     } catch (OutlookSpaceException e) {
       LOG.error("Error getting user (" + userId + ") spaces", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error getting user (" + userId + ") spaces");
@@ -180,10 +184,16 @@ public class UserController extends AbstractController {
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
-    links.add(linkTo(methodOn(UserController.class).getSpaces(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getSpaces(userId, null, null)).withSelfRel());
     links.add(linkTo(methodOn(SpaceController.class).getSpace(OutlookConstant.SPACE_ID)).withRel("space"));
 
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(spaces.size(), 1, spaces.size(), 1);
+    int availableSpaceNumber = userSpaces.size();
+    try {
+      availableSpaceNumber = spaceService.getMemberSpaces(userId).getSize();
+    } catch (Exception e) {
+      LOG.error("Error defining number of available user (" + userId + ") spaces", e);
+    }
+    PagedResources.PageMetadata metadata = getPaginationMetadata(offset, limit, availableSpaceNumber);
 
     resource = new FileResource(metadata, spaces, links);
 
