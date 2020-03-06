@@ -1,10 +1,22 @@
-.editButton {
-  min-width: 32px;
-  background: transparent;
-  padding: 0 4px;
-  border: none;
+.editableSubject{
+  .ms-TextField-fieldGroup {
+    min-height: 40px;
+  }
 }
 
-.ms-Button-icon {
-  display: inline-block;
+.editableContent {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #c8c8c8;
+}
+
+input.ms-TextField-field,
+input.ms-TextField-field:disabled {
+  background: #fff;
+  color: #333;
+  min-height: 40px;
+  padding: 0 10px;
+  border: Solid 1px #e1e8ee;
+  cursor: text;
+  box-shadow: none;
 }

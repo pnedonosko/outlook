@@ -10,6 +10,7 @@ import { ConvertMessageTypes, IConvertMessageConfig } from "./convert-message.ty
 import { Spinner, SpinnerSize, IDropdownOption, MessageBar, MessageBarType } from "office-ui-fabric-react";
 import TextMessage from "../../components/TextMessage";
 import axios from "axios";
+import ContentEditable from "react-contenteditable";
 
 const qs = require("querystring");
 
@@ -20,7 +21,7 @@ export interface IConvertMessageProps extends IContainerProps {
 interface IConvertMessageState {
   config: IConvertMessageConfig;
   editMessage: boolean;
-  messageContent?: any;
+  messageContent?: string;
   messageTitle?: string;
   error?: string;
   selectedSpace?: IDropdownOption;
@@ -32,6 +33,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   state: IConvertMessageState = { config: null, editMessage: false };
   labelId: string = getId("label");
   iconButtonId: string = getId("iconButton");
+  contentEditable = React.createRef<HTMLElement>();
 
   async componentDidMount() {
     await this.getComponentConfig(this.props.type);
@@ -42,7 +44,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
       // % = : @ / \ | ^ # ; [ ] { } < > * ' " + ? &
       let subject = Office.context.mailbox.item.subject;
       this.setState({ messageTitle: subject.replace(specialCharacters, " ") });
-      Office.context.mailbox.item.body.getAsync("text", async => {
+      Office.context.mailbox.item.body.getAsync("html", async => {
         this.setState({ messageContent: async.value });
       });
     });
@@ -64,7 +66,6 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   };
 
   getSpace = (space: IDropdownOption) => {
-    console.log(space);
     this.setState({ selectedSpace: space });
   };
 
@@ -85,6 +86,10 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
       />
     </Stack>
   );
+
+  handleContentEdit = (event: { target: { value: string }}) => {
+    this.setState({ messageContent: event.target.value });
+  };
 
   convertMessage = () => {
     const requestBody = {
@@ -167,17 +172,20 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
                 label={this.state.config.fields.content.label}
                 onRenderLabel={this.renderLabel}
                 value={this.state.messageTitle}
-                readOnly 
+                disabled={!this.state.editMessage}
+                className="editableSubject"
+                onChange={(_, newValue) => this.setState({ messageTitle: newValue })}
               />
             ) : null}
-            <TextField
-              description={this.state.config.fields.content.description}
-              multiline
-              rows={7}
+            <ContentEditable
+              innerRef={this.contentEditable}
+              html={this.state.messageContent}
               disabled={!this.state.editMessage}
-              value={this.state.messageContent}
-              readOnly
+              onChange={this.handleContentEdit}
+              tagName='article'
+              className="editableContent"
             />
+            <div className="ms-TextField-description">{this.state.config.fields.content.description}</div>
           </>
         ) : null}
         <SpacesSelect
