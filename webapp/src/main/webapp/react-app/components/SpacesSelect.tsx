@@ -1,48 +1,43 @@
 import * as React from "react";
 import "./SpacesSelect.less";
-import { Dropdown, IDropdownStyles, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
-// import axios from "axios";
+import { Dropdown, IDropdownOption, ResponsiveMode } from "office-ui-fabric-react/lib/Dropdown";
+import axios from "axios";
 
 interface ISpacesSelectProps {
   isOptional: boolean;
   description: string;
   onSelectSpace: Function;
-  user: any;
+  user: string;
+  userName: string;
 }
-
-const dropdownStyles: Partial<IDropdownStyles> = {
-  dropdown: { width: 300 }
-};
 
 function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSelectProps> {
   const [spaces, setSpaces] = React.useState<IDropdownOption[]>();
 
   React.useEffect(() => {
-    // axios.get(props.user._links.user.href).then(({ data }) => {
-    //   axios.get(data._links.spaces.href).then(res => {
-    //     const iterableSpaces = res.data._embedded.spaces.map(({ id, title, _links }) => ({
-    //       key: id,
-    //       text: title,
-    //       _links: _links
-    //     }));
-    //     setSpaces(iterableSpaces);
-    //   });
-    // });
-    setSpaces([
-      { key: "id1", text: "First space" },
-      { key: "id2", text: "Second space" }
-    ]);
+    axios.get(props.user).then(({ data }) => {
+      let spaces = data._links.spaces.href.replace("$UID", props.userName).split("?")[0];
+      axios.get(spaces, { params: { offset: 0, limit: 10 } }).then(res => {
+        const dropsownSpaces = res.data._embedded.children.map(({ groupId, title }) => ({
+          key: groupId,
+          text: title
+        }));
+        setSpaces(dropsownSpaces);
+      });
+    });
   }, []);
 
   return (
     <>
-      <Dropdown
-        label={"Target space" + (props.isOptional ? " (optional)" : "")}
-        options={spaces}
-        styles={dropdownStyles}
-        onChange={(_, selected) => props.onSelectSpace(selected)}
-      />
-      <div>{props.description}</div>
+      {spaces ? (
+        <Dropdown
+          label={"Target space" + (props.isOptional ? " (optional)" : "")}
+          options={spaces}
+          onChange={(_, selected) => props.onSelectSpace(selected)}
+          responsiveMode={ResponsiveMode.large}
+        />
+      ) : null}
+      <div className="ms-TextField-description">{props.description}</div>
     </>
   );
 }

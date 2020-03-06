@@ -74,7 +74,8 @@ class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsS
               isOptional
               description="Select the space where the attachments will be saved"
               onSelectSpace={this.getSpace}
-              user={this.props.user}
+              user={this.props.services.userServices.href}
+              userName={this.props.userName}
             />
             <DestinationFolder
               onShowDialog={() => this.setState({ showFolderDialog: true })}

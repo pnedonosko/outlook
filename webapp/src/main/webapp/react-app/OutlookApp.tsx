@@ -1,19 +1,25 @@
 import * as React from "react";
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
-// import axios from "./axios-entry-point";
-import { DefaultButton } from "office-ui-fabric-react/lib/Button";
-import { Panel } from "office-ui-fabric-react/lib/Panel";
+import axios from "axios";
 import { ConvertMessageTypes } from "./containers/ConvertMessage/convert-message.types";
 import { IConvertMessageProps } from "./containers/ConvertMessage";
 
+export interface IExoServices {
+  self: { href: string };
+  mailServices: { href: string };
+  userServices: { href: string };
+  spaceServices: { href: string };
+  activityServices: { href: string };
+  documentServices: { href: string };
+}
+
 export interface IContainerProps {
-  // user is root api for user services
-  user: any;
+  services: IExoServices;
+  userName: string;
 }
 
 interface IOutlookAppState {
-  isPanelOpen: boolean;
-  user?: any;
+  services: IExoServices;
   component?: React.ComponentType<IContainerProps | IConvertMessageProps>;
   error?: string;
   componentType?: ConvertMessageTypes;
@@ -21,10 +27,12 @@ interface IOutlookAppState {
 
 interface IOutlookAppProps {
   componentName: string;
+  baseUrl: string;
+  userName: string;
 }
 
 class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
-  state: IOutlookAppState = { isPanelOpen: false };
+  state: IOutlookAppState = { services: undefined };
 
   constructor(props: IOutlookAppProps) {
     super(props);
@@ -48,10 +56,9 @@ class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
       componentName = "ConvertMessage";
     }
     await this.addComponent(componentName);
-    // axios.get("/exo").then(({ data }) => {
-    //   this.setState({ user: data });
-    // });
-    this.setState({ user: "data" });
+    axios.get(this.props.baseUrl).then(({ data }) => {
+      this.setState({ services: data._links });
+    });
   }
 
   addComponent = async componentName => {
@@ -71,36 +78,21 @@ class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
       );
   };
 
-  togglePanel = () => {
-    this.setState((prevState: IOutlookAppState) => ({ isPanelOpen: !prevState.isPanelOpen }));
-  };
-
   render(): JSX.Element {
-    let displayedComponent = this.state.component ? (
-      <this.state.component
-        user={this.state.user}
-        type={this.state.componentType ? this.state.componentType : null}
-      />
-    ) : (
-      <Spinner size={SpinnerSize.large} />
-    );
+    let displayedComponent =
+      this.state.component && this.state.services ? (
+        <this.state.component
+          services={this.state.services}
+          type={this.state.componentType ? this.state.componentType : null}
+          userName={this.props.userName}
+        />
+      ) : (
+        <Spinner size={SpinnerSize.large} />
+      );
     if (this.state.error) {
       displayedComponent = <div>{this.state.error}</div>;
     }
-    return (
-      <>
-        {/* Button and Panel components will be deleted in the future. For testing purposes. */}
-        <DefaultButton text="Open panel" onClick={this.togglePanel} />
-        <Panel
-          headerText="Sample panel"
-          isOpen={this.state.isPanelOpen}
-          onDismiss={this.togglePanel}
-          closeButtonAriaLabel="Close"
-        >
-          {displayedComponent}
-        </Panel>
-      </>
-    );
+    return displayedComponent;
   }
 }
 

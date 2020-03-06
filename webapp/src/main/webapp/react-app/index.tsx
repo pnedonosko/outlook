@@ -2,26 +2,34 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { initializeIcons } from "@uifabric/icons";
 import OutlookApp from "./OutlookApp";
+import "./index.less";
 
 initializeIcons();
 
 // let isOfficeInitialized = false;
-
+console.log(window["eXo"].env.portal.context);
 // variable that define what component should be loaded
-const command = "ConvertToForum";
+const settings = {
+  baseUrl: "/outlook/app/v2/exo",
+  command: "ConvertToActivity",
+  userName: "$UID"
+};
 
 const render = (componentName: string) => {
-  ReactDOM.render(<OutlookApp componentName={componentName} />, document.getElementById("outlook-app"));
+  ReactDOM.render(
+    <OutlookApp componentName={componentName} baseUrl={settings.baseUrl} userName={settings.userName} />,
+    document.getElementById("outlook-app")
+  );
 };
 
 /* Render application after Office initializes */
 Office.initialize = () => {
   // isOfficeInitialized = true;
-  render(command);
+  render(settings.command);
 };
 
 /* Initial render showing a progress bar */
-render(command);
+render(settings.command);
 
 // TODO make eXo non global, e.g. via AMD wrapping the app bundle.js
 // service URL should link to a starting point in our HATEOAS/HAL
