@@ -7,7 +7,7 @@ import "./index.less";
 initializeIcons();
 
 // let isOfficeInitialized = false;
-console.log(window["eXo"].env.portal.context);
+
 // variable that define what component should be loaded
 const settings = {
   baseUrl: "/outlook/app/v2/exo",

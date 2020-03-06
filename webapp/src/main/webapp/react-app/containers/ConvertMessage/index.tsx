@@ -87,7 +87,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
     </Stack>
   );
 
-  handleContentEdit = (event: { target: { value: string }}) => {
+  handleContentEdit = (event: { target: { value: string } }) => {
     this.setState({ messageContent: event.target.value });
   };
 
@@ -107,7 +107,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
     };
     axios
       .post(
-        "https://alex.exoplatform.com.ua:8443/outlook/app/v2/exo/user/georgyna/activity",
+        `${this.props.services.userServices.href}${this.props.userName}/activity`,
         qs.stringify(requestBody),
         {
           headers: {
@@ -123,7 +123,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
     // const fetchBody = Object.keys(requestBody).map((key) => {
     //   return encodeURIComponent(key) + '=' + encodeURIComponent(requestBody[key]);
     // }).join('&');
-    // return fetch('https://alex.exoplatform.com.ua:8443/outlook/app/v2/exo/user/georgyna/activity?', {
+    // return fetch(`${this.props.services.userServices.href}${this.props.userName}/activity`, {
     //   method: 'POST',
     //     headers: {
     //       'Content-Type': 'application/x-www-form-urlencoded'
@@ -167,7 +167,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
         {this.state.messageContent ? (
           <>
             {this.props.type === ConvertMessageTypes.Activity ? (
-              <TextField 
+              <TextField
                 aria-labelledby={this.labelId}
                 label={this.state.config.fields.content.label}
                 onRenderLabel={this.renderLabel}
@@ -182,7 +182,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
               html={this.state.messageContent}
               disabled={!this.state.editMessage}
               onChange={this.handleContentEdit}
-              tagName='article'
+              tagName="article"
               className="editableContent"
             />
             <div className="ms-TextField-description">{this.state.config.fields.content.description}</div>
