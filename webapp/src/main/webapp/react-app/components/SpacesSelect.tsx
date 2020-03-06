@@ -35,6 +35,10 @@ function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSele
           options={spaces}
           onChange={(_, selected) => props.onSelectSpace(selected)}
           responsiveMode={ResponsiveMode.large}
+          styles={{ dropdownItemsWrapper: { 
+            maxHeight: "148px",
+            overflowY: "auto"
+          }}}
         />
       ) : null}
       <div className="ms-TextField-description">{props.description}</div>
