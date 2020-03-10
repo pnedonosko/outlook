@@ -191,7 +191,14 @@ public abstract class AbstractController {
 
     long pages = (long) Math.ceil((double) availableElementsNumber / requestedDataSize);
     int currentPostition = offset + 1;
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(requestedDataSize,
+
+    int responseSize = 0;
+    if (offset < availableElementsNumber && limit <= availableElementsNumber) {
+      responseSize = (availableElementsNumber - offset) - (availableElementsNumber - limit);
+    } else if (offset < availableElementsNumber) {
+      responseSize = availableElementsNumber - offset;
+    }
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(responseSize,
                                                                            currentPostition,
                                                                            availableElementsNumber,
                                                                            pages);
