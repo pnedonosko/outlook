@@ -74,15 +74,17 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   };
 
   renderLabel = (props: ITextFieldProps): JSX.Element => (
-    <Stack horizontal verticalAlign="center">
-      <span id={this.labelId}>{props.label}</span>
+    <Stack horizontal verticalAlign="center" className="editLabel">
+      <label id={this.labelId} className="ms-Label">
+        {props.label}
+      </label>
       <IconButton
         id={this.iconButtonId}
-        iconProps={{ iconName: "Label" }}
+        iconProps={{ iconName: "Label", styles: { root: { fontSize: "12px" } } }}
         title="Edit"
         ariaLabel="Edit"
         onClick={() => this.setState({ editMessage: !this.state.editMessage })}
-        className="editButton"
+        className="labelIcon"
       />
     </Stack>
   );
