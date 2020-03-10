@@ -41,6 +41,8 @@ body {
 
 .ms-Button {
   border-radius: 0;
+  height: 32px;
+  min-width: 80px;
 
   &--default {
     margin-left: 10px;
@@ -59,4 +61,28 @@ body {
     background: #fff;
     color: #004578;
   }
+}
+
+.ms-Pivot {
+  display: flex;
+  justify-content: space-between;
+  width: 169px;
+
+  &-link:not(.is-selected) {
+    background-color: #f4f4f4;
+    border: 1px solid #f4f4f4;
+  
+    &:hover {
+      background-color: #eaeaea;
+      border-color: #eaeaea;
+      outline: 1px solid transparent;
+      color: #333;
+    }
+  }
+  
+  &-link.is-selected {
+      background-color: #0078d7;
+      border-color: #0078d7;
+      font-weight: normal;
+    }
 }

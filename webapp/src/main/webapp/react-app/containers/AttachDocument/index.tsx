@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./index.less";
 import { IContainerProps } from "../../OutlookApp";
-import { Dropdown } from "office-ui-fabric-react/lib/Dropdown";
+import { Dropdown, ResponsiveMode } from "office-ui-fabric-react/lib/Dropdown";
 import { Pivot, PivotItem, PivotLinkFormat } from "office-ui-fabric-react/lib/Pivot";
 import { SearchBox } from "office-ui-fabric-react/lib/SearchBox";
 import {
@@ -19,6 +19,7 @@ import {
   MessageBarType,
   MessageBar
 } from "office-ui-fabric-react";
+import axios from "axios";
 
 interface IAttachDocumentState {
   sources: ISource[];
@@ -58,14 +59,26 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
   ];
 
   componentDidMount() {
-    // get spaces, add options 'All spaces' and 'My documents' to dropdown
-    this.setState({
-      sources: [
-        { key: "allId", text: "All spaces" },
-        { key: "mydocsId", text: "My documents" },
-        { key: "space1", text: "Space 1" }
-      ]
-    });
+    axios
+      .get(this.props.services.userServices.href)
+      .then(({ data }) => {
+        let spaces = data._links.spaces.href.replace("$UID", this.props.userName).split("?")[0];
+        axios.get(spaces, { params: { offset: 0, limit: 100 } }).then(res => {
+          console.log(res.data._embedded.children);
+          const dropdownSpaces = res.data._embedded.children.map(({ groupId, title }) => ({
+            key: groupId,
+            text: title
+          }));
+          this.setState({
+            sources: [
+              ...dropdownSpaces,
+              { key: data._links.documents.href, text: "My documents" },
+              { key: "all", text: "All spaces" }
+            ]
+          });
+        });
+      })
+      .catch(err => console.log(err));
   }
 
   private onSourceChange = () => {
@@ -118,12 +131,22 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
           selectedKey={this.state.selectedSource ? this.state.selectedSource.key : undefined}
           onChange={this.onSourceChange}
           options={this.state.sources}
-          styles={{ dropdown: { width: 300 } }}
+          responsiveMode={ResponsiveMode.large}
+          styles={{
+            dropdownItemsWrapper: {
+              maxHeight: "186px",
+              overflowY: "auto"
+            }
+          }}
         />
-        <Pivot aria-label="Links to choose between exporer and search" linkFormat={PivotLinkFormat.tabs}>
+        <Pivot
+          aria-label="Links to choose between exporer and search"
+          linkFormat={PivotLinkFormat.tabs}
+          className="tabsContainer"
+        >
           <PivotItem headerText="Search">
             <SearchBox
-              placeholder="Search"
+              placeholder="Search by name"
               onEscape={() => console.log("Custom onEscape Called")}
               onClear={() => console.log("Custom onClear Called")}
               onChange={(_, newValue) => console.log("SearchBox onChange fired: " + newValue)}
@@ -131,23 +154,25 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
               onFocus={() => console.log("onFocus called")}
               onBlur={() => console.log("onBlur called")}
             />
-            {this.state.sourceDocuments.length > 0 ? (
-              <MarqueeSelection selection={this.selection}>
-                <DetailsList
-                  items={this.state.sourceDocuments}
-                  columns={this.columns}
-                  setKey="set"
-                  layoutMode={DetailsListLayoutMode.justified}
-                  selection={this.selection}
-                  selectionPreservedOnEmptyClick
-                  ariaLabelForSelectionColumn="Toggle selection"
-                  ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-                  checkButtonAriaLabel="Row checkbox"
-                  isHeaderVisible={false}
-                  onRenderItemColumn={this.renderItemColumn}
-                />
-              </MarqueeSelection>
-            ) : null}
+            <div className="documentSelector">
+              {this.state.sourceDocuments.length > 0 ? (
+                <MarqueeSelection selection={this.selection}>
+                  <DetailsList
+                    items={this.state.sourceDocuments}
+                    columns={this.columns}
+                    setKey="set"
+                    layoutMode={DetailsListLayoutMode.justified}
+                    selection={this.selection}
+                    selectionPreservedOnEmptyClick
+                    ariaLabelForSelectionColumn="Toggle selection"
+                    ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                    checkButtonAriaLabel="Row checkbox"
+                    isHeaderVisible={false}
+                    onRenderItemColumn={this.renderItemColumn}
+                  />
+                </MarqueeSelection>
+              ) : null}
+            </div>
           </PivotItem>
           <PivotItem headerText="Explore">
             <div className="target-folder">
@@ -177,8 +202,8 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
           </PivotItem>
         </Pivot>
         <div>
-          <span>Selected documents: </span>
-          {this.state.selectionDetails ? (
+          <span className="ms-Label">Selected documents</span>
+          {this.state.selectionDetails.length > 0 ? (
             <DetailsList
               items={this.state.selectionDetails}
               columns={this.columns}
@@ -186,7 +211,9 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
               onRenderItemColumn={this.renderItemColumn}
             />
           ) : null}
-          <div>Selected documents will be attached to the message.</div>
+          <div className="ms-TextField-description" style={{ maxWidth: "80%" }}>
+            Selected documents will be attached to the message.
+          </div>
         </div>
         <PrimaryButton text="Attach" onClick={this.attachDocuments} />
         <DefaultButton text="Cancel" />

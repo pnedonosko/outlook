@@ -51,7 +51,7 @@ function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSele
         setSpaces(dropsownSpaces);
       });
     });
-  }
+  };
 
   return (
     <>
@@ -63,7 +63,7 @@ function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSele
           responsiveMode={ResponsiveMode.large}
           styles={{
             dropdownItemsWrapper: {
-              maxHeight: "148px",
+              maxHeight: "112px",
               overflowY: "auto"
             }
           }}
