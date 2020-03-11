@@ -45,20 +45,16 @@
             //eXo.env.app.rest.activity = [[${restActivityURL}]];
             //eXo.env.app.rest.document = [[${restDocumentURL}]];
             //eXo.env.app.rest.mail = [[${restMailURL}]];
-
-            /*// TODO cleanup after applying this in the app scripts
-            // example of getting  Outlook Resource Bundle url (use GET request in order to get JSON resource)
+						
+            // TODO should it be moved into the app code?
             const resourceBundleName = "locale.outlook.Outlook";
-            // getting a language of the user TODO
-            //const lang = (eXo && eXo.env && eXo.env.portal && eXo.env.portal.language) || "en";
-            const url = eXo.env.portal.rest + "/i18n/bundle/" + resourceBundleName + "-" + lang + ".json";
-            console.log("url: " + url);
-            */
-            eXo.env.app.rest.resourcesBundle = eXo.env.portal.rest + '/i18n/bundle';
+            const lang = (eXo && eXo.env && eXo.env.portal && eXo.env.portal.language) || "en";
+            eXo.env.app.rest.resourcesBundle = eXo.env.portal.rest + "/i18n/bundle/" + resourceBundleName + "-" + lang + ".json";
         </script>
     </head>
     <body>
         <div id="outlook-app"></div>
+        <!-- /* Apply AMD or like that to load and invoke the bundle as module - see webpack for packaging settings */ -->
         <script src="/outlook/js/outlook.bundle.js"></script>
     </body>
 </html>
