@@ -126,19 +126,21 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
     ) : (
       <>
         <div className="outlook-description">Attach documents from the intranet to this message.</div>
-        <Dropdown
-          label="Source"
-          selectedKey={this.state.selectedSource ? this.state.selectedSource.key : undefined}
-          onChange={this.onSourceChange}
-          options={this.state.sources}
-          responsiveMode={ResponsiveMode.large}
-          styles={{
-            dropdownItemsWrapper: {
-              maxHeight: "186px",
-              overflowY: "auto"
-            }
-          }}
-        />
+        {this.state.sources.length > 0 ? (
+          <Dropdown
+            label="Source"
+            onChange={this.onSourceChange}
+            options={this.state.sources}
+            responsiveMode={ResponsiveMode.large}
+            styles={{
+              dropdownItemsWrapper: {
+                maxHeight: "186px",
+                overflowY: "auto"
+              }
+            }}
+            defaultSelectedKey="all"
+          />
+        ) : null}
         <Pivot
           aria-label="Links to choose between exporer and search"
           linkFormat={PivotLinkFormat.tabs}
