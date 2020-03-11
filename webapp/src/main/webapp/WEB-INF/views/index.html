@@ -23,27 +23,37 @@
             eXo.env.portal.context = [[${baseName}]];
             eXo.env.app.context = eXo.env.portal.context;
 
+						// current user
+            eXo.env.portal.userName = [[${userName}]];
+						
+	          // command
+            eXo.env.app.command = [[${command}]];
+            
             // portal rest
-            eXo.env.portal.rest = [[${currentRestContextName}]];
+            eXo.env.portal.rest = [[${exoRestBaseURL}]];
 
             // language
             eXo.env.portal.language = [[${language}]];
 
-            // getting a language of the user
-            const lang = (eXo && eXo.env && eXo.env.portal && eXo.env.portal.language) || 'en';
+            // outlook webapp context URL /outlook
+            //eXo.env.app.contextURL = [[${contextURL}]];
+		        // outlook app base URL /outlook/app
+            //eXo.env.app.baseURL = [[${appBaseURL}]];
+            // RESTs
+            eXo.env.app.rest.user = [[${restUserURL}]];
+            //eXo.env.app.rest.space = [[${restSpaceURL}]];
+            //eXo.env.app.rest.activity = [[${restActivityURL}]];
+            //eXo.env.app.rest.document = [[${restDocumentURL}]];
+            //eXo.env.app.rest.mail = [[${restMailURL}]];
 
-            // outlook
-            eXo.env.app.outlook = [[${outlook}]];
-
-            // outlook spring
-            eXo.env.app.spring = [[${spring}]];
-
-            /*
-    // example of getting  Outlook Resource Bundle url (use GET request in order to get JSON resource)
-    const resourceBundleName = "locale.outlook.Outlook";
-    const url = eXo.env.portal.rest + "/i18n/bundle/" + resourceBundleName + "-" + lang + ".json";
-    console.log("url: " + url);
-    */
+            /*// TODO cleanup after applying this in the app scripts
+            // example of getting  Outlook Resource Bundle url (use GET request in order to get JSON resource)
+            const resourceBundleName = "locale.outlook.Outlook";
+            // getting a language of the user TODO
+            //const lang = (eXo && eXo.env && eXo.env.portal && eXo.env.portal.language) || "en";
+            const url = eXo.env.portal.rest + "/i18n/bundle/" + resourceBundleName + "-" + lang + ".json";
+            console.log("url: " + url);
+            */
             eXo.env.app.rest.resourcesBundle = eXo.env.portal.rest + '/i18n/bundle';
         </script>
     </head>

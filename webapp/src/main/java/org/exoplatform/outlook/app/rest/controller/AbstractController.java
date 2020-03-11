@@ -90,9 +90,8 @@ public abstract class AbstractController {
       ParseContext pcontext = new ParseContext();
       ContentHandler contentHandler = new BodyContentHandler();
       Metadata metadata = new Metadata();
-      InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs));
       String titleText;
-      try {
+      try (InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs))) {
         htmlParser.parse(content, contentHandler, metadata, pcontext);
         titleText = cutText(contentHandler.toString(), 100);
       } catch (Exception e) {
