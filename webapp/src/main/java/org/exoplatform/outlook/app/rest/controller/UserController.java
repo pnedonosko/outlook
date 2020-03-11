@@ -19,7 +19,6 @@ import org.exoplatform.social.core.manager.RelationshipManager;
 import org.exoplatform.social.core.relationship.model.Relationship;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.ResourceSupport;
@@ -62,7 +61,7 @@ public class UserController extends AbstractController {
     links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("parent"));
     links.add(linkTo(methodOn(UserController.class).getRoot()).withSelfRel());
     links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
-    links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID)).withRel("connections"));
+    links.add(linkTo(methodOn(UserController.class).getConnections(OutlookConstant.USER_ID, null, null)).withRel("connections"));
     links.add(linkTo(methodOn(UserController.class).getSpaces(OutlookConstant.USER_ID, null, null)).withRel("spaces"));
     links.add(linkTo(methodOn(UserController.class).getDocuments(OutlookConstant.USER_ID, null)).withRel("documents"));
     links.add(linkTo(methodOn(UserController.class).getActivities(OutlookConstant.USER_ID,
@@ -92,7 +91,7 @@ public class UserController extends AbstractController {
 
     try {
       Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
-      List<IdentityInfo> connectionList = getConnectionsList(userId);
+      List<IdentityInfo> connectionList = getConnectionsList(userId, 0, 0);
 
       List<ExoSocialActivity> top20 = activityManager.getActivitiesByPoster(userIdentity).loadAsList(0, 20);
 
@@ -104,7 +103,7 @@ public class UserController extends AbstractController {
       List<Link> links = new LinkedList<>();
       links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("parent"));
       links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, request)).withSelfRel());
-      links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withRel("connections"));
+      links.add(linkTo(methodOn(UserController.class).getConnections(userId, null, null)).withRel("connections"));
       links.add(linkTo(methodOn(UserController.class).getSpaces(userId, null, null)).withRel("spaces"));
       links.add(linkTo(methodOn(UserController.class).getDocuments(userId, null)).withRel("documents"));
       links.add(linkTo(methodOn(UserController.class).getActivities(userId, null, null, null)).withRel("activities"));
@@ -124,12 +123,14 @@ public class UserController extends AbstractController {
    * @return the connections
    */
   @RequestMapping(value = "/{UID}/connections", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public AbstractFileResource getConnections(@PathVariable("UID") String userId) {
+  public AbstractFileResource getConnections(@PathVariable("UID") String userId,
+                                             @RequestParam Integer offset,
+                                             @RequestParam Integer limit) {
     AbstractFileResource resource = null;
 
     List<IdentityInfo> userConnections = null;
     try {
-      userConnections = getConnectionsList(userId);
+      userConnections = getConnectionsList(userId, offset, limit);
     } catch (Exception e) {
       LOG.error("Cannot get user connections {}", userId, e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot get user (" + userId + ") connections");
@@ -137,10 +138,11 @@ public class UserController extends AbstractController {
 
     List<Link> links = new LinkedList<>();
     links.add(linkTo(methodOn(UserController.class).getUserInfo(userId, null)).withRel("parent"));
-    links.add(linkTo(methodOn(UserController.class).getConnections(userId)).withSelfRel());
+    links.add(linkTo(methodOn(UserController.class).getConnections(userId, null, null)).withSelfRel());
     links.add(linkTo(methodOn(UserController.class).getUserInfo(OutlookConstant.USER_ID, null)).withRel("user"));
 
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(userConnections.size(), 1, userConnections.size(), 1);
+    int connectionsNumber = getRelationshipsNumber(userId);
+    PagedResources.PageMetadata metadata = getPaginationMetadata(offset, limit, connectionsNumber);
 
     resource = new FileResource(metadata, userConnections, links);
 
@@ -381,10 +383,10 @@ public class UserController extends AbstractController {
     return activityInfoDTO;
   }
 
-  private List<IdentityInfo> getConnectionsList(String name) throws Exception {
+  private List<IdentityInfo> getConnectionsList(String name, Integer offset, Integer limit) throws Exception {
     List<IdentityInfo> connectionList = new ArrayList<>();
     // TODO get rid of deprecated
-    for (Relationship relationship : getRelationships(name)) {
+    for (Relationship relationship : getRelationships(name, offset, limit)) {
       if (!relationship.getSender().getRemoteId().equals(name)) {
         connectionList.add(new IdentityInfo(relationship.getSender()));
       } else {
@@ -395,14 +397,23 @@ public class UserController extends AbstractController {
   }
 
   @Deprecated
-  private List<Relationship> getRelationships(String name) throws Exception {
+  private List<Relationship> getRelationships(String name, Integer offset, Integer limit) throws Exception {
     ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
     IdentityManager identityManager = (IdentityManager) currentContainer.getComponentInstance(IdentityManager.class);
     RelationshipManager relationshipManager =
                                             (RelationshipManager) currentContainer.getComponentInstance(RelationshipManager.class);
 
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, name, true);
-    List<Relationship> relationships = relationshipManager.getRelationshipsByStatus(userIdentity, CONFIRMED, 0, 0);
+    List<Relationship> relationships = relationshipManager.getRelationshipsByStatus(userIdentity, CONFIRMED, offset, limit);
     return relationships;
+  }
+
+  private int getRelationshipsNumber(String name) {
+    ExoContainer currentContainer = ExoContainerContext.getCurrentContainer();
+    IdentityManager identityManager = (IdentityManager) currentContainer.getComponentInstance(IdentityManager.class);
+    RelationshipManager relationshipManager =
+                                            (RelationshipManager) currentContainer.getComponentInstance(RelationshipManager.class);
+    Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, name, true);
+    return relationshipManager.getRelationshipsCountByStatus(userIdentity, CONFIRMED);
   }
 }

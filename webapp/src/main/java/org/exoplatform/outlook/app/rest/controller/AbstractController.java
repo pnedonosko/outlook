@@ -90,9 +90,8 @@ public abstract class AbstractController {
       ParseContext pcontext = new ParseContext();
       ContentHandler contentHandler = new BodyContentHandler();
       Metadata metadata = new Metadata();
-      InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs));
       String titleText;
-      try {
+      try (InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs))) {
         htmlParser.parse(content, contentHandler, metadata, pcontext);
         titleText = cutText(contentHandler.toString(), 100);
       } catch (Exception e) {
@@ -191,7 +190,14 @@ public abstract class AbstractController {
 
     long pages = (long) Math.ceil((double) availableElementsNumber / requestedDataSize);
     int currentPostition = offset + 1;
-    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(requestedDataSize,
+
+    int responseSize = 0;
+    if (offset < availableElementsNumber && limit <= availableElementsNumber) {
+      responseSize = (availableElementsNumber - offset) - (availableElementsNumber - limit);
+    } else if (offset < availableElementsNumber) {
+      responseSize = availableElementsNumber - offset;
+    }
+    PagedResources.PageMetadata metadata = new PagedResources.PageMetadata(responseSize,
                                                                            currentPostition,
                                                                            availableElementsNumber,
                                                                            pages);
