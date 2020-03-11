@@ -106,7 +106,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
       fromEmail: Office.context.mailbox.item.from.emailAddress
     };
     axios
-      .post(`${this.props.services.userServices.href}${this.props.userName}/activity`, requestBody)
+      .post(`${this.props.userUrl}${this.props.userName}/activity`, requestBody)
       .then(res => console.log(res))
       .catch(() => this.setState({ networkError: "Unable convert to activity" }));
   };
@@ -165,7 +165,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
           isOptional={this.state.config.fields.spaces.isOptional}
           description={this.state.config.fields.spaces.description}
           onSelectSpace={this.getSpace}
-          user={this.props.services.userServices.href}
+          user={this.props.userUrl}
           userName={this.props.userName}
         />
         <PrimaryButton text="Convert" onClick={this.convertMessage} />

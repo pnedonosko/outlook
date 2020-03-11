@@ -39,7 +39,7 @@ class StartDiscussion extends React.Component<IContainerProps, IStartDiscussionS
           isOptional={false}
           description="Your new forum discussion will be posted in the space's forum"
           onSelectSpace={this.getSpace}
-          user={this.props.services.userServices.href}
+          user={this.props.userUrl}
           userName={this.props.userName}
         />
         <PrimaryButton text="Submit" />

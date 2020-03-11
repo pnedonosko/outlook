@@ -39,7 +39,7 @@ class PostActivity extends React.Component<IContainerProps, IPostActivityState> 
           isOptional
           description="If selected, your message will be posted on the space's activity stream."
           onSelectSpace={this.getSpace}
-          user={this.props.services.userServices.href}
+          user={this.props.userUrl}
           userName={this.props.userName}
         />
         <PrimaryButton text="Share" />

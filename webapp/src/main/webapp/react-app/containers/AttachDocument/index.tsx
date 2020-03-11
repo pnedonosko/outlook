@@ -60,7 +60,7 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
 
   componentDidMount() {
     axios
-      .get(this.props.services.userServices.href)
+      .get(this.props.userUrl)
       .then(({ data }) => {
         let spaces = data._links.spaces.href.replace("$UID", this.props.userName).split("?")[0];
         axios.get(spaces, { params: { offset: 0, limit: 100 } }).then(res => {
