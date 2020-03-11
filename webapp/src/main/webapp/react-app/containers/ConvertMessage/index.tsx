@@ -12,8 +12,6 @@ import TextMessage from "../../components/TextMessage";
 import axios from "axios";
 import ContentEditable from "react-contenteditable";
 
-const qs = require("querystring");
-
 export interface IConvertMessageProps extends IContainerProps {
   type: ConvertMessageTypes;
 }
@@ -74,15 +72,17 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   };
 
   renderLabel = (props: ITextFieldProps): JSX.Element => (
-    <Stack horizontal verticalAlign="center">
-      <span id={this.labelId}>{props.label}</span>
+    <Stack horizontal verticalAlign="center" className="editLabel">
+      <label id={this.labelId} className="ms-Label">
+        {props.label}
+      </label>
       <IconButton
         id={this.iconButtonId}
-        iconProps={{ iconName: "Label" }}
+        iconProps={{ iconName: "Label", styles: { root: { fontSize: "12px" } } }}
         title="Edit"
         ariaLabel="Edit"
         onClick={() => this.setState({ editMessage: !this.state.editMessage })}
-        className="editButton"
+        className="labelIcon"
       />
     </Stack>
   );
@@ -96,7 +96,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
       groupId: this.state.selectedSpace.key,
       messageId: Office.context.mailbox.item.itemId,
       title: this.state.activityMessage,
-      Subject: this.state.messageTitle,
+      subject: this.state.messageTitle,
       body: this.state.messageContent,
       created: Office.context.mailbox.item.dateTimeCreated,
       modified: Office.context.mailbox.item.dateTimeModified,
@@ -108,34 +108,10 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
     axios
       .post(
         `${this.props.services.userServices.href}${this.props.userName}/activity`,
-        qs.stringify(requestBody),
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          }
-        }
+        requestBody
       )
       .then(res => console.log(res))
       .catch(() => this.setState({ networkError: "Unable convert to activity" }));
-
-    // Alternative post method using another http client
-    //
-    // const fetchBody = Object.keys(requestBody).map((key) => {
-    //   return encodeURIComponent(key) + '=' + encodeURIComponent(requestBody[key]);
-    // }).join('&');
-    // return fetch(`${this.props.services.userServices.href}${this.props.userName}/activity`, {
-    //   method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/x-www-form-urlencoded'
-    //     },
-    //     body: fetchBody
-    // }).then(res => {
-    //   if (res && res.ok) {
-    //     return res;
-    //   } else {
-    //     console.log('problem');
-    //   }
-    // }).then(data => console.log(data));
   };
 
   render(): JSX.Element {

@@ -1,6 +1,5 @@
 body {
-  margin: 0 20px;
-  margin-bottom: 60px;
+  margin: 30px 20px 40px;
 }
 
 .outlook-title {
@@ -14,6 +13,7 @@ body {
   padding-top: 8px;
   font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-size: 12px;
+  font-weight: 350;
 }
 
 .ms-Label {
@@ -40,5 +40,49 @@ body {
 }
 
 .ms-Button {
-  margin: 10px 0;
+  border-radius: 0;
+  height: 32px;
+  min-width: 80px;
+
+  &--default {
+    margin-left: 10px;
+    border: none;
+    background-color: #f4f4f4;
+  }
+}
+
+.labelIcon {
+  padding: 0;
+  margin: 0;
+  height: fit-content;
+  width: fit-content;
+
+  &:hover {
+    background: #fff;
+    color: #004578;
+  }
+}
+
+.ms-Pivot {
+  display: flex;
+  justify-content: space-between;
+  width: 169px;
+
+  &-link:not(.is-selected) {
+    background-color: #f4f4f4;
+    border: 1px solid #f4f4f4;
+  
+    &:hover {
+      background-color: #eaeaea;
+      border-color: #eaeaea;
+      outline: 1px solid transparent;
+      color: #333;
+    }
+  }
+  
+  &-link.is-selected {
+      background-color: #0078d7;
+      border-color: #0078d7;
+      font-weight: normal;
+    }
 }

@@ -13,10 +13,12 @@ function TextMessage(props: ITextFieldProps): React.ReactElement<ITextFieldProps
     <TextField
       label={props.label}
       multiline
-      rows={7}
+      rows={4}
       onChange={(_, newText: string) => props.onTextChange(newText)}
       placeholder={props.placeholder ? props.placeholder : ""}
       description={props.description}
+      className="message"
+      styles={{ field: { height: "64px", padding: "6px 10px 8px" } }}
     />
   );
 }

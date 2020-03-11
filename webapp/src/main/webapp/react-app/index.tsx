@@ -4,7 +4,7 @@ import { initializeIcons } from "@uifabric/icons";
 import OutlookApp from "./OutlookApp";
 import "./index.less";
 
-initializeIcons();
+initializeIcons("https://static2.sharepointonline.com/files/fabric/assets/icons/");
 
 // let isOfficeInitialized = false;
 
