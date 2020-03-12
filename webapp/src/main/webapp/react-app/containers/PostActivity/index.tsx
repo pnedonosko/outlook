@@ -4,6 +4,7 @@ import { IContainerProps } from "../../OutlookApp";
 import TextMessage from "../../components/TextMessage";
 import SpacesSelect from "../../components/SpacesSelect";
 import { DefaultButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
+import { Translation } from "react-i18next";
 
 interface IPostActivityState {
   message: string;
@@ -24,27 +25,29 @@ class PostActivity extends React.Component<IContainerProps, IPostActivityState> 
 
   render(): JSX.Element {
     return (
-      <div className="outlook-command-container outlook-save-attachments">
-        <h4 className="outlook-title">Post a Status Update</h4>
-        <div className="outlook-description">
-          Post your status update on your personal activity stream or in the target space.
-        </div>
-        <TextMessage
-          label="Status update"
-          description="This will be the body of the activity stream post"
-          placeholder="Type in your message here"
-          onTextChange={this.getMessage}
-        />
-        <SpacesSelect
-          isOptional
-          description="If selected, your message will be posted on the space's activity stream."
-          onSelectSpace={this.getSpace}
-          user={this.props.userUrl}
-          userName={this.props.userName}
-        />
-        <PrimaryButton text="Share" />
-        <DefaultButton text="Cancel" />
-      </div>
+      <Translation>
+        {t => (
+          <div className="outlook-command-container outlook-save-attachments">
+            <h4 className="outlook-title">{t("Outlook.command.postStatus")}</h4>
+            <div className="outlook-description">{t("Outlook.postStatusDescription")}</div>
+            <TextMessage
+              label={t("Outlook.activityMessage")}
+              description={t("Outlook.activityTextDescription")}
+              placeholder={t("Outlook.activityMessagePlaceholder")}
+              onTextChange={this.getMessage}
+            />
+            <SpacesSelect
+              isOptional
+              description={t("Outlook.activityTargetSpaceDescription")}
+              onSelectSpace={this.getSpace}
+              user={this.props.userUrl}
+              userName={this.props.userName}
+            />
+            <PrimaryButton text={t("Outlook.post")} />
+            <DefaultButton text={t("Outlook.cancel")} />
+          </div>
+        )}
+      </Translation>
     );
   }
 }

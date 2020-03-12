@@ -5,6 +5,7 @@ import { TextField } from "office-ui-fabric-react/lib/TextField";
 import TextMessage from "../../components/TextMessage";
 import SpacesSelect from "../../components/SpacesSelect";
 import { IContainerProps } from "../../OutlookApp";
+import { Translation } from "react-i18next";
 
 interface IStartDiscussionState {
   message?: string;
@@ -24,27 +25,31 @@ class StartDiscussion extends React.Component<IContainerProps, IStartDiscussionS
 
   render() {
     return (
-      <div className="outlook-command-container outlook-save-attachments">
-        <h4 className="outlook-title">Start a Discussion</h4>
-        <div className="outlook-description">Start a new discussion in the forum of a space.</div>
-        <TextField label="Topic title" />
-        <div>This will be the title of your forum topic</div>
-        <TextMessage
-          label="Content"
-          description="This will be the body of the forum post"
-          placeholder="Type in your new forum post here"
-          onTextChange={this.getMessage}
-        />
-        <SpacesSelect
-          isOptional={false}
-          description="Your new forum discussion will be posted in the space's forum"
-          onSelectSpace={this.getSpace}
-          user={this.props.userUrl}
-          userName={this.props.userName}
-        />
-        <PrimaryButton text="Submit" />
-        <DefaultButton text="Cancel" />
-      </div>
+      <Translation>
+        {t => (
+          <div className="outlook-command-container outlook-save-attachments">
+            <h4 className="outlook-title">{t("Outlook.command.startDiscussion")}</h4>
+            <div className="outlook-description">{t("Outlook.startDiscussionDescription")}</div>
+            <TextField label="Topic title" />
+            <div>{t("Outlook.forumTopicNameDescription")}</div>
+            <TextMessage
+              label={t("Outlook.forumTopicText")}
+              description={t("Outlook.forumTopicTextDescription")}
+              placeholder={t("Outlook.forumTopicTextPlaceholder")}
+              onTextChange={this.getMessage}
+            />
+            <SpacesSelect
+              isOptional={false}
+              description={t("Outlook.forumNewTopicTargetSpaceDescription")}
+              onSelectSpace={this.getSpace}
+              user={this.props.userUrl}
+              userName={this.props.userName}
+            />
+            <PrimaryButton text={t("Outlook.start")} />
+            <DefaultButton text={t("Outlook.cancel")} />
+          </div>
+        )}
+      </Translation>
     );
   }
 }

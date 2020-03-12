@@ -9,6 +9,7 @@ import { MessageBar, MessageBarType } from "office-ui-fabric-react";
 import DestinationFolder from "./DestinationFolder";
 import AddFolder from "./AddFolder";
 import { IContainerProps } from "../../OutlookApp";
+import { Translation } from "react-i18next";
 
 interface ISaveAttachmentsState {
   attachmentSelection: string;
@@ -59,37 +60,39 @@ class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsS
     if (this.state.attachments) {
       saveAttachmentContent =
         this.state.attachments.length > 0 ? (
-          <div className="outlook-command-container outlook-save-attachments">
-            <h4 className="outlook-title">Save Attachments</h4>
-            <div className="outlook-description">
-              Here you can save attachments as documents inside the intranet.
-            </div>
-            <SelectAttachments attachments={this.state.attachments} onSelectItem={this.getSelection} />
-            <TextMessage
-              label="Include a message(optional)"
-              description="This message will be included in the activity stream post about the saved attachment."
-              onTextChange={this.getMessage}
-            />
-            <SpacesSelect
-              isOptional
-              description="Select the space where the attachments will be saved"
-              onSelectSpace={this.getSpace}
-              user={this.props.userUrl}
-              userName={this.props.userName}
-            />
-            <DestinationFolder
-              onShowDialog={() => this.setState({ showFolderDialog: true })}
-              space={this.state.selectedSpace ? this.state.selectedSpace : null}
-            />
-            {this.state.showFolderDialog ? (
-              <AddFolder
-                onAddFolder={(name: string) => this.addNewFolder(name)}
-                onCloseFolder={() => this.setState({ showFolderDialog: false })}
-              />
-            ) : null}
-            <PrimaryButton onClick={this.saveAttachments} text="Save" />
-            <DefaultButton text="Cancel" />
-          </div>
+          <Translation>
+            {t => (
+              <div className="outlook-command-container outlook-save-attachments">
+                <h4 className="outlook-title">{t("Outlook.command.saveAttachment")}</h4>
+                <div className="outlook-description">{t("Outlook.saveAttachmentDescription")}</div>
+                <SelectAttachments attachments={this.state.attachments} onSelectItem={this.getSelection} />
+                <TextMessage
+                  label={t("Outlook.commentAttachment")}
+                  description={t("Outlook.commentAttachmentDescription")}
+                  onTextChange={this.getMessage}
+                />
+                <SpacesSelect
+                  isOptional
+                  description={t("Outlook.selectSaveSpaceDescription")}
+                  onSelectSpace={this.getSpace}
+                  user={this.props.userUrl}
+                  userName={this.props.userName}
+                />
+                <DestinationFolder
+                  onShowDialog={() => this.setState({ showFolderDialog: true })}
+                  space={this.state.selectedSpace ? this.state.selectedSpace : null}
+                />
+                {this.state.showFolderDialog ? (
+                  <AddFolder
+                    onAddFolder={(name: string) => this.addNewFolder(name)}
+                    onCloseFolder={() => this.setState({ showFolderDialog: false })}
+                  />
+                ) : null}
+                <PrimaryButton onClick={this.saveAttachments} text={t("Outlook.save")} />
+                <DefaultButton text={t("Outlook.cancel")} />
+              </div>
+            )}
+          </Translation>
         ) : (
           <MessageBar
             messageBarType={MessageBarType.warning}

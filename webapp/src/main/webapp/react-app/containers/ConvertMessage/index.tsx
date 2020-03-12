@@ -1,6 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import ContentEditable from "react-contenteditable";
+import { Translation } from "react-i18next";
 
 import "./index.less";
 import { IContainerProps } from "../../OutlookApp";
@@ -168,72 +169,81 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
 
   render(): JSX.Element {
     const displayedComponent = this.state.config ? (
-      <div className="outlook-command-container">
-        {this.state.networkError ? (
-          <MessageBar
-            messageBarType={MessageBarType.error}
-            isMultiline={false}
-            dismissButtonAriaLabel="Close"
-          >
-            {this.state.networkError}
-          </MessageBar>
-        ) : this.state.successMessage ? (
-          <MessageBar
-            messageBarType={MessageBarType.success}
-            isMultiline={false}
-            dismissButtonAriaLabel="Close"
-          >
-            {this.state.successMessage}
-          </MessageBar>
-        ) : null}
-        <h4 className="outlook-title">{this.state.config.header}</h4>
-        <div className="outlook-description">{this.state.config.description}</div>
-        {this.props.type === ConvertMessageTypes.Activity ? (
-          <TextMessage
-            label="Message (optional)"
-            description="Leave a message upon sharing this email"
-            onTextChange={this.getMessage}
-          />
-        ) : (
-          <>
-            <TextField label={this.state.config.fields.title.label} defaultValue={this.state.messageTitle} />
-            <div>{this.state.config.fields.title.description}</div>
-          </>
-        )}
-        {this.state.messageContent ? (
-          <>
-            {this.props.type === ConvertMessageTypes.Activity ? (
-              <TextField
-                aria-labelledby={this.labelId}
-                label={this.state.config.fields.content.label}
-                onRenderLabel={this.renderLabel}
-                value={this.state.messageTitle}
-                disabled={!this.state.editMessage}
-                className="editableSubject"
-                onChange={(_, newValue) => this.setState({ messageTitle: newValue })}
-              />
+      <Translation>
+        {t => (
+          <div className="outlook-command-container">
+            {this.state.networkError ? (
+              <MessageBar
+                messageBarType={MessageBarType.error}
+                isMultiline={false}
+                dismissButtonAriaLabel="Close"
+              >
+                {this.state.networkError}
+              </MessageBar>
+            ) : this.state.successMessage ? (
+              <MessageBar
+                messageBarType={MessageBarType.success}
+                isMultiline={false}
+                dismissButtonAriaLabel="Close"
+              >
+                {this.state.successMessage}
+              </MessageBar>
             ) : null}
-            <ContentEditable
-              innerRef={this.contentEditable}
-              html={this.state.messageContent}
-              disabled={!this.state.editMessage}
-              onChange={this.handleContentEdit}
-              tagName="article"
-              className="editableContent"
+            <h4 className="outlook-title">{t(this.state.config.header)}</h4>
+            <div className="outlook-description">{t(this.state.config.description)}</div>
+            {this.props.type === ConvertMessageTypes.Activity ? (
+              <TextMessage
+                label={t("Outlook.commentAttachment")}
+                description={t("Outlook.activityTitleDescription")}
+                onTextChange={this.getMessage}
+              />
+            ) : (
+              <>
+                <TextField
+                  label={t(this.state.config.fields.title.label)}
+                  defaultValue={this.state.messageTitle}
+                />
+                <div>{t(this.state.config.fields.title.description)}</div>
+              </>
+            )}
+            {this.state.messageContent ? (
+              <>
+                {this.props.type === ConvertMessageTypes.Activity ? (
+                  <TextField
+                    aria-labelledby={this.labelId}
+                    label={t(this.state.config.fields.content.label)}
+                    onRenderLabel={this.renderLabel}
+                    value={this.state.messageTitle}
+                    disabled={!this.state.editMessage}
+                    className="editableSubject"
+                    onChange={(_, newValue) => this.setState({ messageTitle: newValue })}
+                  />
+                ) : null}
+                <ContentEditable
+                  innerRef={this.contentEditable}
+                  html={this.state.messageContent}
+                  disabled={!this.state.editMessage}
+                  onChange={this.handleContentEdit}
+                  tagName="article"
+                  className="editableContent"
+                />
+                <div className="ms-TextField-description">
+                  {t(this.state.config.fields.content.description)}
+                </div>
+              </>
+            ) : null}
+            <SpacesSelect
+              isOptional={this.state.config.fields.spaces.isOptional}
+              description={t(this.state.config.fields.spaces.description)}
+              onSelectSpace={this.getSpace}
+              user={this.props.userUrl}
+              userName={this.props.userName}
             />
-            <div className="ms-TextField-description">{this.state.config.fields.content.description}</div>
-          </>
-        ) : null}
-        <SpacesSelect
-          isOptional={this.state.config.fields.spaces.isOptional}
-          description={this.state.config.fields.spaces.description}
-          onSelectSpace={this.getSpace}
-          user={this.props.userUrl}
-          userName={this.props.userName}
-        />
-        <PrimaryButton text="Convert" onClick={this.convertMessage} />
-        <DefaultButton text="Cancel" style={{ marginLeft: "10px" }} />
-      </div>
+            <PrimaryButton text={t("Outlook.convert")} onClick={this.convertMessage} />
+            <DefaultButton text={t("Outlook.cancel")} style={{ marginLeft: "10px" }} />
+          </div>
+        )}
+      </Translation>
     ) : (
       <Spinner size={SpinnerSize.large} />
     );

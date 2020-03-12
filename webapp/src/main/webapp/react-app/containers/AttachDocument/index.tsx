@@ -20,6 +20,7 @@ import {
   MessageBar
 } from "office-ui-fabric-react";
 import axios from "axios";
+import { Translation } from "react-i18next";
 
 interface IAttachDocumentState {
   sources: ISource[];
@@ -124,110 +125,114 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
         {this.state.resultNotification.errors ? this.state.resultNotification.errors[0] : "Successfull!"}
       </MessageBar>
     ) : (
-      <>
-        <div className="outlook-description">Attach documents from the intranet to this message.</div>
-        {this.state.sources.length > 0 ? (
-          <Dropdown
-            label="Source"
-            onChange={this.onSourceChange}
-            options={this.state.sources}
-            responsiveMode={ResponsiveMode.large}
-            styles={{
-              dropdownItemsWrapper: {
-                maxHeight: "186px",
-                overflowY: "auto"
-              }
-            }}
-            defaultSelectedKey="all"
-          />
-        ) : null}
-        <Pivot
-          aria-label="Links to choose between exporer and search"
-          linkFormat={PivotLinkFormat.tabs}
-          className="tabsContainer"
-        >
-          <PivotItem headerText="Search">
-            <SearchBox
-              placeholder="Search by name"
-              onEscape={() => console.log("Custom onEscape Called")}
-              onClear={() => console.log("Custom onClear Called")}
-              onChange={(_, newValue) => console.log("SearchBox onChange fired: " + newValue)}
-              onSearch={newValue => console.log("SearchBox onSearch fired: " + newValue)}
-              onFocus={() => console.log("onFocus called")}
-              onBlur={() => console.log("onBlur called")}
-            />
-            <div className="documentSelector">
-              {this.state.sourceDocuments.length > 0 ? (
-                <MarqueeSelection selection={this.selection}>
-                  <DetailsList
-                    items={this.state.sourceDocuments}
-                    columns={this.columns}
-                    setKey="set"
-                    layoutMode={DetailsListLayoutMode.justified}
-                    selection={this.selection}
-                    selectionPreservedOnEmptyClick
-                    ariaLabelForSelectionColumn="Toggle selection"
-                    ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-                    checkButtonAriaLabel="Row checkbox"
-                    isHeaderVisible={false}
-                    onRenderItemColumn={this.renderItemColumn}
-                  />
-                </MarqueeSelection>
-              ) : null}
-            </div>
-          </PivotItem>
-          <PivotItem headerText="Explore">
-            <div className="target-folder">
-              <TextField disabled />
-              <div className="target-folder-actions">
-                <IconButton iconProps={{ iconName: "Up" }} title="Show folders" ariaLabel="Show folders" />
-                <IconButton
-                  iconProps={{ iconName: "Go" }}
-                  title="Open in new tab"
-                  ariaLabel="Open in new tab"
+      <Translation>
+        {t => (
+          <div className="outlook-command-container outlook-save-attachments">
+            <h4 className="outlook-title">{t("Outlook.command.addAttachment")}</h4>
+            <div className="outlook-description">{t("Outlook.addAttachmentDescription")}</div>
+            {this.state.sources.length > 0 ? (
+              <Dropdown
+                label={t("Outlook.documentSource")}
+                onChange={this.onSourceChange}
+                options={this.state.sources}
+                responsiveMode={ResponsiveMode.large}
+                styles={{
+                  dropdownItemsWrapper: {
+                    maxHeight: "186px",
+                    overflowY: "auto"
+                  }
+                }}
+                defaultSelectedKey="all"
+              />
+            ) : null}
+            <Pivot
+              aria-label="Links to choose between exporer and search"
+              linkFormat={PivotLinkFormat.tabs}
+              className="tabsContainer"
+            >
+              <PivotItem headerText={t("Outlook.search")}>
+                <SearchBox
+                  placeholder={t("Outlook.searchName")}
+                  onEscape={() => console.log("Custom onEscape Called")}
+                  onClear={() => console.log("Custom onClear Called")}
+                  onChange={(_, newValue) => console.log("SearchBox onChange fired: " + newValue)}
+                  onSearch={newValue => console.log("SearchBox onSearch fired: " + newValue)}
+                  onFocus={() => console.log("onFocus called")}
+                  onBlur={() => console.log("onBlur called")}
                 />
+                <div className="documentSelector">
+                  {this.state.sourceDocuments.length > 0 ? (
+                    <MarqueeSelection selection={this.selection}>
+                      <DetailsList
+                        items={this.state.sourceDocuments}
+                        columns={this.columns}
+                        setKey="set"
+                        layoutMode={DetailsListLayoutMode.justified}
+                        selection={this.selection}
+                        selectionPreservedOnEmptyClick
+                        ariaLabelForSelectionColumn="Toggle selection"
+                        ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                        checkButtonAriaLabel="Row checkbox"
+                        isHeaderVisible={false}
+                        onRenderItemColumn={this.renderItemColumn}
+                      />
+                    </MarqueeSelection>
+                  ) : null}
+                </div>
+              </PivotItem>
+              <PivotItem headerText={t("Outlook.documentExplorer")}>
+                <div className="target-folder">
+                  <TextField disabled />
+                  <div className="target-folder-actions">
+                    <IconButton
+                      iconProps={{ iconName: "Up" }}
+                      title="Show folders"
+                      ariaLabel="Show folders"
+                    />
+                    <IconButton
+                      iconProps={{ iconName: "Go" }}
+                      title="Open in new tab"
+                      ariaLabel="Open in new tab"
+                    />
+                  </div>
+                </div>
+                <DetailsList
+                  items={this.state.sourceDocuments}
+                  columns={this.columns}
+                  setKey="set"
+                  layoutMode={DetailsListLayoutMode.justified}
+                  selection={this.selection}
+                  selectionPreservedOnEmptyClick
+                  ariaLabelForSelectionColumn="Toggle selection"
+                  ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                  checkButtonAriaLabel="Row checkbox"
+                  isHeaderVisible={false}
+                  onRenderItemColumn={this.renderItemColumn}
+                />
+              </PivotItem>
+            </Pivot>
+            <div>
+              <span className="ms-Label">{t("Outlook.attachingDocuments")}</span>
+              {this.state.selectionDetails.length > 0 ? (
+                <DetailsList
+                  items={this.state.selectionDetails}
+                  columns={this.columns}
+                  isHeaderVisible={false}
+                  onRenderItemColumn={this.renderItemColumn}
+                />
+              ) : null}
+              <div className="ms-TextField-description" style={{ maxWidth: "80%" }}>
+                {t("Outlook.attachingDocumentsDescription")}
               </div>
             </div>
-            <DetailsList
-              items={this.state.sourceDocuments}
-              columns={this.columns}
-              setKey="set"
-              layoutMode={DetailsListLayoutMode.justified}
-              selection={this.selection}
-              selectionPreservedOnEmptyClick
-              ariaLabelForSelectionColumn="Toggle selection"
-              ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-              checkButtonAriaLabel="Row checkbox"
-              isHeaderVisible={false}
-              onRenderItemColumn={this.renderItemColumn}
-            />
-          </PivotItem>
-        </Pivot>
-        <div>
-          <span className="ms-Label">Selected documents</span>
-          {this.state.selectionDetails.length > 0 ? (
-            <DetailsList
-              items={this.state.selectionDetails}
-              columns={this.columns}
-              isHeaderVisible={false}
-              onRenderItemColumn={this.renderItemColumn}
-            />
-          ) : null}
-          <div className="ms-TextField-description" style={{ maxWidth: "80%" }}>
-            Selected documents will be attached to the message.
+            <PrimaryButton text={t("Outlook.attach")} onClick={this.attachDocuments} />
+            <DefaultButton text={t("Outlook.cancel")} />
           </div>
-        </div>
-        <PrimaryButton text="Attach" onClick={this.attachDocuments} />
-        <DefaultButton text="Cancel" />
-      </>
+        )}
+      </Translation>
     );
 
-    return (
-      <div className="outlook-command-container outlook-save-attachments">
-        <h4 className="outlook-title">Attach Document</h4>
-        {attachContent}
-      </div>
-    );
+    return attachContent;
   }
 }
 

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Dialog, DialogType, DialogFooter } from "office-ui-fabric-react/lib/Dialog";
 import { PrimaryButton, DefaultButton } from "office-ui-fabric-react/lib/Button";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
+import { useTranslation } from "react-i18next";
 
 interface IAddFolder {
   onAddFolder: Function;
@@ -10,6 +11,7 @@ interface IAddFolder {
 
 function AddFolder(props: IAddFolder): React.ReactElement {
   const [folderName, setFolderName] = React.useState("");
+  const { t } = useTranslation();
 
   return (
     <Dialog
@@ -17,19 +19,19 @@ function AddFolder(props: IAddFolder): React.ReactElement {
       onDismiss={() => props.onCloseFolder()}
       dialogContentProps={{
         type: DialogType.normal,
-        title: "Adding new folder",
+        title: t("Outlook.addingNewFolder"),
         closeButtonAriaLabel: "Close",
-        subText: "Provide a name for this new folder and then click 'Add'"
+        subText: t("Outlook.enterFolderNameAndCreate")
       }}
       modalProps={{
         isBlocking: false,
         styles: { main: { maxWidth: 450 } }
       }}
     >
-      <TextField label="Folder name" onChange={(_, value) => setFolderName(value)} />
+      <TextField label={t("Outlook.folderName")} onChange={(_, value) => setFolderName(value)} />
       <DialogFooter>
-        <PrimaryButton onClick={() => props.onAddFolder(folderName)} text="Add" />
-        <DefaultButton onClick={() => props.onCloseFolder()} text="Cancel" />
+        <PrimaryButton onClick={() => props.onAddFolder(folderName)} text={t("Outlook.add")} />
+        <DefaultButton onClick={() => props.onCloseFolder()} text={t("Outlook.cancel")} />
       </DialogFooter>
     </Dialog>
   );

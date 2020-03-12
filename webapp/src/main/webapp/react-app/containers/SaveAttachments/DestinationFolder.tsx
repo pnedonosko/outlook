@@ -4,6 +4,7 @@ import { IconButton } from "office-ui-fabric-react";
 import "./DestinationFolder.less";
 // import axios from "axios";
 import { IColumn, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
+import { useTranslation } from "react-i18next";
 
 interface IDestinationFolderProps {
   onShowDialog: Function;
@@ -11,8 +12,9 @@ interface IDestinationFolderProps {
 }
 
 function DestinationFolder(props: IDestinationFolderProps): React.ReactElement<IDestinationFolderProps> {
-  const [documents, setDocuments] = React.useState();
+  const [documents, setDocuments] = React.useState([]);
   const [showFolders, setShowFolders] = React.useState(false);
+  const { t } = useTranslation();
   let listColumns: IColumn[];
 
   React.useEffect(() => {
@@ -46,9 +48,9 @@ function DestinationFolder(props: IDestinationFolderProps): React.ReactElement<I
 
   return (
     <div>
-      <div>Destination Folder</div>
+      <div>{t("Outlook.selectFolder")}</div>
       <div className="target-folder">
-        <TextField label="The target folder within the space in which the attachment placed" disabled />
+        <TextField label={t("Outlook.pathInfoSaveDescription")} disabled />
         <div className="target-folder-actions">
           <IconButton
             iconProps={{ iconName: "Up" }}

@@ -8,6 +8,7 @@ import {
 } from "office-ui-fabric-react/lib/Dropdown";
 import axios from "axios";
 import { Stack, IconButton } from "office-ui-fabric-react";
+import { useTranslation } from "react-i18next";
 
 interface ISpacesSelectProps {
   isOptional: boolean;
@@ -19,6 +20,7 @@ interface ISpacesSelectProps {
 
 function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSelectProps> {
   const [spaces, setSpaces] = React.useState<IDropdownOption[]>();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     fetchSpaces();
@@ -57,7 +59,7 @@ function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSele
     <>
       {spaces ? (
         <Dropdown
-          label={"Target space" + (props.isOptional ? " (optional)" : "")}
+          label={props.isOptional ? t("Outlook.targetSpaceOptional") : t("Outlook.selectSaveSpace")}
           options={spaces}
           onChange={(_, selected) => props.onSelectSpace(selected)}
           responsiveMode={ResponsiveMode.large}

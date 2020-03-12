@@ -5,6 +5,7 @@ import {
   DetailsList,
   DetailsListLayoutMode
 } from "office-ui-fabric-react/lib/DetailsList";
+import { useTranslation } from "react-i18next";
 
 interface ISelectAttachmentProps {
   attachments: Office.AttachmentDetails[];
@@ -12,6 +13,7 @@ interface ISelectAttachmentProps {
 }
 
 function SelectAttachments(props: ISelectAttachmentProps): React.ReactElement<ISelectAttachmentProps> {
+  const { t } = useTranslation();
   let selection: Selection = new Selection({
     onSelectionChanged: () => props.onSelectItem(getSelectionDetails())
   });
@@ -39,7 +41,7 @@ function SelectAttachments(props: ISelectAttachmentProps): React.ReactElement<IS
 
   return (
     <div>
-      <span>Select attachments</span>
+      <span>{t("Outlook.selectAttachment")}</span>
       <DetailsList
         items={props.attachments}
         columns={columns}
@@ -49,7 +51,7 @@ function SelectAttachments(props: ISelectAttachmentProps): React.ReactElement<IS
         selectionPreservedOnEmptyClick
         isHeaderVisible={false}
       />
-      <div>Selected attachments will be saved inside the target space.</div>
+      <div>{t("Outlook.selectAttachmentDescription")}.</div>
     </div>
   );
 }
