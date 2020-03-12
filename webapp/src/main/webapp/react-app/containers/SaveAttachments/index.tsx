@@ -13,20 +13,19 @@ import { Translation } from "react-i18next";
 
 interface ISaveAttachmentsState {
   attachmentSelection: string;
-  // any should be replaced by Office.AttachmentDetails
-  attachments?: any[];
+  attachments?: Office.AttachmentDetails[];
   message?: string;
   selectedSpace?: any;
   showFolderDialog?: boolean;
+  errorMessage?: string;
 }
 
 class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsState> {
   state: ISaveAttachmentsState = { attachmentSelection: "No items selected" };
 
   componentDidMount() {
-    // getting letter attachment from Office namespace: Office.context.mailbox.item.attachments
     this.setState({
-      attachments: []
+      attachments: Office.context.mailbox.item.attachments
     });
   }
 
@@ -44,12 +43,13 @@ class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsS
 
   addNewFolder = (name: string) => {
     // POST new folder
-    console.log(name);
     this.setState({ showFolderDialog: false });
+    this.setState({ errorMessage: `Unable to create folder "${name}"` });
   };
 
   saveAttachments = () => {
-    // request to save attachments
+    // request to save attachments should be here
+    this.setState({ errorMessage: "Unable save attachments" });
   };
 
   render(): JSX.Element {
@@ -60,6 +60,15 @@ class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsS
           <Translation>
             {t => (
               <div className="outlook-command-container outlook-save-attachments">
+                {this.state.errorMessage ? (
+                  <MessageBar
+                    messageBarType={MessageBarType.error}
+                    isMultiline={false}
+                    dismissButtonAriaLabel="Close"
+                  >
+                    {this.state.errorMessage}
+                  </MessageBar>
+                ) : null}
                 <h4 className="outlook-title">{t("Outlook.command.saveAttachment")}</h4>
                 <div className="outlook-description">{t("Outlook.saveAttachmentDescription")}</div>
                 <SelectAttachments attachments={this.state.attachments} onSelectItem={this.getSelection} />

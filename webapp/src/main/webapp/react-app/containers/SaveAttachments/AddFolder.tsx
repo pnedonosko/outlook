@@ -13,6 +13,7 @@ function AddFolder(props: IAddFolder): React.ReactElement {
   const [folderName, setFolderName] = React.useState("");
   const { t } = useTranslation();
 
+  // dialog with textfield for new folder creation on exo platform
   return (
     <Dialog
       hidden={false}

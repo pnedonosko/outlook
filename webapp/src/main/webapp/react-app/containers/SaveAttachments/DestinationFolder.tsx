@@ -1,14 +1,13 @@
 import * as React from "react";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
-import { IconButton } from "office-ui-fabric-react";
+import { IconButton, IDropdownOption } from "office-ui-fabric-react";
 import "./DestinationFolder.less";
-// import axios from "axios";
 import { IColumn, DetailsList, DetailsListLayoutMode } from "office-ui-fabric-react/lib/DetailsList";
 import { useTranslation } from "react-i18next";
 
 interface IDestinationFolderProps {
   onShowDialog: Function;
-  space: any;
+  space: IDropdownOption;
 }
 
 function DestinationFolder(props: IDestinationFolderProps): React.ReactElement<IDestinationFolderProps> {
@@ -18,15 +17,10 @@ function DestinationFolder(props: IDestinationFolderProps): React.ReactElement<I
   let listColumns: IColumn[];
 
   React.useEffect(() => {
+    // getting spaces folders
     if (props.space) {
-      // axios.get(props.space._links.self.href).then(({ data }) => {
-      //   axios.get(data._links.documents.href).then(res => {
-      //     setDocuments(res.data.documents);
-      //     listColumns = res.data.documents.map(({ id, name }) => ({ key: id, fieldName: name, name: name }));
-      //   });
-      // });
-      setDocuments([{ id: "11", type: "folder", name: "doc1" }]);
-      listColumns = [{ id: "11", type: "folder", name: "doc1" }].map(({ id, name }) => ({
+      setDocuments([]);
+      listColumns = [].map(({ id, name }) => ({
         key: id,
         fieldName: name,
         name: name,
@@ -35,6 +29,7 @@ function DestinationFolder(props: IDestinationFolderProps): React.ReactElement<I
     }
   }, [props.space]);
 
+  // list with space's folders so that the user can choose which folder to save
   const nodeFolders =
     documents && showFolders ? (
       <DetailsList

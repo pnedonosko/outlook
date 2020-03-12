@@ -65,12 +65,12 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
       .then(({ data }) => {
         let spaces = data._links.spaces.href.replace("$UID", this.props.userName).split("?")[0];
         axios.get(spaces, { params: { offset: 0, limit: 100 } }).then(res => {
-          console.log(res.data._embedded.children);
           const dropdownSpaces = res.data._embedded.children.map(({ groupId, title }) => ({
             key: groupId,
             text: title
           }));
           this.setState({
+            // getting space, adding possibility to choose all spaces or user documents
             sources: [
               ...dropdownSpaces,
               { key: data._links.documents.href, text: "My documents" },
@@ -83,7 +83,7 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
   }
 
   private onSourceChange = () => {
-    // get documents from source
+    // request to get documents from source
     this.setState({
       sourceDocuments: []
     });
@@ -104,6 +104,7 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
   };
 
   private renderItemColumn(item, _, column: IColumn) {
+    // method for rendering list items with icon and link to platform
     const fieldContent = item[column.fieldName as keyof ISourceDocument] as string;
     return column.key === "link" ? (
       <IconButton iconProps={{ iconName: "Go" }} href={fieldContent} />
