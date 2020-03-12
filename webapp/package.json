@@ -7,13 +7,15 @@
     "url": "https://github.com/pnedonosko/outlook"
   },
   "scripts": {
-    "start": "webpack --config webpack.dev.js --mode development",
-    "dev": "webpack-dev-server --config webpack.dev.js --mode development --hot",
-    "watch": "webpack --config webpack.dev.js --progress --colors --watch -d",
+    "start": "jest && webpack --config webpack.dev.js --mode development",
+    "dev": "jest && webpack-dev-server --config webpack.dev.js --mode development --hot",
+    "watch": "jest && webpack --config webpack.dev.js --progress --colors --watch -d",
     "build": "webpack --config webpack.prod.js --mode production",
     "lint": "office-addin-lint check --files src/main/webapp/react-app/**/*.{ts,tsx,js,jsx}",
     "lint:fix": "office-addin-lint fix --files src/main/webapp/react-app/**/*.{ts,tsx,js,jsx}",
-    "mock:api": "json-server --watch src/main/webapp/react-app/apis/exo.json --port 4000"
+    "mock:api": "json-server --watch src/main/webapp/react-app/apis/exo.json --port 4000",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "eXo",
   "license": "LGPL",
@@ -47,20 +49,26 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
-    "@types/jest": "^25.1.2",
+    "@types/enzyme": "^3.10.5",
+    "@types/jest": "^25.1.4",
     "@types/node": "^13.7.1",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
     "axios": "^0.19.2",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "enzyme-to-json": "^3.4.4",
     "i18next": "^19.3.2",
     "i18next-xhr-backend": "^3.2.2",
+    "identity-obj-proxy": "^3.0.0",
     "office-ui-fabric-react": "^7.93.0",
     "react": "^16.12.0",
     "react-contenteditable": "^3.3.3",
     "react-dom": "^16.12.0",
     "react-i18next": "^11.3.3",
-    "react-scripts": "3.2.0"
+    "react-scripts": "3.2.0",
+    "ts-jest": "^25.2.1"
   }
 }
