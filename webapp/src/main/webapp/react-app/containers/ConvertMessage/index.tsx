@@ -1,19 +1,42 @@
 import * as React from "react";
+import axios from "axios";
+import ContentEditable from "react-contenteditable";
+
 import "./index.less";
 import { IContainerProps } from "../../OutlookApp";
+import { ConvertMessageTypes, IConvertMessageConfig } from "./convert-message.types";
+import formatISODate from "../../utils/formatIsoDate";
+
 import SpacesSelect from "../../components/SpacesSelect";
+import TextMessage from "../../components/TextMessage";
+
 import { PrimaryButton, DefaultButton, IconButton } from "office-ui-fabric-react/lib/Button";
 import { TextField, ITextFieldProps } from "office-ui-fabric-react/lib/TextField";
 import { getId } from "office-ui-fabric-react/lib/Utilities";
 import { Stack } from "office-ui-fabric-react/lib/Stack";
-import { ConvertMessageTypes, IConvertMessageConfig } from "./convert-message.types";
 import { Spinner, SpinnerSize, IDropdownOption, MessageBar, MessageBarType } from "office-ui-fabric-react";
-import TextMessage from "../../components/TextMessage";
-import axios from "axios";
-import ContentEditable from "react-contenteditable";
 
 export interface IConvertMessageProps extends IContainerProps {
   type: ConvertMessageTypes;
+}
+
+export interface IPostActivityDto {
+  messageId: string;
+  title: string;
+  subject: string;
+  body: string;
+  created: string;
+  modified: string;
+  userName: string;
+  userEmail: string;
+  fromName: string;
+  fromEmail: string;
+}
+
+interface IPostedActivity {
+  link: string;
+  space: boolean;
+  targetName: string;
 }
 
 interface IConvertMessageState {
@@ -25,6 +48,8 @@ interface IConvertMessageState {
   selectedSpace?: IDropdownOption;
   activityMessage?: string;
   networkError?: string;
+  successMessage?: string;
+  postedActivity?: IPostedActivity;
 }
 
 class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessageState> {
@@ -63,11 +88,11 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
       );
   };
 
-  getSpace = (space: IDropdownOption) => {
+  getSpace = (space: IDropdownOption): void => {
     this.setState({ selectedSpace: space });
   };
 
-  getMessage = (text: string) => {
+  getMessage = (text: string): void => {
     this.setState({ activityMessage: text });
   };
 
@@ -92,26 +117,53 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   };
 
   convertMessage = () => {
-    const requestBody = {
-      groupId: this.state.selectedSpace.key,
+    const requestBody: IPostActivityDto = {
       messageId: Office.context.mailbox.item.itemId,
-      title: this.state.activityMessage,
+      title: this.state.activityMessage ? this.state.activityMessage : "",
       subject: this.state.messageTitle,
       body: this.state.messageContent,
-      created: Office.context.mailbox.item.dateTimeCreated,
-      modified: Office.context.mailbox.item.dateTimeModified,
+      created: formatISODate(Office.context.mailbox.item.dateTimeCreated),
+      modified: formatISODate(Office.context.mailbox.item.dateTimeModified),
       userName: Office.context.mailbox.userProfile.displayName,
       userEmail: Office.context.mailbox.userProfile.emailAddress,
       fromName: Office.context.mailbox.item.from.displayName,
       fromEmail: Office.context.mailbox.item.from.emailAddress
     };
-    axios
-      .post(
-        `${this.props.services.userServices.href}${this.props.userName}/activity`,
-        requestBody
-      )
-      .then(res => console.log(res))
-      .catch(() => this.setState({ networkError: "Unable convert to activity" }));
+    const params = new URLSearchParams();
+    for (let key in requestBody) {
+      params.append(key, requestBody[key]);
+    }
+    this.state.selectedSpace
+      ? axios
+          .get(this.props.userUrl)
+          .then(({ data }) => {
+            axios.get(data._links.parent.href).then(res => {
+              axios
+                .post(
+                  `${res.data._links.spaceServices.href}${
+                    this.state.selectedSpace.key.toString().split("/")[2]
+                  }/activity`,
+                  params
+                )
+                .then(res =>
+                  this.setState({
+                    successMessage: "The activity was successfully posted in spaces stream.",
+                    postedActivity: res.data.activityStatus
+                  })
+                )
+                .catch(() => this.setState({ networkError: "Unable convert to activity" }));
+            });
+          })
+          .catch(() => this.setState({ networkError: "Unable convert to activity" }))
+      : axios
+          .post(`${this.props.userUrl}/${this.props.userName}/activity`, params)
+          .then(({ data }) =>
+            this.setState({
+              successMessage: "The activity was successfully posted in spaces stream.",
+              postedActivity: data.activityStatus
+            })
+          )
+          .catch(() => this.setState({ networkError: "Unable convert to activity" }));
   };
 
   render(): JSX.Element {
@@ -124,6 +176,14 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
             dismissButtonAriaLabel="Close"
           >
             {this.state.networkError}
+          </MessageBar>
+        ) : this.state.successMessage ? (
+          <MessageBar
+            messageBarType={MessageBarType.success}
+            isMultiline={false}
+            dismissButtonAriaLabel="Close"
+          >
+            {this.state.successMessage}
           </MessageBar>
         ) : null}
         <h4 className="outlook-title">{this.state.config.header}</h4>
@@ -168,7 +228,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
           isOptional={this.state.config.fields.spaces.isOptional}
           description={this.state.config.fields.spaces.description}
           onSelectSpace={this.getSpace}
-          user={this.props.services.userServices.href}
+          user={this.props.userUrl}
           userName={this.props.userName}
         />
         <PrimaryButton text="Convert" onClick={this.convertMessage} />
