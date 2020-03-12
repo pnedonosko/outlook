@@ -51,7 +51,7 @@ public class OutlookAppController {
 
     /*
      * "$BASE_URL/outlook/app" "$BASE_URL/outlook/app?command=search" "$BASE_URL/outlook/app?command=userInfoRead"
-     * "$BASE_URL/outlook/app?command=userInfoCompose" "$BASE_URL/outlook/app?command=postStatus"
+     * "$BASE_URL/outlook/app?command=userInfoCompose" "$BASE_URL/outlook/apt?command=postStatus"
      * "$BASE_URL/outlook/app?command=startDiscussion" "$BASE_URL/outlook/app?command=addAttachment"
      * "$BASE_URL/outlook/app?command=saveAttachment" "$BASE_URL/outlook/app?command=convertToStatus"
      * "$BASE_URL/outlook/app?command=convertToWiki" "$BASE_URL/outlook/app?command=convertToForum"
@@ -76,7 +76,7 @@ public class OutlookAppController {
     model.addAttribute("contextURL", contextURL.toString());
     CharSequence appBaseURL = new StringBuilder(contextURL).append("/").append(OUTLOOK_APP);
     model.addAttribute("appBaseURL", appBaseURL.toString());
-    CharSequence appRestURL = new StringBuilder(contextURL).append("/v2");
+    CharSequence appRestURL = new StringBuilder(appBaseURL).append("/v2");
     model.addAttribute("restUserURL", new StringBuilder(appRestURL).append("/exo/user").toString());
     model.addAttribute("restSpaceURL", new StringBuilder(appRestURL).append("/exo/space").toString());
     model.addAttribute("restActivityURL", new StringBuilder(appRestURL).append("/exo/activity").toString());
