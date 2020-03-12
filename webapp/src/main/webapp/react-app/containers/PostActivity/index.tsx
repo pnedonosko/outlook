@@ -5,11 +5,12 @@ import TextMessage from "../../components/TextMessage";
 import SpacesSelect from "../../components/SpacesSelect";
 import { DefaultButton, PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { Translation } from "react-i18next";
+import { IDropdownOption, MessageBar, MessageBarType } from "office-ui-fabric-react";
 
 interface IPostActivityState {
   message: string;
-  selectedSpace: any;
-  // any will be replaced by space interface
+  selectedSpace: IDropdownOption;
+  errorMessage?: string;
 }
 
 class PostActivity extends React.Component<IContainerProps, IPostActivityState> {
@@ -23,11 +24,25 @@ class PostActivity extends React.Component<IContainerProps, IPostActivityState> 
     this.setState({ selectedSpace: space });
   };
 
+  /* should be replaced by request to post activity */
+  postActivity = () => {
+    this.setState({ errorMessage: "Unable to post activity" });
+  };
+
   render(): JSX.Element {
     return (
       <Translation>
         {t => (
           <div className="outlook-command-container outlook-save-attachments">
+            {this.state.errorMessage ? (
+              <MessageBar
+                messageBarType={MessageBarType.error}
+                isMultiline={false}
+                dismissButtonAriaLabel="Close"
+              >
+                {this.state.errorMessage}
+              </MessageBar>
+            ) : null}
             <h4 className="outlook-title">{t("Outlook.command.postStatus")}</h4>
             <div className="outlook-description">{t("Outlook.postStatusDescription")}</div>
             <TextMessage
@@ -43,7 +58,7 @@ class PostActivity extends React.Component<IContainerProps, IPostActivityState> 
               user={this.props.userUrl}
               userName={this.props.userName}
             />
-            <PrimaryButton text={t("Outlook.post")} />
+            <PrimaryButton text={t("Outlook.post")} onClick={this.postActivity} />
             <DefaultButton text={t("Outlook.cancel")} />
           </div>
         )}

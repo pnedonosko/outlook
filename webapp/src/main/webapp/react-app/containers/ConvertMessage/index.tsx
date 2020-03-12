@@ -75,7 +75,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   }
 
   getComponentConfig = async (configType: string): Promise<void> => {
-    // download component config in depending on type from props
+    // download component config in depending on type from props (can be activity, forum or wiki)
     import(`./convert-message.config`)
       .then(configs =>
         this.setState({
@@ -98,6 +98,7 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   };
 
   renderLabel = (props: ITextFieldProps): JSX.Element => (
+    // rendering label with icon, is nedeed for Fabric React
     <Stack horizontal verticalAlign="center" className="editLabel">
       <label id={this.labelId} className="ms-Label">
         {props.label}
@@ -118,53 +119,59 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
   };
 
   convertMessage = () => {
-    const requestBody: IPostActivityDto = {
-      messageId: Office.context.mailbox.item.itemId,
-      title: this.state.activityMessage ? this.state.activityMessage : "",
-      subject: this.state.messageTitle,
-      body: this.state.messageContent,
-      created: formatISODate(Office.context.mailbox.item.dateTimeCreated),
-      modified: formatISODate(Office.context.mailbox.item.dateTimeModified),
-      userName: Office.context.mailbox.userProfile.displayName,
-      userEmail: Office.context.mailbox.userProfile.emailAddress,
-      fromName: Office.context.mailbox.item.from.displayName,
-      fromEmail: Office.context.mailbox.item.from.emailAddress
-    };
-    const params = new URLSearchParams();
-    for (let key in requestBody) {
-      params.append(key, requestBody[key]);
-    }
-    this.state.selectedSpace
-      ? axios
-          .get(this.props.userUrl)
-          .then(({ data }) => {
-            axios.get(data._links.parent.href).then(res => {
-              axios
-                .post(
-                  `${res.data._links.spaceServices.href}${
-                    this.state.selectedSpace.key.toString().split("/")[2]
-                  }/activity`,
-                  params
-                )
-                .then(res =>
-                  this.setState({
-                    successMessage: "The activity was successfully posted in spaces stream.",
-                    postedActivity: res.data.activityStatus
-                  })
-                )
-                .catch(() => this.setState({ networkError: "Unable convert to activity" }));
-            });
-          })
-          .catch(() => this.setState({ networkError: "Unable convert to activity" }))
-      : axios
-          .post(`${this.props.userUrl}/${this.props.userName}/activity`, params)
-          .then(({ data }) =>
-            this.setState({
-              successMessage: "The activity was successfully posted in spaces stream.",
-              postedActivity: data.activityStatus
+    if (this.props.type === ConvertMessageTypes.Activity) {
+      const requestBody: IPostActivityDto = {
+        messageId: Office.context.mailbox.item.itemId,
+        title: this.state.activityMessage ? this.state.activityMessage : "",
+        subject: this.state.messageTitle,
+        body: this.state.messageContent,
+        created: formatISODate(Office.context.mailbox.item.dateTimeCreated),
+        modified: formatISODate(Office.context.mailbox.item.dateTimeModified),
+        userName: Office.context.mailbox.userProfile.displayName,
+        userEmail: Office.context.mailbox.userProfile.emailAddress,
+        fromName: Office.context.mailbox.item.from.displayName,
+        fromEmail: Office.context.mailbox.item.from.emailAddress
+      };
+      const params = new URLSearchParams();
+      for (let key in requestBody) {
+        params.append(key, requestBody[key]);
+      }
+      /* post message to space's activity in case of selected space and post to user acrivity otherwise */
+      this.state.selectedSpace
+        ? axios
+            .get(this.props.userUrl)
+            .then(({ data }) => {
+              axios.get(data._links.parent.href).then(res => {
+                /* getting exo services and then select url for space */
+                axios
+                  .post(
+                    `${res.data._links.spaceServices.href}${
+                      this.state.selectedSpace.key.toString().split("/")[2]
+                    }/activity`,
+                    params
+                  )
+                  .then(res =>
+                    this.setState({
+                      successMessage: "The activity was successfully posted in spaces stream.",
+                      postedActivity: res.data.activityStatus
+                    })
+                  )
+                  .catch(() => this.setState({ networkError: "Unable convert to activity" }));
+              });
             })
-          )
-          .catch(() => this.setState({ networkError: "Unable convert to activity" }));
+            .catch(() => this.setState({ networkError: "Unable convert to activity" }))
+        : axios
+            .post(`${this.props.userUrl}/${this.props.userName}/activity`, params)
+            .then(({ data }) =>
+              this.setState({
+                successMessage: "The activity was successfully posted in spaces stream.",
+                postedActivity: data.activityStatus
+              })
+            )
+            .catch(() => this.setState({ networkError: "Unable convert to activity" }));
+    } else {
+      this.setState({ networkError: "Unable to convert" });
+    }
   };
 
   render(): JSX.Element {
@@ -202,8 +209,11 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
                 <TextField
                   label={t(this.state.config.fields.title.label)}
                   defaultValue={this.state.messageTitle}
+                  className="editableSubject"
                 />
-                <div>{t(this.state.config.fields.title.description)}</div>
+                <span className="ms-TextField-description">
+                  {t(this.state.config.fields.title.description)}
+                </span>
               </>
             )}
             {this.state.messageContent ? (
@@ -218,7 +228,9 @@ class ConvertMessage extends React.Component<IConvertMessageProps, IConvertMessa
                     className="editableSubject"
                     onChange={(_, newValue) => this.setState({ messageTitle: newValue })}
                   />
-                ) : null}
+                ) : (
+                  this.renderLabel({ label: "Page content" })
+                )}
                 <ContentEditable
                   innerRef={this.contentEditable}
                   html={this.state.messageContent}

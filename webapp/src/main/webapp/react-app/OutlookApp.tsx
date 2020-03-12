@@ -18,23 +18,43 @@ interface IOutlookAppProps extends IContainerProps {
   componentName: string;
 }
 
+/* ContainerTypes contains relevant component names in app */
+enum ContainerTypes {
+  "PostStatus" = "PostActivity",
+  "StartDiscussion" = "StartDiscussion",
+  "AddAttachment" = "AttachDocument",
+  "SaveAttachment" = "SaveAttachments"
+}
+
 class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
   async componentDidMount() {
     let componentName = this.props.componentName;
-    if (componentName.includes("convertTo")) {
-      switch (this.props.componentName) {
-        case "convertToWiki":
-          this.setState({ componentType: ConvertMessageTypes.Wiki });
-          break;
-        case "convertToForum":
-          this.setState({ componentType: ConvertMessageTypes.Forum });
-          break;
-        case "convertToStatus":
-          this.setState({ componentType: ConvertMessageTypes.Activity });
-          break;
-      }
-      // for all converting component 'ConvertMessage' with defferent types should be rendered
-      componentName = "ConvertMessage";
+    /* Name in props matches command name from manifest */
+    switch (this.props.componentName) {
+      case "convertToWiki":
+        this.setState({ componentType: ConvertMessageTypes.Wiki });
+        componentName = "ConvertMessage";
+        break;
+      case "convertToForum":
+        this.setState({ componentType: ConvertMessageTypes.Forum });
+        componentName = "ConvertMessage";
+        break;
+      case "convertToStatus":
+        this.setState({ componentType: ConvertMessageTypes.Activity });
+        componentName = "ConvertMessage";
+        break;
+      case "postStatus":
+        componentName = ContainerTypes.PostStatus;
+        break;
+      case "startDiscussion":
+        componentName = ContainerTypes.StartDiscussion;
+        break;
+      case "addAttachment":
+        componentName = ContainerTypes.AddAttachment;
+        break;
+      case "saveAttachment":
+        componentName = ContainerTypes.SaveAttachment;
+        break;
     }
     await this.addComponent(componentName);
   }
@@ -42,7 +62,7 @@ class OutlookApp extends React.Component<IOutlookAppProps, IOutlookAppState> {
   addComponent = async componentName => {
     console.log(`Loading ${componentName} component...`);
 
-    // download appropriate component selected by name
+    /* Download appropriate component selected by name */
     import(`./containers/${componentName}`)
       .then(module =>
         this.setState({

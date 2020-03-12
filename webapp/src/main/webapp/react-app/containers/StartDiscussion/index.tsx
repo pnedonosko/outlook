@@ -6,10 +6,12 @@ import TextMessage from "../../components/TextMessage";
 import SpacesSelect from "../../components/SpacesSelect";
 import { IContainerProps } from "../../OutlookApp";
 import { Translation } from "react-i18next";
+import { IDropdownOption, MessageBar, MessageBarType } from "office-ui-fabric-react";
 
 interface IStartDiscussionState {
   message?: string;
-  selectedSpace?: any;
+  selectedSpace?: IDropdownOption;
+  errorMessage?: string;
 }
 
 class StartDiscussion extends React.Component<IContainerProps, IStartDiscussionState> {
@@ -23,15 +25,28 @@ class StartDiscussion extends React.Component<IContainerProps, IStartDiscussionS
     this.setState({ selectedSpace: space });
   };
 
+  /* should be replaced by request to start discussion */
+  startDiscussion = () => {
+    this.setState({ errorMessage: "Unable to start discussion" });
+  };
+
   render() {
     return (
       <Translation>
         {t => (
           <div className="outlook-command-container outlook-save-attachments">
+            {this.state.errorMessage ? (
+              <MessageBar
+                messageBarType={MessageBarType.error}
+                isMultiline={false}
+                dismissButtonAriaLabel="Close"
+              >
+                {this.state.errorMessage}
+              </MessageBar>
+            ) : null}
             <h4 className="outlook-title">{t("Outlook.command.startDiscussion")}</h4>
             <div className="outlook-description">{t("Outlook.startDiscussionDescription")}</div>
-            <TextField label="Topic title" />
-            <div>{t("Outlook.forumTopicNameDescription")}</div>
+            <TextField label="Topic title" description={t("Outlook.forumTopicNameDescription")} />
             <TextMessage
               label={t("Outlook.forumTopicText")}
               description={t("Outlook.forumTopicTextDescription")}
@@ -45,7 +60,7 @@ class StartDiscussion extends React.Component<IContainerProps, IStartDiscussionS
               user={this.props.userUrl}
               userName={this.props.userName}
             />
-            <PrimaryButton text={t("Outlook.start")} />
+            <PrimaryButton text={t("Outlook.start")} onClick={this.startDiscussion} />
             <DefaultButton text={t("Outlook.cancel")} />
           </div>
         )}

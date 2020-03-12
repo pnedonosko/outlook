@@ -85,10 +85,7 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
   private onSourceChange = () => {
     // get documents from source
     this.setState({
-      sourceDocuments: [
-        { name: "file.jpg", type: "file", path: "tofile1" },
-        { name: "file.png", type: "file", path: "tofile2" }
-      ]
+      sourceDocuments: []
     });
   };
 
@@ -98,7 +95,7 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
 
   private attachDocuments = () => {
     // request save attachment with result
-    const res = { status: "error", errors: ["An internal error has occured"] };
+    const res = { status: "error", errors: ["Unable to send request"] };
     if (res.status === "error") {
       this.setState({ resultNotification: { type: MessageBarType.error, errors: res.errors } });
     } else {
@@ -116,18 +113,21 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
   }
 
   public render(): JSX.Element {
-    const attachContent = this.state.resultNotification ? (
-      <MessageBar
-        messageBarType={this.state.resultNotification.type}
-        isMultiline={false}
-        dismissButtonAriaLabel="Close"
-      >
-        {this.state.resultNotification.errors ? this.state.resultNotification.errors[0] : "Successfull!"}
-      </MessageBar>
-    ) : (
+    const attachContent = (
       <Translation>
         {t => (
           <div className="outlook-command-container outlook-save-attachments">
+            {this.state.resultNotification ? (
+              <MessageBar
+                messageBarType={this.state.resultNotification.type}
+                isMultiline={false}
+                dismissButtonAriaLabel="Close"
+              >
+                {this.state.resultNotification.errors
+                  ? this.state.resultNotification.errors[0]
+                  : "Successfull!"}
+              </MessageBar>
+            ) : null}
             <h4 className="outlook-title">{t("Outlook.command.addAttachment")}</h4>
             <div className="outlook-description">{t("Outlook.addAttachmentDescription")}</div>
             {this.state.sources.length > 0 ? (
@@ -196,19 +196,21 @@ class AttachDocument extends React.Component<IContainerProps, IAttachDocumentSta
                     />
                   </div>
                 </div>
-                <DetailsList
-                  items={this.state.sourceDocuments}
-                  columns={this.columns}
-                  setKey="set"
-                  layoutMode={DetailsListLayoutMode.justified}
-                  selection={this.selection}
-                  selectionPreservedOnEmptyClick
-                  ariaLabelForSelectionColumn="Toggle selection"
-                  ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-                  checkButtonAriaLabel="Row checkbox"
-                  isHeaderVisible={false}
-                  onRenderItemColumn={this.renderItemColumn}
-                />
+                <div className="documentSelector">
+                  <DetailsList
+                    items={this.state.sourceDocuments}
+                    columns={this.columns}
+                    setKey="set"
+                    layoutMode={DetailsListLayoutMode.justified}
+                    selection={this.selection}
+                    selectionPreservedOnEmptyClick
+                    ariaLabelForSelectionColumn="Toggle selection"
+                    ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                    checkButtonAriaLabel="Row checkbox"
+                    isHeaderVisible={false}
+                    onRenderItemColumn={this.renderItemColumn}
+                  />
+                </div>
               </PivotItem>
             </Pivot>
             <div>

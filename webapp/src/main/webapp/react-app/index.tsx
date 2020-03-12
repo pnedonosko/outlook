@@ -29,6 +29,7 @@ i18n
     lng: eXo.env.portal.language,
     fallbackLng: "en",
     backend: {
+      /* path for getting locale resources */
       loadPath: eXo.env.app.rest.resourcesBundle
     },
     load: "all",
@@ -39,13 +40,13 @@ i18n
     }
   })
   .then(() => {
-    /* Render application after Office initializes */
+    /* Render application when locale ressources are ready and after Office initializes */
     Office.initialize = () => {
       render(eXo.env.app.command);
     };
 
     /* Initial render showing a progress bar, should be replaced by application shell */
-    <Spinner size={SpinnerSize.large} />
+    <Spinner size={SpinnerSize.large} />;
   });
 
 // TODO make eXo non global, e.g. via AMD wrapping the app bundle.js

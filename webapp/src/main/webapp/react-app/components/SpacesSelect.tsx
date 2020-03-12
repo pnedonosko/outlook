@@ -46,7 +46,7 @@ function SpacesSelect(props: ISpacesSelectProps): React.ReactElement<ISpacesSele
     axios.get(props.user).then(({ data }) => {
       let spaces = data._links.spaces.href.replace("$UID", props.userName).split("?")[0];
       axios.get(spaces, { params: { offset: 0, limit: 100 } }).then(res => {
-        const dropsownSpaces = res.data._embedded.children.map(({ groupId, title }) => ({
+        const dropsownSpaces: IDropdownOption[] = res.data._embedded.children.map(({ groupId, title }) => ({
           key: groupId,
           text: title
         }));

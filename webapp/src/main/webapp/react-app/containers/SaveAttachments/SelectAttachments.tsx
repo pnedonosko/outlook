@@ -41,7 +41,7 @@ function SelectAttachments(props: ISelectAttachmentProps): React.ReactElement<IS
 
   return (
     <div>
-      <span>{t("Outlook.selectAttachment")}</span>
+      <span className="ms-Label">{t("Outlook.selectAttachment")}</span>
       <DetailsList
         items={props.attachments}
         columns={columns}

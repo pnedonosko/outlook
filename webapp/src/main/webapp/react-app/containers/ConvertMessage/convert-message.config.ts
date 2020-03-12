@@ -21,7 +21,7 @@ export const convertToWikiConfig: IConvertMessageConfig = {
 
 export const convertToForumConfig: IConvertMessageConfig = {
   header: "Outlook.command.convertToForum",
-  description: "Outlook.convertToForumDescription.",
+  description: "Outlook.convertToForumDescription",
   fields: {
     title: {
       label: "Outlook.forumTopicName",

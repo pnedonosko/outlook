@@ -26,10 +26,7 @@ class SaveAttachments extends React.Component<IContainerProps, ISaveAttachmentsS
   componentDidMount() {
     // getting letter attachment from Office namespace: Office.context.mailbox.item.attachments
     this.setState({
-      attachments: [
-        { name: "first-picture.img", size: 20, id: "1", attachmentType: "file" },
-        { name: "second-picture.png", size: 14, id: "2", attachmentType: "file" }
-      ]
+      attachments: []
     });
   }
 
