@@ -63,12 +63,15 @@ public abstract class AbstractController {
     OrganizationService organization = (OrganizationService) currentContainer.getComponentInstance(OrganizationService.class);
 
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
-
     final Charset clientCs = loadEncoding(request.getCharacterEncoding());
 
     Set<String> currentUserGroupIds = null;
-    try (Stream<Membership> membershipStream = organization.getMembershipHandler().findMembershipsByUser(userId).stream()) {
-      currentUserGroupIds = membershipStream.map(m -> m.getGroupId()).collect(Collectors.toSet());
+    try {
+      currentUserGroupIds = organization.getMembershipHandler()
+                                        .findMembershipsByUser(userId)
+                                        .stream()
+                                        .map(m -> m.getGroupId())
+                                        .collect(Collectors.toSet());
     } catch (Exception e) {
       LOG.error("Error getting current user (" + userId + ") group ids", e);
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -79,35 +82,31 @@ public abstract class AbstractController {
     HtmlParser htmlParser = new HtmlParser();
 
     Set<String> finalCurrentUserGroupIds = currentUserGroupIds;
-    List<ActivityInfo> activities = null;
-    try (Stream<ExoSocialActivity> exoSocialActivityStream = spaceActivities.stream()) {
-      activities = exoSocialActivityStream.filter(a -> {
-        String streamId = a.getStreamOwner();
-        return streamId != null
-            && (userIdentity.getRemoteId().equals(streamId) || finalCurrentUserGroupIds.contains(findSpaceGroupId(streamId)));
-      }).map(a -> {
-        // We want activity title in text (not HTML)
-        ParseContext pcontext = new ParseContext();
-        ContentHandler contentHandler = new BodyContentHandler();
-        Metadata metadata = new Metadata();
-        InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs));
-        String titleText;
-        try {
-          htmlParser.parse(content, contentHandler, metadata, pcontext);
-          titleText = cutText(contentHandler.toString(), 100);
-        } catch (Exception e) {
-          String rawTitle = cutText(a.getTitle(), 100);
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("Cannot parse activity title: '{}...'", rawTitle, e);
-          }
-          titleText = rawTitle;
+    List<ActivityInfo> activities = spaceActivities.stream().filter(a -> {
+      String streamId = a.getStreamOwner();
+      return streamId != null
+          && (userIdentity.getRemoteId().equals(streamId) || finalCurrentUserGroupIds.contains(findSpaceGroupId(streamId)));
+    }).map(a -> {
+      // We want activity title in text (not HTML)
+      ParseContext pcontext = new ParseContext();
+      ContentHandler contentHandler = new BodyContentHandler();
+      Metadata metadata = new Metadata();
+      String titleText;
+      try (InputStream content = new ByteArrayInputStream(a.getTitle().getBytes(clientCs))) {
+        htmlParser.parse(content, contentHandler, metadata, pcontext);
+        titleText = cutText(contentHandler.toString(), 100);
+      } catch (Exception e) {
+        String rawTitle = cutText(a.getTitle(), 100);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Cannot parse activity title: '{}...'", rawTitle, e);
         }
-        return new org.exoplatform.outlook.model.ActivityInfo(titleText,
-                                                              a.getType(),
-                                                              LinkProvider.getSingleActivityUrl(a.getId()),
-                                                              a.getPostedTime());
-      }).collect(Collectors.toList());
-    }
+        titleText = rawTitle;
+      }
+      return new org.exoplatform.outlook.model.ActivityInfo(titleText,
+                                                            a.getType(),
+                                                            LinkProvider.getSingleActivityUrl(a.getId()),
+                                                            a.getPostedTime());
+    }).collect(Collectors.toList());
 
     return activities;
   }
