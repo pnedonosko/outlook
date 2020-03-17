@@ -55,3 +55,8 @@ dependency-reduced-pom.xml
 .groovy/
 transaction.log
 
+# Dependencies
+node_modules
+
+# VS code settings
+.vscode

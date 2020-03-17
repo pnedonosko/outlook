@@ -1,0 +1,34 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["react", "@typescript-eslint", "office-addins"],
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "project": "../../../../tsconfig.json"
+    },
+    "extends": ["plugin:office-addins/react"],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "rules": {
+        "react/no-multi-comp": [1, { "ignoreStateless": false }],
+        "react/prefer-es6-class": [1, "always"],
+        "react/prefer-stateless-function": [1, { "ignorePureComponents": true }],
+        "react/jsx-pascal-case": [1],
+        "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+        "jsx-quotes": [1, "prefer-double"],
+        "no-multi-spaces": [1],
+        "react/jsx-tag-spacing": [1],
+        "react/jsx-curly-spacing": [1],
+        "react/jsx-boolean-value": [1],
+        "react/no-array-index-key": [1],
+        "react/no-string-refs": [1, { "noTemplateLiterals": false }],
+        "react/require-render-return": [1],
+        "prettier/prettier": [2, { "singleQuote": false, "tabWidth": 2, "printWidth": 110 }]
+    }
+}
