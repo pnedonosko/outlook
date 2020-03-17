@@ -32,8 +32,8 @@ public class RootDiscoveryMailServiceController extends AbstractController {
     ResourceSupport resource = new ResourceSupport();
 
     List<Link> links = new LinkedList<>();
+    links.add(linkTo(methodOn(RootAppController.class).getRoot()).withRel("parent"));
     links.add(linkTo(methodOn(RootDiscoveryMailServiceController.class).getRootDiscoveryOfOutlookMailServices()).withSelfRel());
-    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("exoServices"));
     links.add(linkTo(methodOn(MessageController.class).getRoot()).withRel("messageServices"));
     resource.add(links);
 

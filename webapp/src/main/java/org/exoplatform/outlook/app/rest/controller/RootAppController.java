@@ -1,6 +1,8 @@
 package org.exoplatform.outlook.app.rest.controller;
 
 import org.exoplatform.outlook.model.OutlookConstant;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -15,29 +17,29 @@ import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
- * The type Root discovery eXo service controller.
+ * The type Root app controller.
  */
 @RestController
-@RequestMapping(value = "/v2/exo")
+@RequestMapping(value = "/v2")
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
-public class RootDiscoveryeXoServiceController extends AbstractController {
+public class RootAppController {
+
+  /** The Constant LOG. */
+  private static final Log LOG = ExoLogger.getLogger(DocumentController.class);
 
   /**
-   * Gets root discovery of outlook mail services.
+   * Gets root.
    *
-   * @return the root discovery of outlook mail services
+   * @return the root
    */
   @RequestMapping(value = "", method = RequestMethod.GET, produces = OutlookConstant.HAL_AND_JSON)
-  public ResourceSupport getRootDiscoveryOfOutlookExoServices() {
+  public ResourceSupport getRoot() {
     ResourceSupport resource = new ResourceSupport();
 
     List<Link> links = new LinkedList<>();
-    links.add(linkTo(methodOn(RootAppController.class).getRoot()).withRel("parent"));
-    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withSelfRel());
-    links.add(linkTo(methodOn(UserController.class).getRoot()).withRel("userServices"));
-    links.add(linkTo(methodOn(SpaceController.class).getRoot()).withRel("spaceServices"));
-    links.add(linkTo(methodOn(ActivityController.class).getRoot()).withRel("activityServices"));
-    links.add(linkTo(methodOn(DocumentController.class).getRoot()).withRel("documentServices"));
+    links.add(linkTo(methodOn(RootAppController.class).getRoot()).withSelfRel());
+    links.add(linkTo(methodOn(RootDiscoveryeXoServiceController.class).getRootDiscoveryOfOutlookExoServices()).withRel("exo"));
+    links.add(linkTo(methodOn(RootDiscoveryMailServiceController.class).getRootDiscoveryOfOutlookMailServices()).withRel("mail"));
     resource.add(links);
 
     return resource;
