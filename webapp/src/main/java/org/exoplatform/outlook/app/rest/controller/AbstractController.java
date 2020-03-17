@@ -1,30 +1,5 @@
 package org.exoplatform.outlook.app.rest.controller;
 
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.html.HtmlParser;
-import org.apache.tika.sax.BodyContentHandler;
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.outlook.*;
-import org.exoplatform.outlook.model.ActivityInfo;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.Membership;
-import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.social.core.activity.model.ExoSocialActivity;
-import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.social.core.service.LinkProvider;
-import org.exoplatform.social.core.space.spi.SpaceService;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-import org.xml.sax.ContentHandler;
-
-import javax.jcr.RepositoryException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -37,7 +12,38 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import javax.jcr.RepositoryException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import org.xml.sax.ContentHandler;
+
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.outlook.OutlookEmail;
+import org.exoplatform.outlook.OutlookException;
+import org.exoplatform.outlook.OutlookMessage;
+import org.exoplatform.outlook.OutlookService;
+import org.exoplatform.outlook.OutlookSpace;
+import org.exoplatform.outlook.OutlookSpaceException;
+import org.exoplatform.outlook.OutlookUser;
+import org.exoplatform.outlook.model.ActivityInfo;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.service.LinkProvider;
+import org.exoplatform.social.core.space.spi.SpaceService;
 
 public abstract class AbstractController {
 
@@ -65,7 +71,7 @@ public abstract class AbstractController {
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
     final Charset clientCs = loadEncoding(request.getCharacterEncoding());
 
-    Set<String> currentUserGroupIds = null;
+    Set<String> currentUserGroupIds;
     try {
       currentUserGroupIds = organization.getMembershipHandler()
                                         .findMembershipsByUser(userId)
