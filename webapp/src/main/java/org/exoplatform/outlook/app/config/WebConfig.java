@@ -86,6 +86,10 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
   // Services config
 
+  /*
+  * We should try to use @Lazy annotation in order to initialize beans when we have an access to services (server started)
+  * */
+
   /*@Bean(name = "outlookServiceFactory")
   public OutlookServiceFactory outlookServiceFactory() {
     OutlookServiceFactory factory = new OutlookServiceFactory();

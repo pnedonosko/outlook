@@ -10,6 +10,7 @@ import org.exoplatform.outlook.*;
 import org.exoplatform.outlook.model.ActivityInfo;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -36,6 +37,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractController {
 
@@ -61,7 +63,6 @@ public abstract class AbstractController {
     OrganizationService organization = (OrganizationService) currentContainer.getComponentInstance(OrganizationService.class);
 
     Identity userIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
-
     final Charset clientCs = loadEncoding(request.getCharacterEncoding());
 
     Set<String> currentUserGroupIds = null;
